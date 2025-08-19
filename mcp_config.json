@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "archon": {
+      "command": "python",
+      "args": [
+        "C:\\Jarvis\\AI Workspace\\Archon\\mcp_server.py"
+      ],
+      "env": {
+        "ARCHON_PROJECT_ID": "fibrefield-project",
+        "ARCHON_API_URL": "http://localhost:8181/api",
+        "ARCHON_UI_URL": "http://localhost:3737"
+      }
+    }
+  },
+  "project_config": {
+    "name": "FibreField",
+    "project_id": "fibrefield-project",
+    "type": "Progressive Web Application",
+    "languages": [
+      "TypeScript",
+      "JavaScript"
+    ],
+    "frameworks": [
+      "Next.js",
+      "React"
+    ],
+    "setup_date": "2025-08-19 04:02:23"
+  }
+}

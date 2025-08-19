@@ -1,0 +1,40 @@
+{
+  "project": "FibreField",
+  "tools": {
+    "archon_ram": {
+      "enabled": true,
+      "auto_search": true,
+      "project_id": "c8a3e933-b4d7-41cc-9a82-208dbc17ca57"
+    },
+    "task_management": {
+      "enabled": true,
+      "auto_create": true,
+      "categories": [
+        "bug",
+        "feature",
+        "optimization",
+        "documentation"
+      ]
+    },
+    "knowledge_search": {
+      "enabled": true,
+      "sources": [
+        "local",
+        "archon_ram",
+        "firebase_docs"
+      ]
+    }
+  },
+  "workflows": {
+    "before_coding": [
+      "check_tasks",
+      "search_patterns",
+      "review_examples"
+    ],
+    "after_feature": [
+      "update_task",
+      "document_patterns",
+      "add_to_knowledge"
+    ]
+  }
+}

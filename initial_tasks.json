@@ -1,0 +1,47 @@
+[
+  {
+    "id": "fibre-001",
+    "title": "Fix build errors - Install missing Radix UI components",
+    "description": "Install @radix-ui/react-switch and @radix-ui/react-slider to resolve build failures",
+    "status": "todo",
+    "priority": "high",
+    "category": "bug_fix",
+    "estimated_hours": 1
+  },
+  {
+    "id": "fibre-002",
+    "title": "Implement Firebase authentication integration",
+    "description": "Replace auth scaffolding with functional Firebase Auth using shared configuration",
+    "status": "todo",
+    "priority": "high",
+    "category": "feature",
+    "estimated_hours": 4
+  },
+  {
+    "id": "fibre-003",
+    "title": "Replace REST API calls with Firebase SDK",
+    "description": "Update API integration to use Firebase SDK instead of REST endpoints to match FibreFlow patterns",
+    "status": "todo",
+    "priority": "medium",
+    "category": "refactor",
+    "estimated_hours": 6
+  },
+  {
+    "id": "fibre-004",
+    "title": "Implement photo upload backend logic",
+    "description": "Add Firebase Storage integration for photo uploads with compression",
+    "status": "todo",
+    "priority": "medium",
+    "category": "feature",
+    "estimated_hours": 3
+  },
+  {
+    "id": "fibre-005",
+    "title": "Test offline synchronization workflow",
+    "description": "Validate pole capture data syncs correctly when connection is restored",
+    "status": "todo",
+    "priority": "medium",
+    "category": "testing",
+    "estimated_hours": 2
+  }
+]

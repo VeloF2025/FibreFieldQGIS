@@ -1,0 +1,52 @@
+[
+  {
+    "type": "documentation",
+    "source": "README.md",
+    "content": "FibreField PWA project documentation",
+    "tags": [
+      "setup",
+      "overview",
+      "requirements"
+    ]
+  },
+  {
+    "type": "api_reference",
+    "source": "API_REFERENCE.md",
+    "content": "API endpoints and data models",
+    "tags": [
+      "api",
+      "endpoints",
+      "models"
+    ]
+  },
+  {
+    "type": "architecture",
+    "source": "src/services/",
+    "content": "Service layer architecture and patterns",
+    "tags": [
+      "services",
+      "architecture",
+      "patterns"
+    ]
+  },
+  {
+    "type": "data_models",
+    "source": "src/models/field-capture.model.ts",
+    "content": "Core data models for pole capture workflow",
+    "tags": [
+      "models",
+      "typescript",
+      "data"
+    ]
+  },
+  {
+    "type": "components",
+    "source": "src/components/",
+    "content": "React components and UI patterns",
+    "tags": [
+      "react",
+      "components",
+      "ui"
+    ]
+  }
+]
