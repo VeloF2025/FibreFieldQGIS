@@ -1,0 +1,82 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+
+  /* High contrast light theme for field visibility */
+  --primary-color: #1976d2;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
+  --background: #ffffff;
+  --surface: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #424242;
+  --border-color: #212121;
+  
+  color-scheme: light;
+  color: var(--text-primary);
+  background-color: var(--background);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  font-size: 18px; /* Increased for better readability */
+}
+
+h1 {
+  font-size: 1.75rem; /* Reduced for mobile, but still prominent */
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+button {
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+  padding: 1rem 1.5rem; /* Increased padding for 48px+ touch targets */
+  min-height: 48px;
+  min-width: 48px;
+  font-size: 18px; /* Larger text for readability */
+  font-weight: 600;
+  font-family: inherit;
+  background-color: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  transition: all 0.25s;
+  touch-action: manipulation; /* Prevent zoom on double tap */
+  -webkit-tap-highlight-color: transparent;
+}
+button:hover {
+  background-color: #1565c0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+button:focus,
+button:focus-visible {
+  outline: 3px solid var(--warning-color);
+  outline-offset: 2px;
+}
+
+/* Remove dark mode override since we're using high contrast light theme */

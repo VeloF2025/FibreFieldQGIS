@@ -1,0 +1,63 @@
+.sync-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.sync-icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.sync-icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Status-specific styles */
+.sync-status-synced {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--success-color, #4caf50);
+}
+
+.sync-status-syncing {
+  background-color: rgba(33, 150, 243, 0.1);
+  color: var(--primary-color, #1976d2);
+}
+
+.sync-status-pending {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: var(--warning-color, #ff9800);
+}
+
+.sync-status-offline {
+  background-color: rgba(158, 158, 158, 0.1);
+  color: #666;
+}
+
+.sync-status-error {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: var(--error-color, #f44336);
+}
+
+.sync-text {
+  white-space: nowrap;
+}

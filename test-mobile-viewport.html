@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Viewport Test - 360x640</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 16px;
+        }
+        
+        .container {
+            max-width: 360px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #1976d2;
+        }
+        
+        .viewport-info {
+            background: #e3f2fd;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+        
+        .test-button {
+            display: block;
+            width: 100%;
+            min-height: 48px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .test-button:hover {
+            background: #1565c0;
+        }
+        
+        .test-button:active {
+            background: #0d47a1;
+        }
+        
+        .touch-target {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin: 8px;
+            position: relative;
+        }
+        
+        .touch-target::after {
+            content: '48px';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .small-target {
+            width: 32px;
+            height: 32px;
+            background: #f44336;
+        }
+        
+        .small-target::after {
+            content: '32px';
+        }
+        
+        .test-section {
+            margin-bottom: 24px;
+        }
+        
+        .test-section h2 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #1976d2;
+        }
+        
+        .status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .status.online {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        
+        .status.offline {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mobile Viewport Test</h1>
+        
+        <div class="viewport-info" id="viewport-info">
+            Loading viewport info...
+        </div>
+        
+        <div class="test-section">
+            <h2>Touch Target Test</h2>
+            <p style="margin-bottom: 12px;">Green = Good (48px), Red = Too Small</p>
+            <div style="text-align: center;">
+                <span class="touch-target"></span>
+                <span class="touch-target small-target"></span>
+                <span class="touch-target"></span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Button Tests</h2>
+            <button class="test-button" onclick="alert('Button clicked!')">
+                Standard Button (48px height)
+            </button>
+            <button class="test-button" style="min-height: 32px; font-size: 14px;">
+                Small Button (32px - TOO SMALL)
+            </button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Form Input Test</h2>
+            <input type="text" placeholder="Pole Number (e.g., LAW.P.B167)">
+            <input type="text" placeholder="GPS Coordinates">
+        </div>
+        
+        <div class="test-section">
+            <h2>Status Indicators</h2>
+            <div class="status online">🟢 Online - Connected</div>
+            <div class="status offline">🔴 Offline - No Connection</div>
+        </div>
+    </div>
+    
+    <script>
+        function updateViewportInfo() {
+            const info = document.getElementById('viewport-info');
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const dpr = window.devicePixelRatio || 1;
+            const screen = window.screen;
+            
+            info.innerHTML = `
+                Viewport: ${vw} x ${vh}px<br>
+                Device Pixel Ratio: ${dpr}<br>
+                Screen: ${screen.width} x ${screen.height}px<br>
+                Orientation: ${screen.orientation?.type || 'unknown'}<br>
+                Touch: ${('ontouchstart' in window) ? 'Yes' : 'No'}
+            `;
+            
+            // Add warning if viewport is not mobile
+            if (vw > 414) {
+                info.innerHTML += '<br><strong style="color: red;">⚠️ Not mobile viewport!</strong>';
+            }
+        }
+        
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+        window.addEventListener('orientationchange', updateViewportInfo);
+    </script>
+</body>
+</html>
