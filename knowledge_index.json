@@ -10,43 +10,104 @@
     ]
   },
   {
+    "type": "planning",
+    "source": "IMPLEMENTATION_PLAN.md",
+    "content": "Phased implementation plan with 4 phases, 21 tasks, 92 hours estimated",
+    "tags": [
+      "planning",
+      "tasks",
+      "phases",
+      "timeline"
+    ],
+    "created": "2025-09-09"
+  },
+  {
+    "type": "tasks",
+    "source": "archon_tasks.json",
+    "content": "Comprehensive task tracking with priorities, dependencies, and acceptance criteria",
+    "tags": [
+      "tasks",
+      "archon",
+      "tracking",
+      "priorities"
+    ],
+    "created": "2025-09-09"
+  },
+  {
     "type": "api_reference",
     "source": "API_REFERENCE.md",
-    "content": "API endpoints and data models",
+    "content": "API endpoints and data models including Home Drop Capture",
     "tags": [
       "api",
       "endpoints",
-      "models"
+      "models",
+      "home-drop"
     ]
   },
   {
     "type": "architecture",
     "source": "src/services/",
-    "content": "Service layer architecture and patterns",
+    "content": "Service layer architecture with Firebase integration patterns",
     "tags": [
       "services",
       "architecture",
-      "patterns"
+      "patterns",
+      "firebase"
     ]
   },
   {
     "type": "data_models",
     "source": "src/models/field-capture.model.ts",
-    "content": "Core data models for pole capture workflow",
+    "content": "Core data models for pole capture and home drop workflows",
     "tags": [
       "models",
       "typescript",
-      "data"
+      "data",
+      "home-drop"
+    ]
+  },
+  {
+    "type": "data_models",
+    "source": "src/types/home-drop.types.ts",
+    "content": "Home Drop specific type definitions and interfaces",
+    "tags": [
+      "types",
+      "typescript",
+      "home-drop",
+      "interfaces"
     ]
   },
   {
     "type": "components",
     "source": "src/components/",
-    "content": "React components and UI patterns",
+    "content": "React components and UI patterns with 4-step workflow",
     "tags": [
       "react",
       "components",
-      "ui"
+      "ui",
+      "workflow"
+    ]
+  },
+  {
+    "type": "testing",
+    "source": "tests/",
+    "content": "Test suites with >95% coverage including E2E tests",
+    "tags": [
+      "testing",
+      "vitest",
+      "playwright",
+      "coverage"
+    ]
+  },
+  {
+    "type": "integration",
+    "source": "src/services/qgis-integration.service.ts",
+    "content": "QGIS/QField GeoPackage integration service",
+    "tags": [
+      "qgis",
+      "geopackage",
+      "integration",
+      "mapping"
     ]
   }
 ]

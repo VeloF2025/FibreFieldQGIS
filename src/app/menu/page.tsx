@@ -81,7 +81,7 @@ export default function MenuPage() {
       icon: MapPin,
       route: '/map',
       color: 'bg-blue-600',
-      disabled: true
+      badge: 'New'
     },
     {
       title: 'Analytics',
@@ -89,7 +89,7 @@ export default function MenuPage() {
       icon: BarChart3,
       route: '/analytics',
       color: 'bg-purple-600',
-      disabled: true
+      badge: 'New'
     },
     {
       title: 'Settings',

@@ -1,0 +1,72 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - heading "Home Drop Assignments" [level=1] [ref=e6]
+      - paragraph [ref=e7]: Manage work assignments for field technicians with real-time updates and offline support
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e12]:
+          - img [ref=e13]
+          - generic [ref=e15]:
+            - paragraph [ref=e16]: Total
+            - paragraph [ref=e17]: "0"
+        - generic [ref=e20]:
+          - img [ref=e21]
+          - generic [ref=e24]:
+            - paragraph [ref=e25]: Pending
+            - paragraph [ref=e26]: "0"
+        - generic [ref=e29]:
+          - img [ref=e30]
+          - generic [ref=e35]:
+            - paragraph [ref=e36]: In Progress
+            - paragraph [ref=e37]: "0"
+        - generic [ref=e40]:
+          - img [ref=e41]
+          - generic [ref=e44]:
+            - paragraph [ref=e45]: Completed
+            - paragraph [ref=e46]: "0"
+      - generic [ref=e47]:
+        - generic [ref=e49]:
+          - heading "Assignments" [level=3] [ref=e50]
+          - generic [ref=e51]:
+            - button "Refresh" [ref=e52]:
+              - img [ref=e53]
+              - text: Refresh
+            - button "Export" [ref=e58]:
+              - img [ref=e59]
+              - text: Export
+            - button "Import" [ref=e62]:
+              - img [ref=e63]
+              - text: Import
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e69]:
+              - img [ref=e70]
+              - textbox "Search assignments, pole numbers, customers..." [ref=e73]
+            - generic [ref=e74]:
+              - button "Overdue (0)" [ref=e75]:
+                - img [ref=e76]
+                - text: Overdue (0)
+              - button "More Filters" [ref=e78]:
+                - img [ref=e79]
+                - text: More Filters
+          - tablist [ref=e82]:
+            - tab "All" [selected] [ref=e83]
+            - tab "Pending (0)" [ref=e84]
+            - tab "In Progress (0)" [ref=e85]
+            - tab "Completed (0)" [ref=e86]
+      - generic [ref=e90]:
+        - img [ref=e92]
+        - generic [ref=e95]:
+          - heading "No assignments found" [level=3] [ref=e96]
+          - paragraph [ref=e97]: No assignments have been created yet.
+        - button "Create Assignment" [ref=e98]:
+          - img [ref=e99]
+          - text: Create Assignment
+  - button "Open Next.js Dev Tools" [ref=e105] [cursor=pointer]:
+    - img [ref=e106] [cursor=pointer]
+  - alert [ref=e109]
+```

@@ -1,5 +1,5 @@
 // Root layout for FibreField
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
@@ -15,15 +15,6 @@ export const metadata: Metadata = {
   
   // PWA metadata
   manifest: '/manifest.json',
-  themeColor: '#3b82f6',
-  
-  // Mobile optimization
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
   
   // Open Graph
   openGraph: {
@@ -48,6 +39,15 @@ export const metadata: Metadata = {
 };
 
 import { Providers } from '@/components/providers/providers';
+
+// Next.js 15 requires separate viewport export
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#3b82f6',
+};
 
 export default function RootLayout({
   children,

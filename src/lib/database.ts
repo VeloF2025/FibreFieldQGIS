@@ -10,6 +10,12 @@ import {
   Photo 
 } from '@/types';
 import { UserProfile } from '@/lib/auth';
+import type {
+  HomeDropCapture,
+  HomeDropPhotoStorage,
+  HomeDropAssignment,
+  HomeDropSyncQueueItem
+} from '@/types/home-drop.types';
 
 // Local database interface extending the main types with local-specific fields
 export interface LocalPoleInstallation extends Omit<PoleInstallation, 'id'> {
@@ -172,10 +178,20 @@ export class FibreFieldDB extends Dexie {
   poleCaptures!: Table<PoleCapture, string>;
   polePhotos!: Table<PolePhoto, string>;
   
+  // Home drop tables
+  homeDropCaptures!: Table<HomeDropCapture, string>;
+  homeDropPhotos!: Table<HomeDropPhotoStorage, string>;
+  homeDropAssignments!: Table<HomeDropAssignment, string>;
+  homeDropSyncQueue!: Table<HomeDropSyncQueueItem, string>;
+  
   // Queue and sync management
   offlineQueue!: Table<LocalOfflineQueueItem, number>;
   syncMetadata!: Table<SyncMetadata, number>;
   appSettings!: Table<AppSettings, number>;
+  
+  // Photo upload management tables
+  uploadedPhotos!: Table<any, string>;
+  failedUploads!: Table<any, string>;
 
   constructor() {
     super('FibreFieldDB');
@@ -199,6 +215,54 @@ export class FibreFieldDB extends Dexie {
       offlineQueue: '++id, type, action, status, priority, attempts, nextAttempt, createdAt',
       syncMetadata: '++id, collection, lastSyncAt, syncDirection',
       appSettings: '++id, &key, updatedAt'
+    });
+
+    // Version 2: Add home drop tables
+    this.version(2).stores({
+      // Preserve existing stores
+      poleInstallations: '++id, remoteId, projectId, plannedPoleId, contractorId, capturedBy, status, isOffline, capturedAt, syncedAt',
+      plannedPoles: '++id, remoteId, projectId, poleNumber, status, assignedTo, contractorId, lastSyncedAt',
+      projects: '++id, remoteId, title, status, type, clientId, startDate, lastSyncedAt',
+      contractors: '++id, remoteId, name, email, company, status, lastSyncedAt',
+      staff: '++id, remoteId, name, email, contractorId, isActive, lastSyncedAt',
+      photos: '++id, remoteId, type, poleInstallationId, localPath, uploaded, compressed, createdAt',
+      userProfiles: '&uid, email, role, contractorId, isActive, cachedAt',
+      poleCaptures: '&id, projectId, poleNumber, status, syncStatus, capturedBy, capturedAt, createdAt, updatedAt',
+      polePhotos: '&id, poleId, type, uploadStatus, capturedAt, uploadedAt',
+      offlineQueue: '++id, type, action, status, priority, attempts, nextAttempt, createdAt',
+      syncMetadata: '++id, collection, lastSyncAt, syncDirection',
+      appSettings: '++id, &key, updatedAt',
+      
+      // New home drop tables
+      homeDropCaptures: '&id, poleNumber, projectId, contractorId, assignmentId, status, syncStatus, capturedBy, capturedAt, createdAt, updatedAt, [projectId+status], [poleNumber+status]',
+      homeDropPhotos: '&id, homeDropId, type, uploadStatus, capturedAt, uploadedAt, [homeDropId+type]',
+      homeDropAssignments: '&id, homeDropId, poleNumber, assignedTo, assignedBy, status, priority, scheduledDate, assignedAt, [assignedTo+status]',
+      homeDropSyncQueue: '&id, homeDropId, action, status, priority, attempts, nextAttempt, createdAt, [status+priority]'
+    });
+
+    // Version 3: Add photo upload management tables
+    this.version(3).stores({
+      // Preserve all existing stores from version 2
+      poleInstallations: '++id, remoteId, projectId, plannedPoleId, contractorId, capturedBy, status, isOffline, capturedAt, syncedAt',
+      plannedPoles: '++id, remoteId, projectId, poleNumber, status, assignedTo, contractorId, lastSyncedAt',
+      projects: '++id, remoteId, title, status, type, clientId, startDate, lastSyncedAt',
+      contractors: '++id, remoteId, name, email, company, status, lastSyncedAt',
+      staff: '++id, remoteId, name, email, contractorId, isActive, lastSyncedAt',
+      photos: '++id, remoteId, type, poleInstallationId, localPath, uploaded, compressed, createdAt',
+      userProfiles: '&uid, email, role, contractorId, isActive, cachedAt',
+      poleCaptures: '&id, projectId, poleNumber, status, syncStatus, capturedBy, capturedAt, createdAt, updatedAt',
+      polePhotos: '&id, poleId, type, uploadStatus, capturedAt, uploadedAt',
+      offlineQueue: '++id, type, action, status, priority, attempts, nextAttempt, createdAt',
+      syncMetadata: '++id, collection, lastSyncAt, syncDirection',
+      appSettings: '++id, &key, updatedAt',
+      homeDropCaptures: '&id, poleNumber, projectId, contractorId, assignmentId, status, syncStatus, capturedBy, capturedAt, createdAt, updatedAt, [projectId+status], [poleNumber+status]',
+      homeDropPhotos: '&id, homeDropId, type, uploadStatus, capturedAt, uploadedAt, [homeDropId+type]',
+      homeDropAssignments: '&id, homeDropId, poleNumber, assignedTo, assignedBy, status, priority, scheduledDate, assignedAt, [assignedTo+status]',
+      homeDropSyncQueue: '&id, homeDropId, action, status, priority, attempts, nextAttempt, createdAt, [status+priority]',
+      
+      // New photo upload management tables
+      uploadedPhotos: '&id, captureId, photoType, url, path, size, uploadedAt, [captureId+photoType]',
+      failedUploads: '&id, captureId, photoType, projectId, fileData, fileName, fileType, failedAt, retryCount, lastRetryAt, [captureId+photoType]'
     });
 
     // Add hooks for automatic timestamps
@@ -241,6 +305,79 @@ export class FibreFieldDB extends Dexie {
     addTimestampHooks(this.contractors);
     addTimestampHooks(this.staff);
     addTimestampHooks(this.appSettings);
+
+    // Add hooks for home drop tables
+    if (this.homeDropCaptures) {
+      this.homeDropCaptures.hook('creating', (primKey, obj, trans) => {
+        const now = new Date();
+        obj.createdAt = obj.createdAt || now;
+        obj.updatedAt = now;
+        obj.syncStatus = obj.syncStatus || 'pending';
+        
+        // Initialize workflow
+        if (!obj.workflow) {
+          obj.workflow = {
+            currentStep: 1,
+            totalSteps: 4,
+            lastSavedStep: 1,
+            steps: {
+              assignments: false,
+              gps: false,
+              photos: false,
+              review: false
+            }
+          };
+        }
+        
+        // Initialize required photos
+        if (!obj.requiredPhotos) {
+          obj.requiredPhotos = [
+            'power-meter-test',
+            'fibertime-setup-confirmation',
+            'fibertime-device-actions',
+            'router-4-lights-status'
+          ];
+        }
+        
+        obj.completedPhotos = obj.completedPhotos || [];
+      });
+
+      this.homeDropCaptures.hook('updating', (modifications, primKey, obj, trans) => {
+        modifications.updatedAt = new Date();
+        if (modifications.status || modifications.installation || modifications.photos) {
+          if (!modifications.syncStatus || modifications.syncStatus === 'synced') {
+            modifications.syncStatus = 'pending';
+          }
+        }
+      });
+    }
+
+    if (this.homeDropPhotos) {
+      this.homeDropPhotos.hook('creating', (primKey, obj, trans) => {
+        obj.capturedAt = obj.capturedAt || new Date();
+        obj.uploadStatus = obj.uploadStatus || 'pending';
+      });
+    }
+
+    if (this.homeDropAssignments) {
+      this.homeDropAssignments.hook('creating', (primKey, obj, trans) => {
+        obj.assignedAt = obj.assignedAt || new Date();
+        obj.status = obj.status || 'pending';
+        obj.priority = obj.priority || 'medium';
+      });
+    }
+
+    if (this.homeDropSyncQueue) {
+      this.homeDropSyncQueue.hook('creating', (primKey, obj, trans) => {
+        const now = new Date();
+        obj.createdAt = obj.createdAt || now;
+        obj.updatedAt = now;
+        obj.status = obj.status || 'pending';
+        obj.attempts = obj.attempts || 0;
+        obj.priority = obj.priority || 'medium';
+        obj.nextAttempt = obj.nextAttempt || new Date(now.getTime() + 60000); // 1 minute
+      });
+    }
   }
 
   // Utility methods for common operations
@@ -264,6 +401,12 @@ export class FibreFieldDB extends Dexie {
       staff: await this.staff.count(),
       photos: await this.photos.count(),
       userProfiles: await this.userProfiles.count(),
+      poleCaptures: await this.poleCaptures.count(),
+      polePhotos: await this.polePhotos.count(),
+      homeDropCaptures: await this.homeDropCaptures?.count() || 0,
+      homeDropPhotos: await this.homeDropPhotos?.count() || 0,
+      homeDropAssignments: await this.homeDropAssignments?.count() || 0,
+      homeDropSyncQueue: await this.homeDropSyncQueue?.count() || 0,
       offlineQueue: await this.offlineQueue.count(),
       syncMetadata: await this.syncMetadata.count(),
       appSettings: await this.appSettings.count()

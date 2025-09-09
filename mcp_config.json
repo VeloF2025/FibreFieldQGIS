@@ -13,9 +13,10 @@
     }
   },
   "project_config": {
-    "name": "FibreField",
+    "name": "FibreField - Home Drop Capture Enhanced",
     "project_id": "fibrefield-project",
     "type": "Progressive Web Application",
+    "description": "Offline-capable field data collection for fiber optic infrastructure with Home Drop Capture workflow",
     "languages": [
       "TypeScript",
       "JavaScript"
@@ -24,6 +25,15 @@
       "Next.js",
       "React"
     ],
-    "setup_date": "2025-08-19 04:02:23"
+    "enhancement_features": [
+      "4-step home drop capture workflow",
+      "QGIS/QField integration",
+      "Admin approval system",
+      "Photo quality validation",
+      "Client delivery pipeline",
+      "Pole-drop relationship tracking"
+    ],
+    "setup_date": "2025-08-19 04:02:23",
+    "enhanced_date": "2025-09-08"
   }
 }
