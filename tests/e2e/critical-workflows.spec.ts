@@ -7,7 +7,7 @@ test.describe('Critical Workflows', () => {
 
   test('Landing page loads successfully', async ({ page }) => {
     await expect(page).toHaveTitle(/FibreField/);
-    await expect(page.locator('h1')).toContainText('FibreField');
+    await expect(page.locator('h1').first()).toContainText('FibreField');
   });
 
   test('Navigation menu is accessible', async ({ page }) => {
