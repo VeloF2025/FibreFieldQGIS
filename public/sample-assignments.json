@@ -1,0 +1,50 @@
+[
+  {
+    "customerName": "John Doe",
+    "customerAddress": "123 Main St, City, State",
+    "contactNumber": "+1-555-0101",
+    "email": "john@example.com",
+    "accountNumber": "ACC12345",
+    "poleNumber": "POLE001",
+    "priority": "high",
+    "scheduledDate": "2024-01-15",
+    "installationNotes": "Standard installation",
+    "accessNotes": "Gate code: 1234"
+  },
+  {
+    "customerName": "Jane Smith",
+    "customerAddress": "456 Oak Ave, City, State",
+    "contactNumber": "+1-555-0102",
+    "email": "jane@example.com",
+    "accountNumber": "ACC12346",
+    "poleNumber": "POLE002",
+    "priority": "medium",
+    "scheduledDate": "2024-01-16",
+    "installationNotes": "Requires ladder truck",
+    "accessNotes": "Contact before arrival"
+  },
+  {
+    "customerName": "Michael Johnson",
+    "customerAddress": "789 Pine St, City, State",
+    "contactNumber": "+1-555-0103",
+    "email": "mike@example.com",
+    "accountNumber": "ACC12347",
+    "poleNumber": "POLE003",
+    "priority": "low",
+    "scheduledDate": "2024-01-17",
+    "installationNotes": "Customer has dog",
+    "accessNotes": "Side entrance"
+  },
+  {
+    "customerName": "Sarah Wilson",
+    "customerAddress": "321 Elm Dr, City, State",
+    "contactNumber": "+1-555-0104",
+    "email": "sarah@example.com",
+    "accountNumber": "ACC12348",
+    "poleNumber": "POLE004",
+    "priority": "high",
+    "scheduledDate": "2024-01-18",
+    "installationNotes": "Underground service",
+    "accessNotes": "Power company contact needed"
+  }
+]

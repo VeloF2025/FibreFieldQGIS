@@ -1,0 +1,52 @@
+[
+  {
+    "poleNumber": "P001",
+    "serviceAddress": "123 Main Street, Anytown, USA",
+    "priority": "high",
+    "dueDate": "2024-12-20",
+    "assignedTo": "tech001",
+    "notes": "Customer requested morning appointment",
+    "requirements": ["Fiber installation", "Router setup", "Speed test"],
+    "estimatedDuration": 90
+  },
+  {
+    "poleNumber": "P002",
+    "serviceAddress": "456 Oak Avenue, Anytown, USA",
+    "priority": "medium",
+    "dueDate": "2024-12-21",
+    "assignedTo": "tech002",
+    "notes": "Second floor apartment",
+    "requirements": ["Fiber installation", "ONT configuration"],
+    "estimatedDuration": 60
+  },
+  {
+    "poleNumber": "P003",
+    "serviceAddress": "789 Elm Drive, Anytown, USA",
+    "priority": "low",
+    "dueDate": "2024-12-22",
+    "assignedTo": "tech001",
+    "notes": "Standard installation",
+    "requirements": ["Fiber installation"],
+    "estimatedDuration": 45
+  },
+  {
+    "poleNumber": "P004",
+    "serviceAddress": "321 Pine Road, Anytown, USA",
+    "priority": "high",
+    "dueDate": "2024-12-19",
+    "assignedTo": "tech003",
+    "notes": "Business customer - priority service",
+    "requirements": ["Fiber installation", "Business router", "Static IP setup"],
+    "estimatedDuration": 120
+  },
+  {
+    "poleNumber": "P005",
+    "serviceAddress": "654 Maple Lane, Anytown, USA",
+    "priority": "medium",
+    "dueDate": "2024-12-23",
+    "assignedTo": "tech002",
+    "notes": "Elderly customer - needs assistance with setup",
+    "requirements": ["Fiber installation", "Router setup", "WiFi configuration", "Device connection"],
+    "estimatedDuration": 75
+  }
+]

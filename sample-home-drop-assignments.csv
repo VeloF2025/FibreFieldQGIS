@@ -1,0 +1,11 @@
+poleNumber,customerName,customerAddress,contactNumber,email,accountNumber,priority,scheduledDate,installationNotes,accessNotes
+P001-HD-001,John Smith,123 Main Street,555-0101,john.smith@email.com,AC001001,high,2024-09-15,Fiber drop installation from Pole P001. Customer has existing underground conduit.,Gate code: 1234. Contact customer 24hrs before arrival.
+P001-HD-002,Sarah Johnson,125 Main Street,555-0102,sarah.j@email.com,AC001002,medium,2024-09-16,Standard fiber drop installation. New service connection required.,Property has dog - call ahead. Key under mat.
+P002-HD-003,Mike Wilson,789 Oak Avenue,555-0201,mike.wilson@email.com,AC002001,high,2024-09-17,Fiber drop from P002. Customer upgrade from copper to fiber.,Business hours only 9-5. Contact office manager.
+P002-HD-004,Emma Davis,791 Oak Avenue,555-0202,emma.davis@email.com,AC002002,medium,2024-09-18,New construction - fiber drop installation.,Construction site - hard hat required. Contact foreman.
+P003-HD-005,Robert Brown,456 Pine Road,555-0301,r.brown@email.com,AC003001,low,2024-09-19,Residential fiber drop. Customer has existing fiber ready home.,Customer works from home - flexible scheduling.
+P003-HD-006,Lisa Garcia,458 Pine Road,555-0302,lisa.garcia@email.com,AC003002,high,2024-09-20,Fiber drop installation. Customer business - minimal downtime required.,Business hours 8-6. Backup internet required during install.
+P004-HD-007,David Martinez,321 Cedar Lane,555-0401,david.m@email.com,AC004001,medium,2024-09-21,Standard residential drop from pole P004.,Customer has security system - disable before work.
+P004-HD-008,Jennifer Lee,323 Cedar Lane,555-0402,j.lee@email.com,AC004002,low,2024-09-22,Fiber drop installation for home office setup.,Customer prefers morning appointments. Coffee available.
+P005-HD-009,Thomas Anderson,654 Elm Street,555-0501,t.anderson@email.com,AC005001,high,2024-09-23,Emergency fiber restoration after storm damage. Priority customer.,Customer without internet for 3 days - urgent priority.
+P005-HD-010,Angela White,656 Elm Street,555-0502,angela.white@email.com,AC005002,medium,2024-09-24,New fiber drop installation. Multi-unit building.,Building superintendent: 555-0500. Get access to utility room.

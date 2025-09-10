@@ -1,0 +1,122 @@
+[
+  {
+    "poleNumber": "P001-HD-001",
+    "customerName": "John Smith",
+    "customerAddress": "123 Main Street",
+    "contactNumber": "555-0101",
+    "email": "john.smith@email.com",
+    "accountNumber": "AC001001",
+    "priority": "high",
+    "scheduledDate": "2024-09-15",
+    "installationNotes": "Fiber drop installation from Pole P001. Customer has existing underground conduit.",
+    "accessNotes": "Gate code: 1234. Contact customer 24hrs before arrival."
+  },
+  {
+    "poleNumber": "P001-HD-002",
+    "customerName": "Sarah Johnson",
+    "customerAddress": "125 Main Street",
+    "contactNumber": "555-0102",
+    "email": "sarah.j@email.com",
+    "accountNumber": "AC001002",
+    "priority": "medium",
+    "scheduledDate": "2024-09-16",
+    "installationNotes": "Standard fiber drop installation. New service connection required.",
+    "accessNotes": "Property has dog - call ahead. Key under mat."
+  },
+  {
+    "poleNumber": "P002-HD-003",
+    "customerName": "Mike Wilson",
+    "customerAddress": "789 Oak Avenue",
+    "contactNumber": "555-0201",
+    "email": "mike.wilson@email.com",
+    "accountNumber": "AC002001",
+    "priority": "high",
+    "scheduledDate": "2024-09-17",
+    "installationNotes": "Fiber drop from P002. Customer upgrade from copper to fiber.",
+    "accessNotes": "Business hours only 9-5. Contact office manager."
+  },
+  {
+    "poleNumber": "P002-HD-004",
+    "customerName": "Emma Davis",
+    "customerAddress": "791 Oak Avenue",
+    "contactNumber": "555-0202",
+    "email": "emma.davis@email.com",
+    "accountNumber": "AC002002",
+    "priority": "medium",
+    "scheduledDate": "2024-09-18",
+    "installationNotes": "New construction - fiber drop installation.",
+    "accessNotes": "Construction site - hard hat required. Contact foreman."
+  },
+  {
+    "poleNumber": "P003-HD-005",
+    "customerName": "Robert Brown",
+    "customerAddress": "456 Pine Road",
+    "contactNumber": "555-0301",
+    "email": "r.brown@email.com",
+    "accountNumber": "AC003001",
+    "priority": "low",
+    "scheduledDate": "2024-09-19",
+    "installationNotes": "Residential fiber drop. Customer has existing fiber ready home.",
+    "accessNotes": "Customer works from home - flexible scheduling."
+  },
+  {
+    "poleNumber": "P003-HD-006",
+    "customerName": "Lisa Garcia",
+    "customerAddress": "458 Pine Road",
+    "contactNumber": "555-0302",
+    "email": "lisa.garcia@email.com",
+    "accountNumber": "AC003002",
+    "priority": "high",
+    "scheduledDate": "2024-09-20",
+    "installationNotes": "Fiber drop installation. Customer business - minimal downtime required.",
+    "accessNotes": "Business hours 8-6. Backup internet required during install."
+  },
+  {
+    "poleNumber": "P004-HD-007",
+    "customerName": "David Martinez",
+    "customerAddress": "321 Cedar Lane",
+    "contactNumber": "555-0401",
+    "email": "david.m@email.com",
+    "accountNumber": "AC004001",
+    "priority": "medium",
+    "scheduledDate": "2024-09-21",
+    "installationNotes": "Standard residential drop from pole P004.",
+    "accessNotes": "Customer has security system - disable before work."
+  },
+  {
+    "poleNumber": "P004-HD-008",
+    "customerName": "Jennifer Lee",
+    "customerAddress": "323 Cedar Lane",
+    "contactNumber": "555-0402",
+    "email": "j.lee@email.com",
+    "accountNumber": "AC004002",
+    "priority": "low",
+    "scheduledDate": "2024-09-22",
+    "installationNotes": "Fiber drop installation for home office setup.",
+    "accessNotes": "Customer prefers morning appointments. Coffee available."
+  },
+  {
+    "poleNumber": "P005-HD-009",
+    "customerName": "Thomas Anderson",
+    "customerAddress": "654 Elm Street",
+    "contactNumber": "555-0501",
+    "email": "t.anderson@email.com",
+    "accountNumber": "AC005001",
+    "priority": "high",
+    "scheduledDate": "2024-09-23",
+    "installationNotes": "Emergency fiber restoration after storm damage. Priority customer.",
+    "accessNotes": "Customer without internet for 3 days - urgent priority."
+  },
+  {
+    "poleNumber": "P005-HD-010",
+    "customerName": "Angela White",
+    "customerAddress": "656 Elm Street",
+    "contactNumber": "555-0502",
+    "email": "angela.white@email.com",
+    "accountNumber": "AC005002",
+    "priority": "medium",
+    "scheduledDate": "2024-09-24",
+    "installationNotes": "New fiber drop installation. Multi-unit building.",
+    "accessNotes": "Building superintendent: 555-0500. Get access to utility room."
+  }
+]
