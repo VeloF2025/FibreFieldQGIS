@@ -1,0 +1,231 @@
+# FibreField Project-Specific Agents - Archon Configuration
+# Generated: 2025-09-09
+# Project: FibreField PWA - Fiber Optic Field Data Collection
+# Status: Active
+
+project_info:
+  name: "FibreField"
+  id: "fibrefield-project"
+  type: "PWA"
+  complexity_score: 8.7
+  tech_stack:
+    - "Next.js 15"
+    - "React 19" 
+    - "TypeScript 5.7.3"
+    - "Firebase (Auth, Firestore, Storage)"
+    - "Tailwind CSS"
+    - "PWA/Service Worker"
+    - "IndexedDB/Dexie.js"
+    - "QGIS/GeoPackage"
+    - "Playwright E2E"
+  created: "2025-09-09"
+  completion: "89.3%"
+
+specialized_agents:
+  high_priority:
+    - name: "fibre-test-optimizer"
+      type: "test-coverage-validator" 
+      specialization: "E2E test timing, Firebase loading states, PWA test patterns"
+      focus_areas:
+        - "Playwright E2E test optimization"
+        - "Firebase authentication test flows"
+        - "PWA loading state handling"
+        - "Mobile responsiveness testing"
+      current_issues:
+        - "Authentication tests failing due to loading delays"
+        - "Service worker initialization timing"
+        - "Firebase async loading patterns"
+      activation_command: "@fibre-test-optimizer"
+      priority: 1
+
+    - name: "firebase-integration-specialist"
+      type: "system-architect"
+      specialization: "Firebase Auth, Firestore, Storage optimization for PWA"
+      focus_areas:
+        - "Firebase project: fibreflow-73daf"
+        - "Firestore index deployment"
+        - "Authentication RBAC patterns"
+        - "Offline sync with IndexedDB"
+      current_issues:
+        - "Firebase project access limitations"
+        - "Index deployment blocked"
+        - "Security rules configuration"
+      activation_command: "@firebase-integration-specialist"
+      priority: 2
+
+    - name: "pwa-performance-optimizer"
+      type: "performance-optimizer"
+      specialization: "Service worker, caching, bundle optimization, Core Web Vitals"
+      focus_areas:
+        - "Bundle size optimization (<500KB chunks)"
+        - "Service worker caching strategies"
+        - "Image compression and loading"
+        - "API response time optimization"
+      targets:
+        - "Page load: <1.5s"
+        - "API response: <200ms" 
+        - "Lighthouse PWA score: >90"
+        - "Core Web Vitals: All green"
+      activation_command: "@pwa-performance-optimizer"
+      priority: 3
+
+  core_development:
+    - name: "home-drop-workflow-specialist"
+      type: "code-implementer"
+      specialization: "4-step capture workflow, photo validation, GPS accuracy"
+      focus_areas:
+        - "Assignment selection and filtering"
+        - "GPS location validation (±20m accuracy)"
+        - "4 photo types: Power Meter, Fibertime, Device Actions, Router Lights"
+        - "Customer info capture and validation"
+      workflows:
+        - "Step 1: Assignment Selection"
+        - "Step 2: GPS Validation" 
+        - "Step 3: Photo Capture (4 types)"
+        - "Step 4: Review & Submit"
+      activation_command: "@home-drop-workflow-specialist"
+      priority: 4
+
+    - name: "qgis-integration-architect"
+      type: "api-design-architect"
+      specialization: "GeoPackage handling, coordinate systems, QGIS/QField compatibility"
+      focus_areas:
+        - "GeoPackage (.gpkg) import/export"
+        - "Coordinate system transformations (WGS84, UTM)"
+        - "QGIS Desktop integration"
+        - "QField mobile synchronization"
+      formats:
+        - "GeoPackage (.gpkg)"
+        - "GeoJSON"
+        - "Shapefile"
+        - "KML/KMZ"
+      activation_command: "@qgis-integration-architect"
+      priority: 5
+
+    - name: "rbac-security-enforcer"
+      type: "security-auditor"
+      specialization: "Role-based access control, route protection, data isolation"
+      roles:
+        - "Admin: Full access"
+        - "Manager: Project management, assignments"
+        - "Technician: Field data capture"
+        - "Client: View-only access"
+      security_patterns:
+        - "Middleware route protection"
+        - "Data filtering by role"
+        - "API endpoint permissions"
+        - "Audit logging"
+      activation_command: "@rbac-security-enforcer"
+      priority: 6
+
+  production_readiness:
+    - name: "vercel-deployment-orchestrator"
+      type: "deployment-automation"
+      specialization: "Production deployment, environment configuration, monitoring"
+      focus_areas:
+        - "Vercel deployment optimization"
+        - "Environment variable management"
+        - "Production monitoring setup"
+        - "SSL and domain configuration"
+      deployment_ready: true
+      config_files:
+        - "vercel.json"
+        - ".env.production.example"
+        - "DEPLOYMENT_GUIDE.md"
+      activation_command: "@vercel-deployment-orchestrator"
+      priority: 7
+
+    - name: "fibre-analytics-monitor"
+      type: "performance-optimizer"
+      specialization: "Field data analytics, capture metrics, quality scoring"
+      focus_areas:
+        - "Capture completion rates"
+        - "Photo quality metrics"
+        - "GPS accuracy statistics"
+        - "Technician performance tracking"
+      dashboards:
+        - "Admin analytics overview"
+        - "Project completion metrics"
+        - "Quality score trends"
+        - "Field team performance"
+      activation_command: "@fibre-analytics-monitor"
+      priority: 8
+
+  maintenance:
+    - name: "typescript-next15-compatibilizer"
+      type: "code-quality-reviewer"
+      specialization: "Next.js 15 compatibility, TypeScript strict mode"
+      status: "MISSION_ACCOMPLISHED"
+      completed_tasks:
+        - "Fixed all Next.js 15 API route compatibility"
+        - "Updated dynamic route parameter handling"
+        - "Resolved type compatibility issues"
+      maintenance_role: "Monitor future Next.js updates"
+      activation_command: "@typescript-next15-compatibilizer"
+      priority: 9
+
+    - name: "offline-sync-validator"
+      type: "code-implementer"
+      specialization: "IndexedDB sync, conflict resolution, data integrity"
+      focus_areas:
+        - "Dexie.js optimization"
+        - "Sync queue management"
+        - "Conflict resolution strategies"
+        - "Data consistency validation"
+      patterns:
+        - "Offline-first architecture"
+        - "Background sync queuing"
+        - "Network-aware syncing"
+        - "Data deduplication"
+      activation_command: "@offline-sync-validator"
+      priority: 10
+
+agent_activation_rules:
+  immediate_triggers:
+    - trigger: "E2E test failures"
+      agent: "fibre-test-optimizer"
+    - trigger: "Performance issues"
+      agent: "pwa-performance-optimizer"
+    - trigger: "Deployment requests"
+      agent: "vercel-deployment-orchestrator"
+    - trigger: "Firebase errors"
+      agent: "firebase-integration-specialist"
+  
+  development_triggers:
+    - trigger: "Workflow changes"
+      agent: "home-drop-workflow-specialist"
+    - trigger: "QGIS integration"
+      agent: "qgis-integration-architect"
+    - trigger: "Security concerns"
+      agent: "rbac-security-enforcer"
+  
+  monitoring_triggers:
+    - trigger: "Performance degradation"
+      agent: "fibre-analytics-monitor"
+    - trigger: "Sync failures"
+      agent: "offline-sync-validator"
+
+quality_gates:
+  mandatory_checks:
+    - "Zero TypeScript errors"
+    - "Zero ESLint warnings"
+    - "Zero console.log statements"
+    - "All E2E tests passing"
+    - ">95% test coverage"
+    - "Performance targets met"
+  
+  deployment_blockers:
+    - "TypeScript compilation errors"
+    - "Critical security vulnerabilities"
+    - "Failed E2E tests"
+    - "Performance below thresholds"
+
+archon_integration:
+  supabase_registered: true
+  knowledge_base_synced: true
+  agent_orchestration: "active"
+  project_monitoring: "enabled"
+  auto_activation: true
+
+last_updated: "2025-09-09T08:45:00Z"
+version: "1.0"

@@ -1,0 +1,493 @@
+[
+  {
+    "id": "bc52bdad-c6b7-4bc7-af35-fc28ae2f6ef7",
+    "project_id": "fibrefield-project",
+    "project_name": "FibreField",
+    "agent_name": "fibre-test-optimizer",
+    "agent_type": "test-coverage-validator",
+    "specialization": "E2E test timing, Firebase loading states, PWA test patterns",
+    "category": "high_priority",
+    "priority": 1,
+    "activation_command": "@fibre-test-optimizer",
+    "focus_areas": [
+      "Playwright E2E test optimization",
+      "Firebase authentication test flows",
+      "PWA loading state handling",
+      "Mobile responsiveness testing"
+    ],
+    "status": "active",
+    "tech_stack": [
+      "Next.js 15",
+      "React 19",
+      "TypeScript 5.7.3",
+      "Firebase (Auth, Firestore, Storage)",
+      "Tailwind CSS",
+      "PWA/Service Worker",
+      "IndexedDB/Dexie.js",
+      "QGIS/GeoPackage",
+      "Playwright E2E"
+    ],
+    "complexity_score": 8.7,
+    "created_at": "2025-09-09T12:15:12.588861",
+    "updated_at": "2025-09-09T12:15:12.588876",
+    "metadata": {
+      "current_issues": [
+        "Authentication tests failing due to loading delays",
+        "Service worker initialization timing",
+        "Firebase async loading patterns"
+      ],
+      "workflows": [],
+      "targets": {},
+      "deployment_ready": false,
+      "config_files": [],
+      "completed_tasks": [],
+      "formats": [],
+      "roles": [],
+      "security_patterns": [],
+      "dashboards": [],
+      "patterns": []
+    }
+  },
+  {
+    "id": "cdd8cbf3-4901-4c51-868f-9c0171414a93",
+    "project_id": "fibrefield-project",
+    "project_name": "FibreField",
+    "agent_name": "firebase-integration-specialist",
+    "agent_type": "system-architect",
+    "specialization": "Firebase Auth, Firestore, Storage optimization for PWA",
+    "category": "high_priority",
+    "priority": 2,
+    "activation_command": "@firebase-integration-specialist",
+    "focus_areas": [
+      "Firebase project: fibreflow-73daf",
+      "Firestore index deployment",
+      "Authentication RBAC patterns",
+      "Offline sync with IndexedDB"
+    ],
+    "status": "active",
+    "tech_stack": [
+      "Next.js 15",
+      "React 19",
+      "TypeScript 5.7.3",
+      "Firebase (Auth, Firestore, Storage)",
+      "Tailwind CSS",
+      "PWA/Service Worker",
+      "IndexedDB/Dexie.js",
+      "QGIS/GeoPackage",
+      "Playwright E2E"
+    ],
+    "complexity_score": 8.7,
+    "created_at": "2025-09-09T12:15:12.588892",
+    "updated_at": "2025-09-09T12:15:12.588894",
+    "metadata": {
+      "current_issues": [
+        "Firebase project access limitations",
+        "Index deployment blocked",
+        "Security rules configuration"
+      ],
+      "workflows": [],
+      "targets": {},
+      "deployment_ready": false,
+      "config_files": [],
+      "completed_tasks": [],
+      "formats": [],
+      "roles": [],
+      "security_patterns": [],
+      "dashboards": [],
+      "patterns": []
+    }
+  },
+  {
+    "id": "63706546-61af-42e3-a7bb-830c6b6d9b88",
+    "project_id": "fibrefield-project",
+    "project_name": "FibreField",
+    "agent_name": "pwa-performance-optimizer",
+    "agent_type": "performance-optimizer",
+    "specialization": "Service worker, caching, bundle optimization, Core Web Vitals",
+    "category": "high_priority",
+    "priority": 3,
+    "activation_command": "@pwa-performance-optimizer",
+    "focus_areas": [
+      "Bundle size optimization (<500KB chunks)",
+      "Service worker caching strategies",
+      "Image compression and loading",
+      "API response time optimization"
+    ],
+    "status": "active",
+    "tech_stack": [
+      "Next.js 15",
+      "React 19",
+      "TypeScript 5.7.3",
+      "Firebase (Auth, Firestore, Storage)",
+      "Tailwind CSS",
+      "PWA/Service Worker",
+      "IndexedDB/Dexie.js",
+      "QGIS/GeoPackage",
+      "Playwright E2E"
+    ],
+    "complexity_score": 8.7,
+    "created_at": "2025-09-09T12:15:12.588903",
+    "updated_at": "2025-09-09T12:15:12.588904",
+    "metadata": {
+      "current_issues": [],
+      "workflows": [],
+      "targets": [
+        "Page load: <1.5s",
+        "API response: <200ms",
+        "Lighthouse PWA score: >90",
+        "Core Web Vitals: All green"
+      ],
+      "deployment_ready": false,
+      "config_files": [],
+      "completed_tasks": [],
+      "formats": [],
+      "roles": [],
+      "security_patterns": [],
+      "dashboards": [],
+      "patterns": []
+    }
+  },
+  {
+    "id": "79096a6d-2c74-44fb-9da2-699f628f084d",
+    "project_id": "fibrefield-project",
+    "project_name": "FibreField",
+    "agent_name": "home-drop-workflow-specialist",
+    "agent_type": "code-implementer",
+    "specialization": "4-step capture workflow, photo validation, GPS accuracy",
+    "category": "core_development",
+    "priority": 4,
+    "activation_command": "@home-drop-workflow-specialist",
+    "focus_areas": [
+      "Assignment selection and filtering",
+      "GPS location validation (\u00b120m accuracy)",
+      "4 photo types: Power Meter, Fibertime, Device Actions, Router Lights",
+      "Customer info capture and validation"
+    ],
+    "status": "active",
+    "tech_stack": [
+      "Next.js 15",
+      "React 19",
+      "TypeScript 5.7.3",
+      "Firebase (Auth, Firestore, Storage)",
+      "Tailwind CSS",
+      "PWA/Service Worker",
+      "IndexedDB/Dexie.js",
+      "QGIS/GeoPackage",
+      "Playwright E2E"
+    ],
+    "complexity_score": 8.7,
+    "created_at": "2025-09-09T12:15:12.588912",
+    "updated_at": "2025-09-09T12:15:12.588913",
+    "metadata": {
+      "current_issues": [],
+      "workflows": [
+        "Step 1: Assignment Selection",
+        "Step 2: GPS Validation",
+        "Step 3: Photo Capture (4 types)",
+        "Step 4: Review & Submit"
+      ],
+      "targets": {},
+      "deployment_ready": false,
+      "config_files": [],
+      "completed_tasks": [],
+      "formats": [],
+      "roles": [],
+      "security_patterns": [],
+      "dashboards": [],
+      "patterns": []
+    }
+  },
+  {
+    "id": "c30b4216-47c2-47ce-9de8-effa23c77f2f",
+    "project_id": "fibrefield-project",
+    "project_name": "FibreField",
+    "agent_name": "qgis-integration-architect",
+    "agent_type": "api-design-architect",
+    "specialization": "GeoPackage handling, coordinate systems, QGIS/QField compatibility",
+    "category": "core_development",
+    "priority": 5,
+    "activation_command": "@qgis-integration-architect",
+    "focus_areas": [
+      "GeoPackage (.gpkg) import/export",
+      "Coordinate system transformations (WGS84, UTM)",
+      "QGIS Desktop integration",
+      "QField mobile synchronization"
+    ],
+    "status": "active",
+    "tech_stack": [
+      "Next.js 15",
+      "React 19",
+      "TypeScript 5.7.3",
+      "Firebase (Auth, Firestore, Storage)",
+      "Tailwind CSS",
+      "PWA/Service Worker",
+      "IndexedDB/Dexie.js",
+      "QGIS/GeoPackage",
+      "Playwright E2E"
+    ],
+    "complexity_score": 8.7,
+    "created_at": "2025-09-09T12:15:12.588921",
+    "updated_at": "2025-09-09T12:15:12.588922",
+    "metadata": {
+      "current_issues": [],
+      "workflows": [],
+      "targets": {},
+      "deployment_ready": false,
+      "config_files": [],
+      "completed_tasks": [],
+      "formats": [
+        "GeoPackage (.gpkg)",
+        "GeoJSON",
+        "Shapefile",
+        "KML/KMZ"
+      ],
+      "roles": [],
+      "security_patterns": [],
+      "dashboards": [],
+      "patterns": []
+    }
+  },
+  {
+    "id": "2b284521-95ac-4d04-aea4-53d1919600c3",
+    "project_id": "fibrefield-project",
+    "project_name": "FibreField",
+    "agent_name": "rbac-security-enforcer",
+    "agent_type": "security-auditor",
+    "specialization": "Role-based access control, route protection, data isolation",
+    "category": "core_development",
+    "priority": 6,
+    "activation_command": "@rbac-security-enforcer",
+    "focus_areas": [],
+    "status": "active",
+    "tech_stack": [
+      "Next.js 15",
+      "React 19",
+      "TypeScript 5.7.3",
+      "Firebase (Auth, Firestore, Storage)",
+      "Tailwind CSS",
+      "PWA/Service Worker",
+      "IndexedDB/Dexie.js",
+      "QGIS/GeoPackage",
+      "Playwright E2E"
+    ],
+    "complexity_score": 8.7,
+    "created_at": "2025-09-09T12:15:12.588931",
+    "updated_at": "2025-09-09T12:15:12.588932",
+    "metadata": {
+      "current_issues": [],
+      "workflows": [],
+      "targets": {},
+      "deployment_ready": false,
+      "config_files": [],
+      "completed_tasks": [],
+      "formats": [],
+      "roles": [
+        "Admin: Full access",
+        "Manager: Project management, assignments",
+        "Technician: Field data capture",
+        "Client: View-only access"
+      ],
+      "security_patterns": [
+        "Middleware route protection",
+        "Data filtering by role",
+        "API endpoint permissions",
+        "Audit logging"
+      ],
+      "dashboards": [],
+      "patterns": []
+    }
+  },
+  {
+    "id": "59ac055e-412b-4698-98dc-4b0dc9909fad",
+    "project_id": "fibrefield-project",
+    "project_name": "FibreField",
+    "agent_name": "vercel-deployment-orchestrator",
+    "agent_type": "deployment-automation",
+    "specialization": "Production deployment, environment configuration, monitoring",
+    "category": "production_readiness",
+    "priority": 7,
+    "activation_command": "@vercel-deployment-orchestrator",
+    "focus_areas": [
+      "Vercel deployment optimization",
+      "Environment variable management",
+      "Production monitoring setup",
+      "SSL and domain configuration"
+    ],
+    "status": "active",
+    "tech_stack": [
+      "Next.js 15",
+      "React 19",
+      "TypeScript 5.7.3",
+      "Firebase (Auth, Firestore, Storage)",
+      "Tailwind CSS",
+      "PWA/Service Worker",
+      "IndexedDB/Dexie.js",
+      "QGIS/GeoPackage",
+      "Playwright E2E"
+    ],
+    "complexity_score": 8.7,
+    "created_at": "2025-09-09T12:15:12.588938",
+    "updated_at": "2025-09-09T12:15:12.588939",
+    "metadata": {
+      "current_issues": [],
+      "workflows": [],
+      "targets": {},
+      "deployment_ready": true,
+      "config_files": [
+        "vercel.json",
+        ".env.production.example",
+        "DEPLOYMENT_GUIDE.md"
+      ],
+      "completed_tasks": [],
+      "formats": [],
+      "roles": [],
+      "security_patterns": [],
+      "dashboards": [],
+      "patterns": []
+    }
+  },
+  {
+    "id": "826b261b-287e-4e07-bdcd-1ccb2a6dbb1e",
+    "project_id": "fibrefield-project",
+    "project_name": "FibreField",
+    "agent_name": "fibre-analytics-monitor",
+    "agent_type": "performance-optimizer",
+    "specialization": "Field data analytics, capture metrics, quality scoring",
+    "category": "production_readiness",
+    "priority": 8,
+    "activation_command": "@fibre-analytics-monitor",
+    "focus_areas": [
+      "Capture completion rates",
+      "Photo quality metrics",
+      "GPS accuracy statistics",
+      "Technician performance tracking"
+    ],
+    "status": "active",
+    "tech_stack": [
+      "Next.js 15",
+      "React 19",
+      "TypeScript 5.7.3",
+      "Firebase (Auth, Firestore, Storage)",
+      "Tailwind CSS",
+      "PWA/Service Worker",
+      "IndexedDB/Dexie.js",
+      "QGIS/GeoPackage",
+      "Playwright E2E"
+    ],
+    "complexity_score": 8.7,
+    "created_at": "2025-09-09T12:15:12.588946",
+    "updated_at": "2025-09-09T12:15:12.588947",
+    "metadata": {
+      "current_issues": [],
+      "workflows": [],
+      "targets": {},
+      "deployment_ready": false,
+      "config_files": [],
+      "completed_tasks": [],
+      "formats": [],
+      "roles": [],
+      "security_patterns": [],
+      "dashboards": [
+        "Admin analytics overview",
+        "Project completion metrics",
+        "Quality score trends",
+        "Field team performance"
+      ],
+      "patterns": []
+    }
+  },
+  {
+    "id": "6bb4929e-704e-4556-bf0d-921a7ccc2d8e",
+    "project_id": "fibrefield-project",
+    "project_name": "FibreField",
+    "agent_name": "typescript-next15-compatibilizer",
+    "agent_type": "code-quality-reviewer",
+    "specialization": "Next.js 15 compatibility, TypeScript strict mode",
+    "category": "maintenance",
+    "priority": 9,
+    "activation_command": "@typescript-next15-compatibilizer",
+    "focus_areas": [],
+    "status": "MISSION_ACCOMPLISHED",
+    "tech_stack": [
+      "Next.js 15",
+      "React 19",
+      "TypeScript 5.7.3",
+      "Firebase (Auth, Firestore, Storage)",
+      "Tailwind CSS",
+      "PWA/Service Worker",
+      "IndexedDB/Dexie.js",
+      "QGIS/GeoPackage",
+      "Playwright E2E"
+    ],
+    "complexity_score": 8.7,
+    "created_at": "2025-09-09T12:15:12.588953",
+    "updated_at": "2025-09-09T12:15:12.588955",
+    "metadata": {
+      "current_issues": [],
+      "workflows": [],
+      "targets": {},
+      "deployment_ready": false,
+      "config_files": [],
+      "completed_tasks": [
+        "Fixed all Next.js 15 API route compatibility",
+        "Updated dynamic route parameter handling",
+        "Resolved type compatibility issues"
+      ],
+      "formats": [],
+      "roles": [],
+      "security_patterns": [],
+      "dashboards": [],
+      "patterns": []
+    }
+  },
+  {
+    "id": "0ffde78a-7651-4d65-8862-ed4162b80e90",
+    "project_id": "fibrefield-project",
+    "project_name": "FibreField",
+    "agent_name": "offline-sync-validator",
+    "agent_type": "code-implementer",
+    "specialization": "IndexedDB sync, conflict resolution, data integrity",
+    "category": "maintenance",
+    "priority": 10,
+    "activation_command": "@offline-sync-validator",
+    "focus_areas": [
+      "Dexie.js optimization",
+      "Sync queue management",
+      "Conflict resolution strategies",
+      "Data consistency validation"
+    ],
+    "status": "active",
+    "tech_stack": [
+      "Next.js 15",
+      "React 19",
+      "TypeScript 5.7.3",
+      "Firebase (Auth, Firestore, Storage)",
+      "Tailwind CSS",
+      "PWA/Service Worker",
+      "IndexedDB/Dexie.js",
+      "QGIS/GeoPackage",
+      "Playwright E2E"
+    ],
+    "complexity_score": 8.7,
+    "created_at": "2025-09-09T12:15:12.588961",
+    "updated_at": "2025-09-09T12:15:12.588962",
+    "metadata": {
+      "current_issues": [],
+      "workflows": [],
+      "targets": {},
+      "deployment_ready": false,
+      "config_files": [],
+      "completed_tasks": [],
+      "formats": [],
+      "roles": [],
+      "security_patterns": [],
+      "dashboards": [],
+      "patterns": [
+        "Offline-first architecture",
+        "Background sync queuing",
+        "Network-aware syncing",
+        "Data deduplication"
+      ]
+    }
+  }
+]
