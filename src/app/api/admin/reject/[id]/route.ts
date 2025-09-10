@@ -6,13 +6,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const captureId = params.id;
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
+    const resolvedParams = await params;
+    const captureId = resolvedParams.id;
     
     if (!captureId) {
       return NextResponse.json(
@@ -189,7 +198,7 @@ export async function POST(
     });
 
   } catch (error: unknown) {
-    console.error('Reject capture error:', error);
+    log.error('Reject capture error:', {}, "Route", error instanceof Error ? error : undefined);
     return NextResponse.json(
       {
         success: false,

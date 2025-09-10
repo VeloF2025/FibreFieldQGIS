@@ -323,17 +323,17 @@ export async function initializeHomeDropDatabase(): Promise<void> {
     
     const missingTables = requiredTables.filter(t => !tables.includes(t));
     if (missingTables.length > 0) {
-      console.warn('⚠️ Missing home drop tables:', missingTables);
+      log.warn('⚠️ Missing home drop tables:', missingTables, {}, "Homedropdatabase");
       // Tables will be created on next database open
     } else {
-      console.log('✅ Home drop database tables initialized successfully');
+      log.info('✅ Home drop database tables initialized successfully', {}, "Homedropdatabase");
     }
     
     // Create indexes for optimal query performance
     await createHomeDropIndexes();
     
   } catch (error) {
-    console.error('❌ Failed to initialize home drop database:', error);
+    log.error('❌ Failed to initialize home drop database:', {}, "Homedropdatabase", error);
     throw error;
   }
 }
@@ -344,7 +344,7 @@ export async function initializeHomeDropDatabase(): Promise<void> {
 async function createHomeDropIndexes(): Promise<void> {
   // Indexes are created via the schema definition
   // This function is for any runtime index optimization if needed
-  console.log('📊 Home drop database indexes configured');
+  log.info('📊 Home drop database indexes configured', {}, "Homedropdatabase");
 }
 
 /**

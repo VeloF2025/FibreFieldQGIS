@@ -307,7 +307,7 @@ export const useAppSettings = () => {
       }, {} as Record<string, any>);
       setSettings(settingsMap);
     } catch (error) {
-      console.error('Failed to load app settings:', error);
+      log.error('Failed to load app settings:', {}, "UseOfflineData", error);
     } finally {
       setLoading(false);
     }
@@ -345,7 +345,7 @@ export const useDatabaseStats = () => {
       const dbStats = await localDB.getStats();
       setStats(dbStats);
     } catch (error) {
-      console.error('Failed to load database stats:', error);
+      log.error('Failed to load database stats:', {}, "UseOfflineData", error);
     } finally {
       setLoading(false);
     }

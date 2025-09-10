@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ImportAssignmentsModal } from '../import-assignments-modal';
+import { ImportAssignmentsModal } from '../ImportAssignmentsModal';
 import * as XLSX from 'xlsx';
 import * as Papa from 'papaparse';
 

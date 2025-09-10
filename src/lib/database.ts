@@ -1,5 +1,6 @@
 // Dexie database setup for offline storage
 import Dexie, { Table } from 'dexie';
+import { log } from './logger';
 import { 
   PoleInstallation, 
   PlannedPole, 
@@ -473,7 +474,7 @@ export const db = localDB; // Alias for compatibility
 export const initializeDatabase = async () => {
   try {
     await localDB.open();
-    console.log('✅ FibreField local database initialized');
+    log.info('✅ FibreField local database initialized', {}, "Database");
     
     // Set default settings if they don't exist
     const hasSettings = await localDB.appSettings.count();
@@ -486,15 +487,15 @@ export const initializeDatabase = async () => {
         { key: 'maxPhotoSize', value: 10, updatedAt: new Date() }, // MB
         { key: 'offlineMode', value: false, updatedAt: new Date() }
       ]);
-      console.log('✅ Default app settings created');
+      log.info('✅ Default app settings created', {}, "Database");
     }
     
     const stats = await localDB.getStats();
-    console.log('📊 Database stats:', stats);
+    log.info('📊 Database stats:', stats, {}, "Database");
     
     return localDB;
   } catch (error) {
-    console.error('❌ Failed to initialize database:', error);
+    log.error('❌ Failed to initialize database:', {}, "Database", error);
     throw error;
   }
 };

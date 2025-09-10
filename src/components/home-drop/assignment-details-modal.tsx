@@ -115,7 +115,7 @@ export function AssignmentDetailsModal({
       setPoleCapture(poleData || null);
 
     } catch (error) {
-      console.error('Failed to load assignment data:', error);
+      log.error('Failed to load assignment data:', {}, "Assignmentdetailsmodal", error);
     } finally {
       setIsLoading(false);
     }

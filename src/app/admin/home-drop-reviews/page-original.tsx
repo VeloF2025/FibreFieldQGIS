@@ -46,6 +46,7 @@ import type {
   HomeDropFilterOptions 
 } from '@/types/home-drop.types';
 import { cn } from '@/lib/utils';
+import { log } from '@/lib/logger';
 
 /**
  * Review Dashboard Statistics Component
@@ -558,7 +559,7 @@ export default function AdminHomeDropReviewsPage() {
       setStatistics(stats);
       
     } catch (error) {
-      console.error('Failed to load review data:', error);
+      log.error('Failed to load review data:', {}, "Pageoriginal", error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
     }
@@ -583,18 +584,18 @@ export default function AdminHomeDropReviewsPage() {
       setSelectedCaptures([]);
       await loadData();
     } catch (error) {
-      console.error('Failed to bulk approve:', error);
+      log.error('Failed to bulk approve:', {}, "Pageoriginal", error instanceof Error ? error : new Error(String(error)));
     }
   };
 
   const handleBulkReject = () => {
     // TODO: Open bulk rejection dialog with reason input
-    console.log('Bulk reject:', selectedCaptures);
+    log.info('Bulk reject:', { selectedCaptures }, "Pageoriginal");
   };
 
   const handleBulkExport = () => {
     // TODO: Export selected captures
-    console.log('Bulk export:', selectedCaptures);
+    log.info('Bulk export:', { selectedCaptures }, "Pageoriginal");
   };
 
   const handleViewDetails = (captureId: string) => {

@@ -20,6 +20,7 @@ import {
   disableNetwork
 } from 'firebase/firestore';
 import { db } from './firebase';
+import { log } from './logger';
 
 // Collection names - matching FibreFlow conventions
 export const COLLECTIONS = {
@@ -50,7 +51,7 @@ export class FirestoreService<T extends DocumentData> {
       });
       return docRef.id;
     } catch (error) {
-      console.error(`Error creating document in ${this.collectionName}:`, error);
+      log.error(`Error creating document in ${this.collectionName}:`, {}, "Firestore", error);
       throw error;
     }
   }
@@ -69,7 +70,7 @@ export class FirestoreService<T extends DocumentData> {
       
       return null;
     } catch (error) {
-      console.error(`Error getting document ${id} from ${this.collectionName}:`, error);
+      log.error(`Error getting document ${id} from ${this.collectionName}:`, {}, "Firestore", error);
       throw error;
     }
   }
@@ -85,7 +86,7 @@ export class FirestoreService<T extends DocumentData> {
         ...doc.data()
       })) as (T & { id: string })[];
     } catch (error) {
-      console.error(`Error getting documents from ${this.collectionName}:`, error);
+      log.error(`Error getting documents from ${this.collectionName}:`, {}, "Firestore", error);
       throw error;
     }
   }
@@ -98,7 +99,7 @@ export class FirestoreService<T extends DocumentData> {
         updatedAt: Timestamp.now()
       });
     } catch (error) {
-      console.error(`Error updating document ${id} in ${this.collectionName}:`, error);
+      log.error(`Error updating document ${id} in ${this.collectionName}:`, {}, "Firestore", error);
       throw error;
     }
   }
@@ -108,7 +109,7 @@ export class FirestoreService<T extends DocumentData> {
     try {
       await deleteDoc(doc(this.collectionRef, id));
     } catch (error) {
-      console.error(`Error deleting document ${id} from ${this.collectionName}:`, error);
+      log.error(`Error deleting document ${id} from ${this.collectionName}:`, {}, "Firestore", error);
       throw error;
     }
   }
@@ -128,7 +129,7 @@ export class FirestoreService<T extends DocumentData> {
       
       callback(data);
     }, (error) => {
-      console.error(`Error in snapshot listener for ${this.collectionName}:`, error);
+      log.error(`Error in snapshot listener for ${this.collectionName}:`, {}, "Firestore", error);
     });
   }
 }
@@ -137,18 +138,18 @@ export class FirestoreService<T extends DocumentData> {
 export const goOffline = async () => {
   try {
     await disableNetwork(db);
-    console.log('Firestore: Switched to offline mode');
+    log.info('Firestore: Switched to offline mode', {}, "Firestore");
   } catch (error) {
-    console.error('Error going offline:', error);
+    log.error('Error going offline:', {}, "Firestore", error);
   }
 };
 
 export const goOnline = async () => {
   try {
     await enableNetwork(db);
-    console.log('Firestore: Switched to online mode');
+    log.info('Firestore: Switched to online mode', {}, "Firestore");
   } catch (error) {
-    console.error('Error going online:', error);
+    log.error('Error going online:', {}, "Firestore", error);
   }
 };
 

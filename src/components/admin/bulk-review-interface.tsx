@@ -674,7 +674,7 @@ export function BulkReviewInterface({
             break;
           case 'export':
             // TODO: Implement export functionality
-            console.log('Exporting captures:', operation.captures);
+            log.info('Exporting captures:', operation.captures, {}, "Bulkreviewinterface");
             break;
         }
       }
@@ -686,7 +686,7 @@ export function BulkReviewInterface({
       // TODO: Refresh captures from service
       
     } catch (error) {
-      console.error('Bulk operation failed:', error);
+      log.error('Bulk operation failed:', {}, "Bulkreviewinterface", error);
       // TODO: Show error notification
     } finally {
       setIsProcessing(false);

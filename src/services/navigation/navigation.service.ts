@@ -175,9 +175,9 @@ class NavigationService {
         routeDeviation: 0
       });
 
-      console.log('Navigation started to:', assignment.customer.address);
+      log.info('Navigation started to:', assignment.customer.address, {}, "NavigationService");
     } catch (error) {
-      console.error('Failed to start navigation:', error);
+      log.error('Failed to start navigation:', {}, "NavigationService", error);
       throw error;
     }
   }
@@ -237,9 +237,9 @@ class NavigationService {
         routeDeviation: 0
       });
 
-      console.log(`Multi-assignment navigation started for ${assignments.length} locations`);
+      log.info(`Multi-assignment navigation started for ${assignments.length} locations`, {}, "NavigationService");
     } catch (error) {
-      console.error('Failed to start multi-assignment navigation:', error);
+      log.error('Failed to start multi-assignment navigation:', {}, "NavigationService", error);
       throw error;
     }
   }
@@ -269,7 +269,7 @@ class NavigationService {
       routeDeviation: 0
     });
 
-    console.log('Navigation stopped');
+    log.info('Navigation stopped', {}, "NavigationService");
   }
 
   /**
@@ -518,7 +518,7 @@ class NavigationService {
           alert.triggered = true;
           alert.timestamp = new Date();
           activeAlerts.push(alert);
-          console.log(`Proximity alert: Within ${alert.distance}m of ${status.currentDestination.name}`);
+          log.info(`Proximity alert: Within ${alert.distance}m of ${status.currentDestination.name}`, {}, "NavigationService");
         }
       }
     });

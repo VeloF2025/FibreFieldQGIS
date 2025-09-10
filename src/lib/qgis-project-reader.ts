@@ -22,6 +22,7 @@
  * - styles and symbols
  */
 
+import { log } from '@/lib/logger';
 import { geoPackageHandler } from './geopackage-handler';
 import type {
   QGISProject,
@@ -284,7 +285,7 @@ class QGISProjectReader {
    * Initialize reader
    */
   private async initializeReader(): Promise<void> {
-    console.log('✅ QGIS Project Reader initialized');
+    log.info('✅ QGIS Project Reader initialized', {}, "Qgisprojectreader");
   }
 
   // ==================== Main Reading Functions ====================
@@ -406,7 +407,7 @@ class QGISProjectReader {
           layers.push(layer);
         }
       } catch (error: unknown) {
-        console.warn(`Failed to extract layer: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        log.warn(`Failed to extract layer: ${error instanceof Error ? error.message : 'Unknown error'}`, {}, "Qgisprojectreader");
       }
     }
 

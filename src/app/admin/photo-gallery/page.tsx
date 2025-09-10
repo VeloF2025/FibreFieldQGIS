@@ -39,6 +39,8 @@ import { ClientPackageCreator } from '@/components/admin/client-package-creator'
 import { photoManagementService, type PhotoMetadata } from '@/services/photo-management.service';
 import { clientDeliveryService } from '@/services/client-delivery.service';
 import { log } from '@/lib/logger';
+import { AppLayout } from '@/components/layout/app-layout';
+import { AuthGuard } from '@/components/auth/auth-guard';
 
 /**
  * Photo Gallery Statistics Component
@@ -448,19 +450,28 @@ export default function AdminPhotoGalleryPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <Camera className="w-8 h-8 animate-pulse mx-auto mb-4" />
-            <p className="text-gray-500">Loading photo gallery...</p>
+      <AuthGuard requireRoles={['admin', 'manager', 'technician']}>
+        <AppLayout>
+          <div className="space-y-6">
+            <div className="container mx-auto px-4 py-8">
+              <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                  <Camera className="w-8 h-8 animate-pulse mx-auto mb-4" />
+                  <p className="text-gray-500">Loading photo gallery...</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </AppLayout>
+      </AuthGuard>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <AuthGuard requireRoles={['admin', 'manager', 'technician']}>
+      <AppLayout>
+        <div className="space-y-6">
+          <div className="container mx-auto px-4 py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -607,6 +618,9 @@ export default function AdminPhotoGalleryPage() {
         isOpen={isBulkUploadOpen}
         onClose={() => setIsBulkUploadOpen(false)}
       />
-    </div>
+          </div>
+        </div>
+      </AppLayout>
+    </AuthGuard>
   );
 }

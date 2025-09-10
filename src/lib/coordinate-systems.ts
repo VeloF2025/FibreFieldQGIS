@@ -176,7 +176,7 @@ class CoordinateSystemUtils {
   private readonly WGS84_FLATTENING = 1 / 298.257223563;
 
   constructor() {
-    console.log('✅ Coordinate System Utils initialized');
+    log.info('✅ Coordinate System Utils initialized', {}, "Coordinatesystems");
   }
 
   // ==================== System Information ====================
@@ -230,7 +230,7 @@ class CoordinateSystemUtils {
 
     try {
       let transformedPoint: CoordinatePoint;
-      let accuracy = point.accuracy || 10; // Default 10m accuracy
+      const accuracy = point.accuracy || 10; // Default 10m accuracy
       let warning: string | undefined;
 
       // Same CRS - no transformation needed

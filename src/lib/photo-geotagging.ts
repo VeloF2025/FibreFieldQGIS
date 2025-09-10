@@ -177,7 +177,7 @@ class PhotoGeotaggingService {
   };
 
   constructor() {
-    console.log('✅ Photo Geotagging Service initialized');
+    log.info('✅ Photo Geotagging Service initialized', {}, "Photogeotagging");
   }
 
   // ==================== EXIF GPS Embedding ====================
@@ -264,7 +264,7 @@ class PhotoGeotaggingService {
 
       return null;
     } catch (error: unknown) {
-      console.warn('Failed to extract GPS data:', error);
+      log.warn('Failed to extract GPS data:', error, {}, "Photogeotagging");
       return null;
     }
   }
@@ -760,7 +760,7 @@ class PhotoGeotaggingService {
    */
   clearCache(): void {
     // Clear any cached data if implemented
-    console.log('Photo geotagging cache cleared');
+    log.info('Photo geotagging cache cleared', {}, "Photogeotagging");
   }
 }
 

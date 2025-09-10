@@ -5,13 +5,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { poleId: string } }
+  { params }: { params: Promise<{ poleId: string }> }
 ) {
   try {
-    const poleId = params.poleId;
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
+    const resolvedParams = await params;
+    const poleId = resolvedParams.poleId;
     
     if (!poleId) {
       return NextResponse.json(
@@ -85,7 +94,7 @@ export async function GET(
       ...doc.data(),
       capturedAt: doc.data().capturedAt?.toDate?.()?.toISOString(),
       approvedAt: doc.data().approvedAt?.toDate?.()?.toISOString()
-    }));
+    })) as Array<any>;
 
     // Calculate distances if requested and pole location is available
     if (includeDistance && poleData?.gpsLocation) {
@@ -160,7 +169,7 @@ export async function GET(
     });
 
   } catch (error: unknown) {
-    console.error('Pole-drops relation error:', error);
+    log.error('Pole-drops relation error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

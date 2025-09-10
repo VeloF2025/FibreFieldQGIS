@@ -114,7 +114,7 @@ class PhotoUploadService {
           },
           (error) => {
             // Error handling
-            console.error('Upload error:', error);
+            log.error('Upload error:', {}, "PhotouploadService", error);
             this.activeUploads.delete(uploadId);
             
             // Cache for retry
@@ -158,7 +158,7 @@ class PhotoUploadService {
         );
       });
     } catch (error: any) {
-      console.error('Photo upload error:', error);
+      log.error('Photo upload error:', {}, "PhotouploadService", error);
       return {
         success: false,
         error: error.message || 'Upload failed'
@@ -214,7 +214,7 @@ class PhotoUploadService {
       
       return true;
     } catch (error) {
-      console.error('Delete photo error:', error);
+      log.error('Delete photo error:', {}, "PhotouploadService", error);
       return false;
     }
   }
@@ -235,7 +235,7 @@ class PhotoUploadService {
       
       return urls;
     } catch (error) {
-      console.error('Get capture photos error:', error);
+      log.error('Get capture photos error:', {}, "PhotouploadService", error);
       return [];
     }
   }
@@ -345,7 +345,7 @@ class PhotoUploadService {
         retryCount: 0
       });
     } catch (error) {
-      console.error('Failed to cache upload for retry:', error);
+      log.error('Failed to cache upload for retry:', {}, "PhotouploadService", error);
     }
   }
 
@@ -359,7 +359,7 @@ class PhotoUploadService {
         ...info
       });
     } catch (error) {
-      console.error('Failed to cache upload info:', error);
+      log.error('Failed to cache upload info:', {}, "PhotouploadService", error);
     }
   }
 
@@ -374,7 +374,7 @@ class PhotoUploadService {
         await localDB.uploadedPhotos.delete(toDelete.id);
       }
     } catch (error) {
-      console.error('Failed to remove cached upload info:', error);
+      log.error('Failed to remove cached upload info:', {}, "PhotouploadService", error);
     }
   }
 
@@ -406,13 +406,13 @@ class PhotoUploadService {
             });
           }
         } catch (error) {
-          console.error('Retry upload error:', error);
+          log.error('Retry upload error:', {}, "PhotouploadService", error);
         }
       }
       
       return successCount;
     } catch (error) {
-      console.error('Retry failed uploads error:', error);
+      log.error('Retry failed uploads error:', {}, "PhotouploadService", error);
       return 0;
     }
   }
@@ -474,7 +474,7 @@ class PhotoUploadService {
         totalSize
       };
     } catch (error) {
-      console.error('Get upload stats error:', error);
+      log.error('Get upload stats error:', {}, "PhotouploadService", error);
       return {
         totalUploaded: 0,
         totalFailed: 0,

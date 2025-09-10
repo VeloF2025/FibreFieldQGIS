@@ -57,7 +57,7 @@ export const uploadFile = async (
           onProgress?.(progress);
         },
         (error) => {
-          console.error('Upload error:', error);
+          log.error('Upload error:', {}, "Storage", error);
           reject(error);
         },
         async () => {
@@ -78,7 +78,7 @@ export const uploadFile = async (
       );
     });
   } catch (error) {
-    console.error('Upload initialization error:', error);
+    log.error('Upload initialization error:', {}, "Storage", error);
     throw error;
   }
 };
@@ -110,7 +110,7 @@ export const uploadBase64Image = async (
     
     return uploadFile(blob, path, fileName, onProgress);
   } catch (error) {
-    console.error('Base64 upload error:', error);
+    log.error('Base64 upload error:', {}, "Storage", error);
     throw error;
   }
 };
@@ -121,7 +121,7 @@ export const getFileUrl = async (path: string): Promise<string> => {
     const storageRef = ref(storage, path);
     return await getDownloadURL(storageRef);
   } catch (error) {
-    console.error('Get file URL error:', error);
+    log.error('Get file URL error:', {}, "Storage", error);
     throw error;
   }
 };
@@ -132,7 +132,7 @@ export const deleteFile = async (path: string): Promise<void> => {
     const storageRef = ref(storage, path);
     await deleteObject(storageRef);
   } catch (error) {
-    console.error('Delete file error:', error);
+    log.error('Delete file error:', {}, "Storage", error);
     throw error;
   }
 };
@@ -145,7 +145,7 @@ export const listFiles = async (path: string): Promise<string[]> => {
     
     return result.items.map(item => item.fullPath);
   } catch (error) {
-    console.error('List files error:', error);
+    log.error('List files error:', {}, "Storage", error);
     throw error;
   }
 };

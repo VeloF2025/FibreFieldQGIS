@@ -5,9 +5,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     // Get query parameters
     const { searchParams } = new URL(request.url);
     const contractorId = searchParams.get('contractor');
@@ -45,7 +53,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Projects API error:', error);
+    log.error('Projects API error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,
@@ -70,7 +78,7 @@ export async function POST(request: NextRequest) {
     }, { status: 501 });
 
   } catch (error: unknown) {
-    console.error('Projects POST error:', error);
+    log.error('Projects POST error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

@@ -139,13 +139,22 @@ export interface HomeDropCapture {
   syncAttempts: number;           // Number of sync attempts
   lastSyncAttempt?: Date;         // Last sync attempt time
   
+  // Direct approval status for UI compatibility
+  approvalStatus?: 'pending' | 'approved' | 'rejected' | 'under_review'; // Top-level approval status
+  
+  // Installation identifiers
+  dropNumber?: string;            // Drop number identifier
+  serviceAddress?: string;        // Service installation address
+  
   // Customer details (duplicated for offline access)
   customer: {
     name: string;
     address: string;
     contactNumber?: string;
+    phone?: string;               // Alternative to contactNumber for UI compatibility
     email?: string;
     accountNumber?: string;
+    serviceType?: string;         // Type of service being installed
     
     // GPS coordinates of customer location
     location?: {
@@ -155,6 +164,14 @@ export interface HomeDropCapture {
       altitude?: number;
       capturedAt: Date;
     };
+  };
+  
+  // Alternative customer info reference for UI compatibility
+  customerInfo?: {
+    name?: string;
+    phone?: string;
+    email?: string;
+    serviceType?: string;
   };
   
   // Installation details
@@ -246,6 +263,9 @@ export interface HomeDropCapture {
     checkedBy?: string;           // Who performed quality check
     checkedAt?: Date;             // When quality check was done
   };
+  
+  // Top-level quality score for UI compatibility
+  qualityScore?: number;          // 0-100 overall quality score
   
   // Approval workflow
   approval?: {

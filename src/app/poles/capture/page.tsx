@@ -8,6 +8,7 @@ import { gpsService, type GPSPosition } from '@/services/gps.service';
 import { MultiPhotosCapture } from '@/components/pole-capture/photo-capture';
 import { useAuth } from '@/contexts/auth-context';
 import { AuthGuard } from '@/components/auth/auth-guard';
+import { AppLayout } from '@/components/layout/app-layout';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -22,8 +23,12 @@ interface StepData {
 
 export default function PoleCapturePageWrapper() {
   return (
-    <AuthGuard>
-      <PoleCaptureFlow />
+    <AuthGuard requireRoles={['admin', 'manager', 'technician']}>
+      <AppLayout>
+        <div className="space-y-6">
+          <PoleCaptureFlow />
+        </div>
+      </AppLayout>
     </AuthGuard>
   );
 }
@@ -118,7 +123,7 @@ function PoleCaptureFlow() {
         photos: stepData.photos || []
       });
     } catch (error) {
-      console.error('Error saving progress:', error);
+      log.error('Error saving progress:', {}, "Page", error);
     } finally {
       setIsSaving(false);
     }
@@ -199,7 +204,7 @@ function PoleCaptureFlow() {
       // Navigate to success page or list
       router.push('/pole-capture/success');
     } catch (error) {
-      console.error('Error saving pole capture:', error);
+      log.error('Error saving pole capture:', {}, "Page", error);
       alert('Failed to save pole capture. Please try again.');
     } finally {
       setIsLoading(false);

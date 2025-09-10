@@ -26,6 +26,7 @@ import {
 } from '@/models/field-capture.model';
 import { localDB } from '@/lib/database';
 import { offlineSyncService } from './offline-sync.service';
+import { log } from '@/lib/logger';
 
 class FieldCaptureService {
   private readonly INSTALLATIONS_COLLECTION = 'field-pole-installations';
@@ -99,7 +100,7 @@ class FieldCaptureService {
         return `local_${localId}`;
       }
     } catch (error) {
-      console.error('Error creating installation:', error);
+      log.error('Error creating installation', { error }, 'FieldCaptureService', error as Error);
       throw error;
     }
   }
@@ -151,7 +152,7 @@ class FieldCaptureService {
           // Update installation with photo
           await this.addPhotoToInstallation(installationId, photo);
         } catch (error: any) {
-          console.warn('Firebase Storage upload failed, storing locally:', error.message);
+          log.warn('Firebase Storage upload failed, storing locally', { error: error.message, installationId }, 'FieldCaptureService');
           
           // If storage upload fails (e.g., permission denied), fall back to local storage
           const base64 = await this.blobToBase64(photoBlob);
@@ -210,7 +211,7 @@ class FieldCaptureService {
       
       return photo;
     } catch (error) {
-      console.error('Error capturing photo:', error);
+      log.error('Error capturing photo', { installationId, photoType }, 'FieldCaptureService', error as Error);
       throw error;
     }
   }
@@ -256,7 +257,7 @@ class FieldCaptureService {
         );
       }
     } catch (error) {
-      console.error('Error submitting quality checks:', error);
+      log.error('Error submitting quality checks', { installationId }, 'FieldCaptureService', error as Error);
       throw error;
     }
   }
@@ -298,7 +299,7 @@ class FieldCaptureService {
         );
       }
     } catch (error) {
-      console.error('Error adding field notes:', error);
+      log.error('Error adding field notes', { installationId }, 'FieldCaptureService', error as Error);
       throw error;
     }
   }
@@ -332,7 +333,7 @@ class FieldCaptureService {
       
       return null;
     } catch (error) {
-      console.error('Error getting installation:', error);
+      log.error('Error getting installation', { installationId }, 'FieldCaptureService', error as Error);
       return null;
     }
   }
@@ -373,7 +374,7 @@ class FieldCaptureService {
       
       return installations;
     } catch (error) {
-      console.error('Error getting project installations:', error);
+      log.error('Error getting project installations', { projectId }, 'FieldCaptureService', error as Error);
       return [];
     }
   }
@@ -488,7 +489,7 @@ class FieldCaptureService {
       
       return results;
     } catch (error) {
-      console.error('Sync error:', error);
+      log.error('Sync error during offline installation sync', {}, 'FieldCaptureService', error as Error);
       throw error;
     }
   }

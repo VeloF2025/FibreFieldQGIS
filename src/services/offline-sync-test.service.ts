@@ -29,7 +29,7 @@ class OfflineSyncTestService {
    * Run complete offline sync test suite
    */
   async runFullTestSuite(): Promise<OfflineSyncTestSuite> {
-    console.log('🧪 Starting Offline Sync Test Suite...');
+    log.info('🧪 Starting Offline Sync Test Suite...', {}, "OfflinesynctestService");
     const startTime = Date.now();
     this.testResults = [];
     

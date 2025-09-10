@@ -12,6 +12,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import type { HomeDropCapture, HomeDropAssignment } from '@/types/home-drop.types';
 import type { NavigationPoint } from './navigation.service';
+import { log } from '@/lib/logger';
 
 /**
  * Map Layer Types
@@ -188,9 +189,9 @@ class MappingService {
       // Update status
       this.updateStatus({ isLoaded: true });
       
-      console.log('Mapping service initialized');
+      log.info('Mapping service initialized', {}, "MappingService");
     } catch (error) {
-      console.error('Failed to initialize mapping service:', error);
+      log.error('Failed to initialize mapping service:', {}, "MappingService", error as Error);
     }
   }
 
@@ -576,7 +577,7 @@ class MappingService {
                 this.offlineTiles.set(tile.id, tile);
               }
             } catch (error) {
-              console.warn(`Failed to download tile ${z}/${x}/${y}:`, error);
+              log.warn(`Failed to download tile ${z}/${x}/${y}:`, error, {}, "MappingService");
             }
           }
         }
@@ -591,9 +592,9 @@ class MappingService {
         cacheSize: this.calculateCacheSize()
       });
 
-      console.log(`Downloaded ${tiles.length} offline tiles`);
+      log.info(`Downloaded ${tiles.length} offline tiles`, {}, "MappingService");
     } catch (error) {
-      console.error('Failed to download offline tiles:', error);
+      log.error('Failed to download offline tiles:', {}, "MappingService", error as Error);
       throw error;
     }
   }
@@ -616,9 +617,9 @@ class MappingService {
         cacheSize: 0
       });
       
-      console.log('Offline tile cache cleared');
+      log.info('Offline tile cache cleared', {}, "MappingService");
     } catch (error) {
-      console.error('Failed to clear offline cache:', error);
+      log.error('Failed to clear offline cache:', {}, "MappingService", error as Error);
     }
   }
 
@@ -746,7 +747,7 @@ class MappingService {
         request.onerror = () => reject(request.error);
       });
     } catch (error) {
-      console.warn('Could not load offline tiles:', error);
+      log.warn('Could not load offline tiles:', error, {}, "MappingService");
     }
   }
 

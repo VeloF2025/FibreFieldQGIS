@@ -208,7 +208,7 @@ class QGISIntegrationService {
    * Initialize service
    */
   private async initializeService(): Promise<void> {
-    console.log('✅ QGIS Integration Service initialized');
+    log.info('✅ QGIS Integration Service initialized', {}, "QgisintegrationService");
   }
 
   // ==================== QGIS Project Import ====================
@@ -409,7 +409,7 @@ class QGISIntegrationService {
         
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error(`Failed to create assignment for pole ${assignment.poleNumber}: ${errorMessage}`);
+        log.error(`Failed to create assignment for pole ${assignment.poleNumber}: ${errorMessage}`, {}, "QgisintegrationService");
       }
     }
 

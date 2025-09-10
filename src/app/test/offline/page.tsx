@@ -209,7 +209,7 @@ export default function OfflineTestPage() {
       setLocalData([]);
       setTestResults([]);
     } catch (error) {
-      console.error('Failed to clear local data:', error);
+      log.error('Failed to clear local data:', {}, "Page", error);
     }
   };
 
@@ -235,7 +235,7 @@ export default function OfflineTestPage() {
       
       alert(`Synced ${queueItems.length} items`);
     } catch (error) {
-      console.error('Sync failed:', error);
+      log.error('Sync failed:', {}, "Page", error);
       alert('Sync failed');
     }
   };

@@ -5,13 +5,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { areaId: string } }
+  { params }: { params: Promise<{ areaId: string }> }
 ) {
   try {
-    const areaId = params.areaId;
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
+    const resolvedParams = await params;
+    const areaId = resolvedParams.areaId;
     
     if (!areaId) {
       return NextResponse.json(
@@ -38,7 +47,7 @@ export async function GET(
       id: doc.id,
       ...doc.data(),
       capturedAt: doc.data().capturedAt?.toDate?.()?.toISOString()
-    }));
+    })) as Array<any>;
 
     // Get home drops in the area
     const homeDropsQuery = query(
@@ -53,7 +62,7 @@ export async function GET(
       ...doc.data(),
       capturedAt: doc.data().capturedAt?.toDate?.()?.toISOString(),
       approvedAt: doc.data().approvedAt?.toDate?.()?.toISOString()
-    }));
+    })) as Array<any>;
 
     // Get relationships in the area
     const relationshipsQuery = query(
@@ -67,7 +76,7 @@ export async function GET(
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate?.()?.toISOString()
-    }));
+    })) as Array<any>;
 
     // Calculate coverage statistics
     const coverageStats = calculateCoverageStats(poles, homeDrops, relationships);
@@ -130,7 +139,7 @@ export async function GET(
     });
 
   } catch (error: unknown) {
-    console.error('Coverage area API error:', error);
+    log.error('Coverage area API error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,
@@ -161,7 +170,7 @@ function calculateCoverageStats(poles: any[], homeDrops: any[], relationships: a
 
   // Calculate density metrics
   const areaGeometry = calculateServiceAreaGeometry(poles, homeDrops);
-  const areaSize = areaGeometry ? calculatePolygonArea(areaGeometry.coordinates) : 0;
+  const areaSize = areaGeometry ? calculatePolygonArea(areaGeometry.coordinates[0]) : 0;
   const poleDensity = areaSize > 0 ? poles.length / areaSize : 0;
   const dropDensity = areaSize > 0 ? homeDrops.length / areaSize : 0;
 

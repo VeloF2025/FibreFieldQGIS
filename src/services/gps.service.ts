@@ -1,5 +1,6 @@
 // GPS Service for FibreField
 import { BehaviorSubject } from 'rxjs';
+import { log } from '@/lib/logger';
 
 export interface GPSPosition {
   latitude: number;
@@ -40,7 +41,7 @@ class GPSService {
   constructor() {
     // Check if geolocation is available
     if (!this.isGeolocationAvailable()) {
-      console.warn('Geolocation is not available in this browser');
+      log.warn('Geolocation is not available in this browser', {}, 'GPSService');
     }
   }
   
@@ -75,7 +76,11 @@ class GPSService {
           attempts++;
           if (attempts >= (opts.maxAttempts || 5)) {
             // Return best attempt even if accuracy not met
-            console.warn(`GPS accuracy ${position.accuracy}m exceeds required ${opts.requiredAccuracy}m after ${attempts} attempts`);
+            log.warn('GPS accuracy exceeds required after maximum attempts', {
+              actualAccuracy: position.accuracy,
+              requiredAccuracy: opts.requiredAccuracy,
+              attempts
+            }, 'GPSService');
             return position;
           }
           // Wait a bit before retrying

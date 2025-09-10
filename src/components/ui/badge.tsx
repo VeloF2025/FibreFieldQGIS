@@ -29,9 +29,18 @@ export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({ className, variant, children, ...props }: BadgeProps) {
+  // Handle NaN values by converting to string or providing fallback
+  const safeChildren = children === undefined || children === null
+    ? children
+    : typeof children === 'number' && isNaN(children)
+      ? 'N/A'
+      : children;
+
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div className={cn(badgeVariants({ variant }), className)} {...props}>
+      {safeChildren}
+    </div>
   )
 }
 

@@ -26,6 +26,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/auth-context';
 import { localDB } from '@/lib/database';
 import { cn } from '@/lib/utils';
+import { AppLayout } from '@/components/layout/app-layout';
+import { AuthGuard } from '@/components/auth/auth-guard';
 
 interface AppSettings {
   // Camera settings
@@ -93,7 +95,7 @@ export default function SettingsPage() {
       setStorageUsage({ used: usedStorage, total: 1024 }); // Assume 1GB limit
       
     } catch (error) {
-      console.error('Failed to load settings:', error);
+      log.error('Failed to load settings:', {}, "Page", error);
     } finally {
       setIsLoading(false);
     }
@@ -111,12 +113,12 @@ export default function SettingsPage() {
         try {
           await (navigator as any).wakeLock.request('screen');
         } catch (err) {
-          console.warn('Wake lock not supported or failed');
+          log.warn('Wake lock not supported or failed', {}, "Page");
         }
       }
       
     } catch (error) {
-      console.error('Failed to save settings:', error);
+      log.error('Failed to save settings:', {}, "Page", error);
       alert('Failed to save settings. Please try again.');
     } finally {
       setIsSaving(false);
@@ -146,7 +148,7 @@ export default function SettingsPage() {
       alert('Local data cleared successfully.');
       setStorageUsage({ used: 0, total: storageUsage.total });
     } catch (error) {
-      console.error('Failed to clear local data:', error);
+      log.error('Failed to clear local data:', {}, "Page", error);
       alert('Failed to clear local data.');
     }
   };
@@ -177,46 +179,34 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#005cbb] mx-auto mb-4"></div>
-          <p>Loading settings...</p>
-        </div>
-      </div>
+      <AuthGuard requireRoles={['admin', 'manager', 'technician']}>
+        <AppLayout>
+          <div className="space-y-6">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <div className="text-gray-600">Loading settings...</div>
+              </div>
+            </div>
+          </div>
+        </AppLayout>
+      </AuthGuard>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9fd] flex flex-col">
-      {/* Header - FibreFlow style */}
-      <div className="bg-[#005cbb] text-white p-4 flex items-center justify-between shadow-md">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.back()}
-            className="text-white hover:bg-white/20"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-xl font-medium">Settings</h1>
-        </div>
-        
-        {hasUnsavedChanges && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={saveSettings}
-            disabled={isSaving}
-            className="bg-white/20 text-white hover:bg-white/30"
-          >
-            {isSaving ? 'Saving...' : 'Save'}
-          </Button>
-        )}
-      </div>
+    <AuthGuard requireRoles={['admin', 'manager', 'technician']}>
+      <AppLayout>
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+              <p className="text-gray-600">Manage your FibreField preferences and configuration</p>
+            </div>
+          </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Settings Cards */}
         
         {/* User Profile */}
         <Card className="border-0 shadow-sm">
@@ -484,11 +474,12 @@ export default function SettingsPage() {
           <Alert className="border-orange-200 bg-orange-50">
             <AlertCircle className="h-4 w-4 text-orange-600" />
             <AlertDescription className="text-orange-800">
-              You have unsaved changes. Don't forget to save your settings.
+              You have unsaved changes. Don&apos;t forget to save your settings.
             </AlertDescription>
           </Alert>
         )}
-      </div>
-    </div>
+        </div>
+      </AppLayout>
+    </AuthGuard>
   );
 }

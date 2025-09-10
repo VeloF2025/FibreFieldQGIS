@@ -171,7 +171,7 @@ class QGisIntegrationService {
       
       return geoPackage;
     } catch (error) {
-      console.error('Export to GeoPackage failed:', error);
+      log.error('Export to GeoPackage failed:', {}, "QgisService", error);
       throw error;
     }
   }
@@ -251,7 +251,7 @@ class QGisIntegrationService {
       
       return result;
     } catch (error) {
-      console.error('Import from GeoPackage failed:', error);
+      log.error('Import from GeoPackage failed:', {}, "QgisService", error);
       throw error;
     }
   }

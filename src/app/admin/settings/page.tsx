@@ -29,6 +29,7 @@ import {
   Download,
   Upload
 } from 'lucide-react';
+import { log } from '@/lib/logger';
 
 interface SystemSettings {
   general: {
@@ -104,7 +105,7 @@ export default function SettingsPage() {
   };
 
   const handleSaveSettings = () => {
-    console.log('Saving settings:', settings);
+    log.info('Saving settings:', { settings }, "Page");
     setHasChanges(false);
     // TODO: Implement actual save functionality
   };

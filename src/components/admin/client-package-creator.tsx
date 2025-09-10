@@ -877,7 +877,7 @@ export function ClientPackageCreator({
                   template={template}
                   isSelected={options.templateId === template.id}
                   onSelect={handleTemplateSelect}
-                  onPreview={(template) => console.log('Preview template:', template)}
+                  onPreview={(template) => log.info('Preview template:', template, {}, "Clientpackagecreator")}
                 />
               ))}
               

@@ -224,7 +224,7 @@ export function GPSStatus({
         gpsService.startWatching(options);
       }
     } catch (error) {
-      console.error('GPS toggle error:', error);
+      log.error('GPS toggle error:', {}, "Gpsstatus", error);
     }
   };
 
@@ -238,7 +238,7 @@ export function GPSStatus({
         timeout: 15000
       });
     } catch (error) {
-      console.error('GPS refresh error:', error);
+      log.error('GPS refresh error:', {}, "Gpsstatus", error);
     } finally {
       setIsRefreshing(false);
     }

@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { localDB, LocalPoleInstallation, LocalPhoto } from '@/lib/database';
+import { log } from '@/lib/logger';
 
 interface OfflineState {
   // Connection status
@@ -68,7 +69,7 @@ export const useOfflineStore = create<OfflineState>()(
         const count = await localDB.getPendingSyncCount();
         set({ pendingSyncCount: count });
       } catch (error) {
-        console.error('Failed to update pending sync count:', error);
+        log.error('Failed to update pending sync count:', {}, "Offlinestore", error);
       }
     },
 
@@ -150,9 +151,9 @@ export const useOfflineStore = create<OfflineState>()(
           };
         }
         
-        console.log('✅ Offline store initialized');
+        log.info('✅ Offline store initialized', {}, "Offlinestore");
       } catch (error) {
-        console.error('❌ Failed to initialize offline store:', error);
+        log.error('❌ Failed to initialize offline store:', {}, "Offlinestore", error);
         get().addSyncError(`Initialization failed: ${error}`);
       }
     },

@@ -6,9 +6,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, addDoc, query, where, orderBy, limit } from 'firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     // Get query parameters
     const { searchParams } = new URL(request.url);
     const assignedTo = searchParams.get('assignedTo');
@@ -80,7 +88,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Assignments GET error:', error);
+    log.error('Assignments GET error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,
@@ -94,6 +102,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     
     // Validate required fields
@@ -161,7 +176,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Assignments POST error:', error);
+    log.error('Assignments POST error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

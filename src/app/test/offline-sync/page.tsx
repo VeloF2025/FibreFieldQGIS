@@ -49,7 +49,7 @@ export default function OfflineSyncTestPage() {
       setTestSuite(results);
       setCurrentTest('');
     } catch (error) {
-      console.error('Test suite failed:', error);
+      log.error('Test suite failed:', {}, "Page", error);
       setCurrentTest('Test suite failed to complete');
     } finally {
       setRunning(false);
@@ -297,7 +297,7 @@ export default function OfflineSyncTestPage() {
               No Test Results Yet
             </h3>
             <p className="text-gray-600 mb-4">
-              Click "Run Test Suite" to start testing offline synchronization capabilities
+              Click &quot;Run Test Suite&quot; to start testing offline synchronization capabilities
             </p>
             <Button onClick={runTests}>
               <PlayCircle className="h-4 w-4 mr-2" />

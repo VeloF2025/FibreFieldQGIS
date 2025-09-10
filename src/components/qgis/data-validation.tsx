@@ -175,7 +175,7 @@ export default function DataValidation({
         setConflicts(detectedConflicts);
       }
     } catch (error: unknown) {
-      console.error('Validation failed:', error);
+      log.error('Validation failed:', {}, "Datavalidation", error);
     }
 
     setIsValidating(false);
@@ -617,7 +617,7 @@ export default function DataValidation({
           await error.fixAction();
         }
       } catch (fixError: unknown) {
-        console.error(`Failed to fix error ${error.id}:`, fixError);
+        log.error(`Failed to fix error ${error.id}:`, {}, "Datavalidation", fixError);
       }
     }
 

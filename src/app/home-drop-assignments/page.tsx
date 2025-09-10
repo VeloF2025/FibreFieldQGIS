@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import { AssignmentList, AssignmentDetailsModal } from '@/components/home-drop';
 import type { HomeDropAssignment } from '@/types/home-drop.types';
+import { AppLayout } from '@/components/layout/app-layout';
+import { AuthGuard } from '@/components/auth/auth-guard';
+import { log } from '@/lib/logger';
 
 /**
  * Home Drop Assignments Demo Page
@@ -22,7 +25,7 @@ export default function HomeDropAssignmentsPage() {
 
   // Handle assignment actions
   const handleAssignmentAction = (action: string, assignmentId: string) => {
-    console.log(`🔧 Assignment Action: ${action} for assignment ${assignmentId}`);
+    log.info(`🔧 Assignment Action: ${action} for assignment ${assignmentId}`, {}, "Page");
     
     // Here you would implement the actual action handlers
     switch (action) {
@@ -42,11 +45,14 @@ export default function HomeDropAssignmentsPage() {
         // Open edit modal
         break;
       default:
-        console.log(`Unhandled action: ${action}`);
+        log.info(`Unhandled action: ${action}`, {}, "Page");
     }
   };
 
   return (
+    <AuthGuard requireRoles={['admin', 'manager', 'technician']}>
+      <AppLayout>
+        <div className="space-y-6">
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-6">
         <div className="mb-6">
@@ -77,5 +83,8 @@ export default function HomeDropAssignmentsPage() {
         />
       </div>
     </div>
+        </div>
+      </AppLayout>
+    </AuthGuard>
   );
 }

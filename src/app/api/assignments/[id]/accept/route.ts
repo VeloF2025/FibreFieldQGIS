@@ -6,13 +6,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const assignmentId = params.id;
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
+    const resolvedParams = await params;
+    const assignmentId = resolvedParams.id;
     
     if (!assignmentId) {
       return NextResponse.json(
@@ -130,7 +139,7 @@ export async function POST(
     });
 
   } catch (error: unknown) {
-    console.error('Assignment accept error:', error);
+    log.error('Assignment accept error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

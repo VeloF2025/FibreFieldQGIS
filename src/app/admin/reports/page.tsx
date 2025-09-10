@@ -19,6 +19,7 @@ import {
   Target,
   Activity
 } from 'lucide-react';
+import { log } from '@/lib/logger';
 
 export default function ReportsPage() {
   const [timeRange, setTimeRange] = useState('7d');
@@ -51,7 +52,7 @@ export default function ReportsPage() {
   ];
 
   const exportReport = (type: string) => {
-    console.log(`Exporting ${type} report for ${timeRange}`);
+    log.info(`Exporting ${type} report for ${timeRange}`, {}, "Page");
   };
 
   return (

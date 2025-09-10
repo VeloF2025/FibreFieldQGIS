@@ -6,6 +6,7 @@ import { initializeDatabase, localDB } from '@/lib/database';
 import { useOfflineStore } from '@/stores/offline-store';
 import { validateConfig, logConfig } from '@/lib/config';
 import { setupAutoSync } from '@/utils/offline-utils';
+import { log } from '@/lib/logger';
 
 interface OfflineContextType {
   isInitialized: boolean;
@@ -35,7 +36,7 @@ export function OfflineProvider({ children }: OfflineProviderProps) {
   const initializeOffline = async () => {
     try {
       setError(null);
-      console.log('🚀 Initializing FibreField offline systems...');
+      log.info('🚀 Initializing FibreField offline systems...', undefined, 'OfflineProvider');
 
       // Step 1: Validate configuration
       validateConfig();
@@ -43,15 +44,15 @@ export function OfflineProvider({ children }: OfflineProviderProps) {
 
       // Step 2: Initialize database
       await initializeDatabase();
-      console.log('✅ Database initialized');
+      log.info('✅ Database initialized', undefined, 'OfflineProvider');
 
       // Step 3: Initialize offline store
       await initializeOfflineStore();
-      console.log('✅ Offline store initialized');
+      log.info('✅ Offline store initialized', undefined, 'OfflineProvider');
 
       // Step 4: Set up auto-sync (5-minute intervals)
       setupAutoSync(5);
-      console.log('✅ Auto-sync configured');
+      log.info('✅ Auto-sync configured', undefined, 'OfflineProvider');
 
       // Step 5: Cleanup old files on startup
       if (typeof window !== 'undefined') {
@@ -59,17 +60,17 @@ export function OfflineProvider({ children }: OfflineProviderProps) {
         const { cleanupOfflineFiles } = await import('@/utils/offline-utils');
         const cleanedCount = await cleanupOfflineFiles(7); // 7 days
         if (cleanedCount > 0) {
-          console.log(`🧹 Cleaned up ${cleanedCount} old offline files`);
+          log.info(`🧹 Cleaned up ${cleanedCount} old offline files`, { cleanedCount }, 'OfflineProvider');
         }
       }
 
       setIsInitialized(true);
-      console.log('🎉 FibreField offline systems ready!');
+      log.info('🎉 FibreField offline systems ready!', undefined, 'OfflineProvider');
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown initialization error';
       setError(errorMessage);
-      console.error('❌ Offline initialization failed:', err);
+      log.error('❌ Offline initialization failed', { error: err }, 'OfflineProvider', err as Error);
     }
   };
 
@@ -113,7 +114,7 @@ export function OfflineProvider({ children }: OfflineProviderProps) {
               </h1>
               
               <p className="text-gray-600 mb-4">
-                FibreField couldn't initialize properly. This might be due to browser compatibility or storage issues.
+                FibreField couldn&apos;t initialize properly. This might be due to browser compatibility or storage issues.
               </p>
               
               <div className="bg-red-50 rounded-md p-3 mb-4">

@@ -197,7 +197,7 @@ export default function ExportWizard({
       setAvailableContractors(contractors);
 
     } catch (error: unknown) {
-      console.error('Failed to load data:', error);
+      log.error('Failed to load data:', {}, "Exportwizard", error);
     }
   };
 
@@ -240,7 +240,7 @@ export default function ExportWizard({
       setFilteredHomeDrops(filtered);
 
     } catch (error: unknown) {
-      console.error('Failed to filter home drops:', error);
+      log.error('Failed to filter home drops:', {}, "Exportwizard", error);
       setFilteredHomeDrops(homeDrops);
     }
   };
@@ -338,7 +338,7 @@ export default function ExportWizard({
       onClose();
 
     } catch (error: unknown) {
-      console.error('Export failed:', error);
+      log.error('Export failed:', {}, "Exportwizard", error);
     }
 
     setIsExporting(false);

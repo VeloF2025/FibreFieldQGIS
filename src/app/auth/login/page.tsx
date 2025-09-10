@@ -1,15 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { signIn } from '@/lib/auth';
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, LogIn, AlertCircle } from 'lucide-react';
+import { log } from '@/lib/logger';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,18 +18,44 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [signInFunction, setSignInFunction] = useState<((email: string, password: string) => Promise<any>) | null>(null);
+
+  // Dynamically import auth functions only on client side
+  useEffect(() => {
+    const loadAuthFunctions = async () => {
+      try {
+        const authModule = await import('@/lib/auth');
+        setSignInFunction(() => authModule.signIn);
+      } catch (error) {
+        log.error('Failed to load auth module:', {}, "Page", error as Error);
+        setError('Authentication system not available');
+      }
+    };
+    
+    if (typeof window !== 'undefined') {
+      loadAuthFunctions();
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
+    if (!signInFunction) {
+      setError('Authentication system is still loading...');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      await signIn(email, password);
-      router.push('/');
+      await signInFunction(email, password);
+      // Give a small delay to ensure cookie is set before redirecting
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to sign in');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -101,12 +128,17 @@ export default function LoginPage() {
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading}
+              disabled={isLoading || !signInFunction}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Signing in...
+                </>
+              ) : !signInFunction ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Loading...
                 </>
               ) : (
                 <>
@@ -117,7 +149,7 @@ export default function LoginPage() {
             </Button>
 
             <div className="text-center text-sm text-gray-600">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 href="/auth/register"
                 className="text-blue-600 hover:text-blue-700 hover:underline font-medium"

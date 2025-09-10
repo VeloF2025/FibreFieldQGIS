@@ -3,6 +3,7 @@ import { httpsCallable, HttpsCallableResult } from 'firebase/functions';
 import { functions, getFirebaseErrorMessage } from '@/lib/firebase';
 import { getCurrentUser, getCurrentUserId } from '@/lib/auth';
 import { localDB } from '@/lib/database';
+import { log } from '@/lib/logger';
 
 // Types for API responses
 export interface ApiResponse<T = any> {
@@ -58,12 +59,12 @@ export class FibreFlowApiService {
     // Monitor online/offline status
     window.addEventListener('online', () => {
       this.isOnline = true;
-      console.log('🌐 FibreFlow API: Back online');
+      log.info('Back online', { isOnline: true }, 'FibreFlowApiService');
     });
     
     window.addEventListener('offline', () => {
       this.isOnline = false;
-      console.log('📵 FibreFlow API: Offline mode');
+      log.info('Offline mode', { isOnline: false }, 'FibreFlowApiService');
     });
   }
 
@@ -109,7 +110,7 @@ export class FibreFlowApiService {
     if (useCache) {
       const cached = this.getCacheItem(cacheKey);
       if (cached) {
-        console.log(`📱 Using cached data for ${functionName}`);
+        log.debug('Using cached data', { functionName }, 'FibreFlowApiService');
         return cached;
       }
     }
@@ -138,13 +139,13 @@ export class FibreFlowApiService {
 
       return response.data as T;
     } catch (error: any) {
-      console.error(`❌ FibreFlow API error (${functionName}):`, error);
+      log.error('API call failed', { functionName, error: error.message }, 'FibreFlowApiService', error);
       
       // Try to return cached data on error if available
       if (useCache) {
         const cached = this.getCacheItem(cacheKey);
         if (cached) {
-          console.log(`📱 Fallback to cached data for ${functionName}`);
+          log.info('Fallback to cached data', { functionName }, 'FibreFlowApiService');
           return cached;
         }
       }
@@ -282,7 +283,7 @@ export class FibreFlowApiService {
   // Clear cache
   clearCache(): void {
     this.cache.clear();
-    console.log('🧹 FibreFlow API cache cleared');
+    log.info('API cache cleared', { cacheSize: this.cache.size }, 'FibreFlowApiService');
   }
 
   // Get cache statistics

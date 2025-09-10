@@ -5,9 +5,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, orderBy, Timestamp } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     // Get query parameters
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get('project');
@@ -86,7 +94,9 @@ export async function GET(request: NextRequest) {
       type: 'home_drop',
       ...doc.data(),
       capturedAt: doc.data().capturedAt?.toDate(),
-      approvedAt: doc.data().approvedAt?.toDate()
+      approvedAt: doc.data().approvedAt?.toDate(),
+      approvalStatus: doc.data().approvalStatus || doc.data().approval?.status || 'pending',
+      qualityScore: doc.data().qualityScore || doc.data().approval?.qualityScore || 0
     }));
 
     const poles = poleSnapshot.docs.map(doc => ({
@@ -94,7 +104,9 @@ export async function GET(request: NextRequest) {
       type: 'pole',
       ...doc.data(),
       capturedAt: doc.data().capturedAt?.toDate(),
-      approvedAt: doc.data().approvedAt?.toDate()
+      approvedAt: doc.data().approvedAt?.toDate(),
+      approvalStatus: doc.data().approvalStatus || doc.data().approval?.status || 'pending',
+      qualityScore: doc.data().qualityScore || doc.data().approval?.qualityScore || 0
     }));
 
     const allCaptures = [...homeDrops, ...poles];
@@ -151,7 +163,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Completion reports API error:', error);
+    log.error('Completion reports API error:', {}, "Route", error instanceof Error ? error : undefined);
     return NextResponse.json(
       {
         success: false,
@@ -197,7 +209,7 @@ function getOldestPending(captures: any[]): number {
 }
 
 function generateDailyBreakdown(captures: any[], days: number): any[] {
-  const dailyData = {};
+  const dailyData: Record<string, any> = {};
   
   // Initialize all days
   for (let i = 0; i < days; i++) {
@@ -229,7 +241,7 @@ function generateDailyBreakdown(captures: any[], days: number): any[] {
 }
 
 function generateContractorBreakdown(captures: any[]): any[] {
-  const contractorData = {};
+  const contractorData: Record<string, any> = {};
   
   captures.forEach(capture => {
     const contractorId = capture.contractorId || 'unknown';
@@ -261,7 +273,7 @@ function generateContractorBreakdown(captures: any[]): any[] {
   Object.values(contractorData).forEach((data: any) => {
     if (data.qualityScores.length > 0) {
       data.avgQuality = Math.round(
-        data.qualityScores.reduce((sum, score) => sum + score, 0) / data.qualityScores.length
+        data.qualityScores.reduce((sum: number, score: number) => sum + score, 0) / data.qualityScores.length
       );
     }
     delete data.qualityScores; // Remove raw scores from output
@@ -271,7 +283,7 @@ function generateContractorBreakdown(captures: any[]): any[] {
 }
 
 function generateProjectBreakdown(captures: any[]): any[] {
-  const projectData = {};
+  const projectData: Record<string, any> = {};
   
   captures.forEach(capture => {
     const projectId = capture.projectId || 'unknown';
@@ -297,12 +309,12 @@ function generateProjectBreakdown(captures: any[]): any[] {
 }
 
 function generateIssuesReport(captures: any[]): any {
-  const rejected = captures.filter(c => c.approvalStatus === 'rejected');
-  const issuesCount = {};
+  const rejected = captures.filter((c: any) => c.approvalStatus === 'rejected');
+  const issuesCount: Record<string, number> = {};
   
-  rejected.forEach(capture => {
+  rejected.forEach((capture: any) => {
     if (capture.rejection && capture.rejection.issues) {
-      capture.rejection.issues.forEach(issue => {
+      capture.rejection.issues.forEach((issue: string) => {
         issuesCount[issue] = (issuesCount[issue] || 0) + 1;
       });
     }

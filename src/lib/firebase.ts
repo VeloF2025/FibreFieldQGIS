@@ -5,47 +5,69 @@ import { getFirestore, connectFirestoreEmulator, enableIndexedDbPersistence, Fir
 import { getStorage, connectStorageEmulator, FirebaseStorage } from 'firebase/storage';
 import { getFunctions, connectFunctionsEmulator, Functions } from 'firebase/functions';
 import { getAnalytics, Analytics } from 'firebase/analytics';
+import { log } from './logger';
 
-// Firebase configuration - shared with main FibreFlow project
+// Firebase configuration - Uses standalone FibreField project
 const firebaseConfig = {
-  apiKey: "AIzaSyCdpp9ViBcfb37o4V2_OCzWO9nUhCiv9Vc",
-  authDomain: "fibreflow-73daf.firebaseapp.com", 
-  projectId: "fibreflow-73daf",
-  storageBucket: "fibreflow-73daf.firebasestorage.app",
-  messagingSenderId: "296054249427",
-  appId: "1:296054249427:web:2f0d6482daa6beb0624126",
-  measurementId: "G-J0P7YRLGPW"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || ""
 };
+
+// Skip Firebase initialization if required config is missing
+const hasRequiredConfig = firebaseConfig.apiKey && 
+                         firebaseConfig.authDomain && 
+                         firebaseConfig.projectId && 
+                         firebaseConfig.appId;
 
 // Environment detection
 const isDevelopment = process.env.NODE_ENV === 'development';
 const isClient = typeof window !== 'undefined';
 
-// Initialize Firebase app (singleton pattern)
-const app: FirebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+// Initialize Firebase app (singleton pattern) - only if config is complete
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+let storage: FirebaseStorage | null = null;
+let functions: Functions | null = null;
+let analytics: Analytics | null = null;
 
-// Initialize Firebase services
-export const auth: Auth = getAuth(app);
-export const db: Firestore = getFirestore(app);
-export const storage: FirebaseStorage = getStorage(app);
-export const functions: Functions = getFunctions(app);
+if (hasRequiredConfig) {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  
+  // Initialize Firebase services
+  auth = getAuth(app);
+  db = getFirestore(app);
+  storage = getStorage(app);
+  functions = getFunctions(app);
+  
+  // Initialize Analytics (client-side only)
+  analytics = isClient ? getAnalytics(app) : null;
+} else {
+  log.warn('🔥 Firebase configuration incomplete - Firebase disabled', {}, "Firebase");
+  log.warn('Missing required config values. Check .env.local', {}, "Firebase");
+}
 
-// Initialize Analytics (client-side only)
-export const analytics: Analytics | null = isClient ? getAnalytics(app) : null;
+// Export Firebase services (may be null if config is incomplete)
+export { auth, db, storage, functions, analytics };
 
 // Enable offline persistence for Firestore (client-side only)
-if (isClient) {
+if (isClient && db) {
   enableIndexedDbPersistence(db).catch((err) => {
     if (err.code === 'failed-precondition') {
-      console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+      log.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.', {}, "Firebase");
     } else if (err.code === 'unimplemented') {
-      console.warn('The current browser does not support offline persistence');
+      log.warn('The current browser does not support offline persistence', {}, "Firebase");
     }
   });
 }
 
 // Connect to emulators in development (client-side only)
-if (isClient && isDevelopment && !window.__FIREBASE_EMULATORS_CONNECTED__) {
+if (isClient && isDevelopment && auth && db && storage && functions && !window.__FIREBASE_EMULATORS_CONNECTED__) {
   const USE_EMULATOR = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true';
   
   if (USE_EMULATOR) {
@@ -59,9 +81,9 @@ if (isClient && isDevelopment && !window.__FIREBASE_EMULATORS_CONNECTED__) {
       
       // Mark as connected to prevent reconnection
       (window as any).__FIREBASE_EMULATORS_CONNECTED__ = true;
-      console.log('🔧 Connected to Firebase emulators');
+      log.info('🔧 Connected to Firebase emulators', {}, "Firebase");
     } catch (error) {
-      console.warn('⚠️ Failed to connect to Firebase emulators (using production):', error);
+      log.warn('⚠️ Failed to connect to Firebase emulators (using production, {}, "Firebase"):', error);
     }
   }
 }
@@ -98,12 +120,14 @@ export const firebaseServices = {
   analytics,
   config: firebaseConfig,
   isDevelopment,
-  isClient
+  isClient,
+  hasRequiredConfig
 };
 
 // Firebase initialization status
 export const getFirebaseStatus = () => ({
   initialized: !!app,
+  hasRequiredConfig,
   services: {
     auth: !!auth,
     firestore: !!db,
@@ -147,6 +171,6 @@ export const getFirebaseErrorMessage = (error: any): string => {
   return error?.message || 'An unexpected error occurred.';
 };
 
-console.log('🔥 Firebase initialized:', getFirebaseStatus());
+log.info('🔥 FibreField Firebase initialized:', getFirebaseStatus(), 'Firebase');
 
 export default app;

@@ -5,9 +5,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     // Get query parameters
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'all'; // 'home-drops', 'poles', 'all'
@@ -122,7 +130,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Pending approvals API error:', error);
+    log.error('Pending approvals API error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

@@ -124,7 +124,7 @@ export function AssignmentList({
         setStatistics(stats);
       }
     } catch (error) {
-      console.error('Failed to load assignments:', error);
+      log.error('Failed to load assignments:', {}, "Assignmentlist", error);
     } finally {
       setIsLoading(false);
     }

@@ -28,6 +28,8 @@ import { InteractiveMap } from '@/components/mapping/interactive-map';
 import { homeDropAssignmentService } from '@/services/home-drop-assignment.service';
 import { mappingService } from '@/services/navigation/mapping.service';
 import { generateDemoAssignments } from '@/components/navigation/demo-assignments';
+import { AppLayout } from '@/components/layout/app-layout';
+import { AuthGuard } from '@/components/auth/auth-guard';
 import type { HomeDropAssignment } from '@/types/home-drop.types';
 
 /**
@@ -67,7 +69,7 @@ function OfflineMapManager({ className }: { className?: string }) {
       
       await mappingService.downloadOfflineTiles(bounds, 10, 16);
     } catch (error) {
-      console.error('Failed to download offline maps:', error);
+      log.error('Failed to download offline maps:', {}, "Page", error);
     } finally {
       setIsDownloading(false);
     }
@@ -164,7 +166,7 @@ function ExportOptions({ assignments }: { assignments: HomeDropAssignment[] }) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Failed to export GeoPackage:', error);
+      log.error('Failed to export GeoPackage:', {}, "Page", error);
     } finally {
       setIsExporting(false);
     }
@@ -240,7 +242,7 @@ export default function NavigationPage() {
       // const assignmentList = await homeDropAssignmentService.getAllAssignments();
       // setAssignments(assignmentList);
     } catch (error) {
-      console.error('Failed to load assignments:', error);
+      log.error('Failed to load assignments:', {}, "Page", error);
     } finally {
       setLoading(false);
     }
@@ -252,26 +254,32 @@ export default function NavigationPage() {
 
   const handleNavigationComplete = (assignmentId: string) => {
     // Mark assignment as completed
-    console.log('Navigation completed for assignment:', assignmentId);
+    log.info('Navigation completed for assignment:', assignmentId, {}, "Page");
     // Reload assignments to reflect status change
     loadAssignments();
   };
 
   if (loading) {
     return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <div className="text-gray-600">Loading navigation...</div>
+      <AuthGuard requireRoles={['admin', 'manager', 'technician']}>
+        <AppLayout>
+          <div className="space-y-6">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <div className="text-gray-600">Loading navigation...</div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </AppLayout>
+      </AuthGuard>
     );
   }
 
   return (
-    <div className="p-4 max-w-6xl mx-auto space-y-6">
+    <AuthGuard requireRoles={['admin', 'manager', 'technician']}>
+      <AppLayout>
+        <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -459,7 +467,9 @@ export default function NavigationPage() {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
-    </div>
+        </Tabs>
+        </div>
+      </AppLayout>
+    </AuthGuard>
   );
 }

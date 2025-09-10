@@ -1,0 +1,1388 @@
+'use client';
+
+import React, { useState, useCallback, useRef } from 'react';
+import {
+  Upload,
+  X,
+  Download,
+  FileText,
+  AlertCircle,
+  CheckCircle2,
+  Eye,
+  RotateCcw,
+  ArrowRight,
+  ArrowLeft,
+  FileUp,
+  AlertTriangle,
+  Info,
+  Table,
+  MapPin,
+  User,
+  Calendar,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
+import { homeDropAssignmentService } from '@/services/home-drop-assignment.service';
+import type { HomeDropAssignment } from '@/types/home-drop.types';
+import { log } from '@/lib/logger';
+import * as XLSX from 'xlsx';
+import * as Papa from 'papaparse';
+
+// Import interfaces for typed validation
+interface ImportStep {
+  id: number;
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+interface ParsedAssignment {
+  [key: string]: any;
+  originalRow?: number;
+  validationErrors?: string[];
+  isValid?: boolean;
+}
+
+interface FileParseResult {
+  data: ParsedAssignment[];
+  headers: string[];
+  errors: string[];
+  fileType: 'csv' | 'excel' | 'json';
+}
+
+interface ValidationError {
+  row: number;
+  field: string;
+  message: string;
+  type: 'error' | 'warning';
+}
+
+interface ImportResult {
+  successful: number;
+  failed: number;
+  errors: Array<{
+    row: number;
+    error: string;
+  }>;
+}
+
+interface FieldMapping {
+  csvField: string;
+  assignmentField: string;
+  required: boolean;
+}
+
+interface ImportAssignmentsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onImportComplete: () => void;
+  technicianId?: string;
+}
+
+/**
+ * Comprehensive Import Modal for Home Drop Assignments
+ * 
+ * Features:
+ * - Multi-step wizard interface (File Selection → Preview → Import)
+ * - Support for CSV, Excel (.xlsx), and JSON formats
+ * - Field mapping interface for CSV files
+ * - Data validation with error highlighting
+ * - Preview table with first 10 rows
+ * - Sample file downloads
+ * - Drag & drop file upload
+ * - Progress indicators
+ * - Detailed error handling
+ * - Mobile responsive design
+ * - Accessibility support
+ */
+export function ImportAssignmentsModal({
+  isOpen,
+  onClose,
+  onImportComplete,
+  technicianId
+}: ImportAssignmentsModalProps) {
+  // State management
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [parseError, setParseError] = useState<string>('');
+  const [parsedData, setParsedData] = useState<ParsedAssignment[]>([]);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [fieldMappings, setFieldMappings] = useState<FieldMapping[]>([]);
+  const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
+  const [importProgress, setImportProgress] = useState(0);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropzoneRef = useRef<HTMLDivElement>(null);
+
+  // Steps configuration
+  const steps: ImportStep[] = [
+    {
+      id: 1,
+      title: 'File Selection',
+      description: 'Choose your assignment file and format',
+      completed: selectedFile !== null
+    },
+    {
+      id: 2,
+      title: 'Data Preview',
+      description: 'Review and map your data fields',
+      completed: parsedData.length > 0 && validationErrors.filter(e => e.type === 'error').length === 0
+    },
+    {
+      id: 3,
+      title: 'Import Progress',
+      description: 'Import assignments and view results',
+      completed: importResult !== null
+    }
+  ];
+
+  // Required assignment fields with their descriptions
+  const assignmentFields = [
+    { key: 'customerName', label: 'Customer Name', required: true, description: 'Full name of the customer' },
+    { key: 'customerAddress', label: 'Service Address', required: true, description: 'Complete service installation address' },
+    { key: 'contactNumber', label: 'Contact Number', required: false, description: 'Customer phone number' },
+    { key: 'email', label: 'Email Address', required: false, description: 'Customer email address' },
+    { key: 'accountNumber', label: 'Account Number', required: false, description: 'Customer account reference' },
+    { key: 'poleNumber', label: 'Pole Number', required: false, description: 'Connected pole number' },
+    { key: 'priority', label: 'Priority', required: false, description: 'high, medium, or low' },
+    { key: 'scheduledDate', label: 'Scheduled Date', required: false, description: 'Installation date (YYYY-MM-DD)' },
+    { key: 'installationNotes', label: 'Installation Notes', required: false, description: 'Special instructions' },
+    { key: 'accessNotes', label: 'Access Notes', required: false, description: 'Access information (gate codes, etc.)' }
+  ];
+
+  // File type handlers
+  const supportedFormats = [
+    {
+      extension: '.csv',
+      label: 'CSV Files',
+      description: 'Comma-separated values with automatic delimiter detection and field mapping',
+      icon: Table,
+      mimeType: 'text/csv'
+    },
+    {
+      extension: '.xlsx',
+      label: 'Excel Files',
+      description: 'Excel workbook (.xlsx/.xls) with multi-worksheet support and intelligent field mapping',
+      icon: FileText,
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    },
+    {
+      extension: '.json',
+      label: 'JSON Files',
+      description: 'JavaScript Object Notation array with schema validation and error detection',
+      icon: FileText,
+      mimeType: 'application/json'
+    }
+  ];
+
+  // Reset modal state
+  const resetModalState = useCallback(() => {
+    setCurrentStep(1);
+    setSelectedFile(null);
+    setParseError('');
+    setParsedData([]);
+    setValidationErrors([]);
+    setFieldMappings([]);
+    setCsvHeaders([]);
+    setImportProgress(0);
+    setImportResult(null);
+    setIsDragging(false);
+  }, []);
+
+  // Handle modal close
+  const handleClose = useCallback(() => {
+    resetModalState();
+    onClose();
+  }, [resetModalState, onClose]);
+
+  // File validation
+  const validateFile = (file: File): string | null => {
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      return 'File size must be less than 10MB';
+    }
+
+    const validTypes = supportedFormats.map(f => f.mimeType);
+    const validExtensions = supportedFormats.map(f => f.extension);
+    
+    const hasValidType = validTypes.includes(file.type);
+    const hasValidExtension = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+    
+    if (!hasValidType && !hasValidExtension) {
+      return 'Please select a valid CSV, Excel, or JSON file';
+    }
+
+    return null;
+  };
+
+  // Enhanced CSV parsing using PapaParse
+  const parseCSV = (content: string): Promise<FileParseResult> => {
+    return new Promise((resolve, reject) => {
+      Papa.parse(content, {
+        header: true,
+        skipEmptyLines: true,
+        trimHeaders: true,
+        transformHeader: (header: string) => header.trim(),
+        transform: (value: string) => value.trim(),
+        complete: (results) => {
+          if (results.errors.length > 0) {
+            const criticalErrors = results.errors.filter(error => error.type === 'Delimiter');
+            if (criticalErrors.length > 0) {
+              reject(new Error(`CSV parsing failed: ${criticalErrors[0].message}`));
+              return;
+            }
+          }
+
+          if (!results.data || results.data.length === 0) {
+            reject(new Error('CSV file must contain at least one data row'));
+            return;
+          }
+
+          const headers = results.meta.fields || [];
+          if (headers.length === 0) {
+            reject(new Error('CSV file must have a header row'));
+            return;
+          }
+
+          const data = results.data.map((item: any, index: number) => ({
+            ...item,
+            originalRow: index + 2 // +2 because index is 0-based and we skip header
+          }));
+
+          resolve({
+            data,
+            headers,
+            errors: results.errors.map(err => `Row ${err.row}: ${err.message}`),
+            fileType: 'csv'
+          });
+        },
+        error: (error) => {
+          reject(new Error(`CSV parsing error: ${error.message}`));
+        }
+      });
+    });
+  };
+
+  // Enhanced Excel parsing using xlsx library
+  const parseExcel = async (file: File): Promise<FileParseResult> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        try {
+          const fileData = e.target?.result as ArrayBuffer;
+          if (!fileData) {
+            reject(new Error('Failed to read Excel file'));
+            return;
+          }
+
+          // Parse the workbook
+          const workbook = XLSX.read(fileData, { type: 'array' });
+          
+          if (workbook.SheetNames.length === 0) {
+            reject(new Error('Excel file contains no worksheets'));
+            return;
+          }
+
+          // Use the first worksheet
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          
+          if (!worksheet) {
+            reject(new Error('Failed to read worksheet data'));
+            return;
+          }
+
+          // Convert to JSON with header row
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+            header: 1, // Use first row as header
+            defval: '', // Default value for empty cells
+            blankrows: false // Skip blank rows
+          }) as any[][];
+
+          if (jsonData.length < 2) {
+            reject(new Error('Excel file must have at least a header row and one data row'));
+            return;
+          }
+
+          // Extract headers from first row
+          const headers = jsonData[0].map((header: any) => String(header).trim()).filter(h => h);
+          
+          if (headers.length === 0) {
+            reject(new Error('Excel file must have column headers'));
+            return;
+          }
+
+          // Convert data rows to objects
+          const parsedRows = jsonData.slice(1)
+            .filter(row => row.some(cell => cell !== '' && cell !== null && cell !== undefined))
+            .map((row, index) => {
+              const rowData: ParsedAssignment = {
+                originalRow: index + 2 // +2 because index is 0-based and we skip header
+              };
+              
+              headers.forEach((header, colIndex) => {
+                const cellValue = row[colIndex];
+                rowData[header] = cellValue !== null && cellValue !== undefined ? String(cellValue).trim() : '';
+              });
+              
+              return rowData;
+            });
+
+          if (parsedRows.length === 0) {
+            reject(new Error('Excel file contains no valid data rows'));
+            return;
+          }
+
+          resolve({
+            data: parsedRows,
+            headers,
+            errors: [],
+            fileType: 'excel'
+          });
+        } catch (error) {
+          reject(new Error(`Excel parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}`));
+        }
+      };
+
+      reader.onerror = () => {
+        reject(new Error('Failed to read Excel file'));
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  // Enhanced JSON parsing with validation
+  const parseJSON = (content: string): Promise<FileParseResult> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const parsed = JSON.parse(content);
+        
+        if (!Array.isArray(parsed)) {
+          reject(new Error('JSON file must contain an array of assignment objects'));
+          return;
+        }
+
+        if (parsed.length === 0) {
+          reject(new Error('JSON file must contain at least one assignment object'));
+          return;
+        }
+
+        // Extract headers from first object keys
+        const headers = Object.keys(parsed[0] || {});
+        if (headers.length === 0) {
+          reject(new Error('JSON objects must have at least one property'));
+          return;
+        }
+
+        const processedData = parsed.map((item, index) => {
+          if (typeof item !== 'object' || item === null) {
+            throw new Error(`Row ${index + 1}: Each item must be an object`);
+          }
+          
+          return {
+            ...item,
+            originalRow: index + 1
+          };
+        });
+
+        resolve({
+          data: processedData,
+          headers,
+          errors: [],
+          fileType: 'json'
+        });
+      } catch (error) {
+        if (error instanceof SyntaxError) {
+          reject(new Error('Invalid JSON format: ' + error.message));
+        } else {
+          reject(error instanceof Error ? error : new Error('JSON parsing failed'));
+        }
+      }
+    });
+  };
+
+  // Detect file type based on extension and content
+  const detectFileType = (file: File): 'csv' | 'excel' | 'json' => {
+    const extension = file.name.toLowerCase();
+    if (extension.endsWith('.csv')) return 'csv';
+    if (extension.endsWith('.xlsx') || extension.endsWith('.xls')) return 'excel';
+    if (extension.endsWith('.json')) return 'json';
+    
+    // Fallback to MIME type detection
+    if (file.type === 'text/csv') return 'csv';
+    if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') return 'excel';
+    if (file.type === 'application/json') return 'json';
+    
+    throw new Error('Unable to detect file type. Please use .csv, .xlsx, or .json files');
+  };
+
+  // Enhanced file parsing handler with unified pipeline
+  const parseFile = async (file: File) => {
+    setIsLoading(true);
+    setParseError('');
+
+    try {
+      const fileType = detectFileType(file);
+      let result: FileParseResult;
+
+      switch (fileType) {
+        case 'csv': {
+          const reader = new FileReader();
+          const content = await new Promise<string>((resolve, reject) => {
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.onerror = () => reject(new Error('Failed to read CSV file'));
+            reader.readAsText(file);
+          });
+          result = await parseCSV(content);
+          break;
+        }
+        
+        case 'excel': {
+          result = await parseExcel(file);
+          break;
+        }
+        
+        case 'json': {
+          const reader = new FileReader();
+          const content = await new Promise<string>((resolve, reject) => {
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.onerror = () => reject(new Error('Failed to read JSON file'));
+            reader.readAsText(file);
+          });
+          result = await parseJSON(content);
+          break;
+        }
+        
+        default:
+          throw new Error('Unsupported file type');
+      }
+
+      // Handle parsing warnings
+      if (result.errors.length > 0) {
+        log.warn('File parsing warnings', {
+          filename: file.name,
+          warnings: result.errors
+        }, 'ImportAssignmentsModal');
+      }
+
+      // Set headers for field mapping (CSV and Excel only)
+      if (result.fileType === 'csv' || result.fileType === 'excel') {
+        setCsvHeaders(result.headers);
+        
+        // Initialize intelligent field mappings
+        const mappings = createIntelligentFieldMappings(result.headers);
+        setFieldMappings(mappings);
+      } else {
+        // For JSON, create direct mappings
+        const mappings = assignmentFields.map(field => ({
+          csvField: result.headers.includes(field.key) ? field.key : '',
+          assignmentField: field.key,
+          required: field.required
+        }));
+        setFieldMappings(mappings);
+      }
+
+      setParsedData(result.data);
+      validateParsedData(result.data);
+      
+      log.info('File parsed successfully', {
+        count: result.data.length,
+        filename: file.name,
+        fileType: result.fileType,
+        headers: result.headers.length
+      }, 'ImportAssignmentsModal');
+      
+      if (result.data.length > 0) {
+        setCurrentStep(2);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown parsing error';
+      setParseError(errorMessage);
+      log.error('File parsing failed', {
+        filename: file.name,
+        error: errorMessage
+      }, 'ImportAssignmentsModal', error instanceof Error ? error : new Error(errorMessage));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Create intelligent field mappings with fuzzy matching
+  const createIntelligentFieldMappings = (headers: string[]): FieldMapping[] => {
+    return assignmentFields.map(field => {
+      // Create variations of field names to match against
+      const searchTerms = [
+        field.key.toLowerCase(),
+        field.label.toLowerCase(),
+        // Split camelCase and add variations
+        field.key.replace(/([A-Z])/g, ' $1').toLowerCase().trim(),
+        // Common variations
+        field.key.replace(/([A-Z])/g, '_$1').toLowerCase().trim(),
+        field.key.replace(/([A-Z])/g, '-$1').toLowerCase().trim()
+      ];
+
+      // Add specific mappings for common field variations
+      const commonMappings: Record<string, string[]> = {
+        customerName: ['customer name', 'name', 'client name', 'customer', 'full name'],
+        customerAddress: ['address', 'service address', 'install address', 'location', 'site address'],
+        contactNumber: ['phone', 'contact', 'contact number', 'phone number', 'mobile', 'telephone'],
+        email: ['email', 'email address', 'e-mail', 'contact email'],
+        accountNumber: ['account', 'account number', 'account #', 'account id', 'customer account'],
+        poleNumber: ['pole', 'pole number', 'pole #', 'pole id', 'pole ref'],
+        priority: ['priority', 'urgency', 'importance', 'level'],
+        scheduledDate: ['date', 'scheduled date', 'install date', 'appointment', 'schedule'],
+        installationNotes: ['notes', 'installation notes', 'install notes', 'comments', 'remarks'],
+        accessNotes: ['access notes', 'access', 'access info', 'access instructions', 'special instructions']
+      };
+
+      if (commonMappings[field.key]) {
+        searchTerms.push(...commonMappings[field.key]);
+      }
+
+      // Find best matching header
+      const matchedHeader = headers.find(header => {
+        const headerLower = header.toLowerCase().trim();
+        return searchTerms.some(term => 
+          headerLower === term ||
+          headerLower.includes(term) ||
+          term.includes(headerLower)
+        );
+      });
+
+      return {
+        csvField: matchedHeader || '',
+        assignmentField: field.key,
+        required: field.required
+      };
+    });
+  };
+
+  // Enhanced data validation with detailed error checking
+  const validateParsedData = (data: ParsedAssignment[]) => {
+    const errors: ValidationError[] = [];
+    const seenCustomers = new Set<string>();
+    
+    data.forEach((row, index) => {
+      const rowNum = row.originalRow || index + 1;
+      
+      // Check required fields
+      assignmentFields.filter(f => f.required).forEach(field => {
+        const mapping = fieldMappings.find(m => m.assignmentField === field.key);
+        const csvField = mapping?.csvField;
+        const value = csvField ? row[csvField] : row[field.key];
+        
+        if (!value || value.toString().trim() === '') {
+          errors.push({
+            row: rowNum,
+            field: field.label,
+            message: `${field.label} is required`,
+            type: 'error'
+          });
+        }
+      });
+
+      // Get mapped values for validation
+      const getMappedValue = (fieldKey: string): string => {
+        const mapping = fieldMappings.find(m => m.assignmentField === fieldKey);
+        const csvField = mapping?.csvField;
+        return csvField ? (row[csvField] || '') : (row[fieldKey] || '');
+      };
+
+      // Validate priority values
+      const priority = getMappedValue('priority');
+      if (priority && !['high', 'medium', 'low'].includes(priority.toLowerCase())) {
+        errors.push({
+          row: rowNum,
+          field: 'Priority',
+          message: 'Priority must be high, medium, or low',
+          type: 'warning'
+        });
+      }
+
+      // Validate date format
+      const scheduledDate = getMappedValue('scheduledDate');
+      if (scheduledDate) {
+        const parsedDate = new Date(scheduledDate);
+        if (isNaN(parsedDate.getTime())) {
+          errors.push({
+            row: rowNum,
+            field: 'Scheduled Date',
+            message: 'Invalid date format. Use YYYY-MM-DD or MM/DD/YYYY',
+            type: 'warning'
+          });
+        }
+      }
+
+      // Validate email format
+      const email = getMappedValue('email');
+      if (email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          errors.push({
+            row: rowNum,
+            field: 'Email',
+            message: 'Invalid email format',
+            type: 'warning'
+          });
+        }
+      }
+
+      // Validate phone number format
+      const contactNumber = getMappedValue('contactNumber');
+      if (contactNumber) {
+        const phoneRegex = /^[\+]?[1-9][\d\s\-\(\)]{7,15}$/;
+        if (!phoneRegex.test(contactNumber.replace(/\s/g, ''))) {
+          errors.push({
+            row: rowNum,
+            field: 'Contact Number',
+            message: 'Invalid phone number format',
+            type: 'warning'
+          });
+        }
+      }
+
+      // Check for duplicate customers
+      const customerName = getMappedValue('customerName');
+      const customerAddress = getMappedValue('customerAddress');
+      const customerKey = `${customerName.toLowerCase()}-${customerAddress.toLowerCase()}`;
+      
+      if (customerName && customerAddress) {
+        if (seenCustomers.has(customerKey)) {
+          errors.push({
+            row: rowNum,
+            field: 'Customer',
+            message: 'Duplicate customer found (same name and address)',
+            type: 'warning'
+          });
+        } else {
+          seenCustomers.add(customerKey);
+        }
+      }
+
+      // Validate address format (basic check)
+      if (customerAddress && customerAddress.length < 10) {
+        errors.push({
+          row: rowNum,
+          field: 'Customer Address',
+          message: 'Address seems too short. Please verify it\'s complete',
+          type: 'warning'
+        });
+      }
+
+      // Update row validation status
+      const rowErrors = errors.filter(e => e.row === rowNum && e.type === 'error');
+      const rowWarnings = errors.filter(e => e.row === rowNum && e.type === 'warning');
+      
+      row.isValid = rowErrors.length === 0;
+      row.validationErrors = errors.filter(e => e.row === rowNum).map(e => `${e.type.toUpperCase()}: ${e.message}`);
+    });
+
+    setValidationErrors(errors);
+    
+    // Log validation summary
+    const errorCount = errors.filter(e => e.type === 'error').length;
+    const warningCount = errors.filter(e => e.type === 'warning').length;
+    
+    log.info('Data validation completed', {
+      totalRows: data.length,
+      validRows: data.filter(r => r.isValid).length,
+      errors: errorCount,
+      warnings: warningCount
+    }, 'ImportAssignmentsModal');
+  };
+
+  // Handle field mapping change
+  const handleFieldMappingChange = (assignmentField: string, csvField: string) => {
+    setFieldMappings(prev => 
+      prev.map(mapping => 
+        mapping.assignmentField === assignmentField 
+          ? { ...mapping, csvField }
+          : mapping
+      )
+    );
+    
+    // Re-validate with new mappings
+    validateParsedData(parsedData);
+  };
+
+  // Handle file selection
+  const handleFileSelect = (file: File) => {
+    const error = validateFile(file);
+    if (error) {
+      setParseError(error);
+      return;
+    }
+
+    setSelectedFile(file);
+    setParseError('');
+    parseFile(file);
+  };
+
+  // Drag and drop handlers
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileSelect(files[0]);
+    }
+  }, []);
+
+  // Generate sample CSV file
+  const downloadSampleCSV = () => {
+    const headers = assignmentFields.map(f => f.label);
+    const sampleRows = [
+      ['John Doe', '123 Main St, City, State', '+1-555-0101', 'john@example.com', 'ACC12345', 'POLE001', 'high', '2024-01-15', 'Standard installation', 'Gate code: 1234'],
+      ['Jane Smith', '456 Oak Ave, City, State', '+1-555-0102', 'jane@example.com', 'ACC12346', 'POLE002', 'medium', '2024-01-16', 'Requires ladder truck', 'Contact before arrival']
+    ];
+    
+    const csvContent = [headers, ...sampleRows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sample-assignments.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Generate sample Excel file
+  const downloadSampleExcel = () => {
+    const sampleData = [
+      {
+        'Customer Name': 'John Doe',
+        'Service Address': '123 Main St, City, State',
+        'Contact Number': '+1-555-0101',
+        'Email Address': 'john@example.com',
+        'Account Number': 'ACC12345',
+        'Pole Number': 'POLE001',
+        'Priority': 'high',
+        'Scheduled Date': '2024-01-15',
+        'Installation Notes': 'Standard installation',
+        'Access Notes': 'Gate code: 1234'
+      },
+      {
+        'Customer Name': 'Jane Smith',
+        'Service Address': '456 Oak Ave, City, State',
+        'Contact Number': '+1-555-0102',
+        'Email Address': 'jane@example.com',
+        'Account Number': 'ACC12346',
+        'Pole Number': 'POLE002',
+        'Priority': 'medium',
+        'Scheduled Date': '2024-01-16',
+        'Installation Notes': 'Requires ladder truck',
+        'Access Notes': 'Contact before arrival'
+      }
+    ];
+    
+    // Create workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    
+    // Set column widths
+    const columnWidths = [
+      { wpx: 120 }, // Customer Name
+      { wpx: 200 }, // Service Address  
+      { wpx: 120 }, // Contact Number
+      { wpx: 150 }, // Email Address
+      { wpx: 120 }, // Account Number
+      { wpx: 100 }, // Pole Number
+      { wpx: 80 },  // Priority
+      { wpx: 100 }, // Scheduled Date
+      { wpx: 200 }, // Installation Notes
+      { wpx: 200 }  // Access Notes
+    ];
+    worksheet['!cols'] = columnWidths;
+    
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Assignments');
+    
+    // Generate Excel file
+    XLSX.writeFile(workbook, 'sample-assignments.xlsx');
+  };
+
+  // Generate sample JSON file
+  const downloadSampleJSON = () => {
+    const sampleData = [
+      {
+        customerName: 'John Doe',
+        customerAddress: '123 Main St, City, State',
+        contactNumber: '+1-555-0101',
+        email: 'john@example.com',
+        accountNumber: 'ACC12345',
+        poleNumber: 'POLE001',
+        priority: 'high',
+        scheduledDate: '2024-01-15',
+        installationNotes: 'Standard installation',
+        accessNotes: 'Gate code: 1234'
+      },
+      {
+        customerName: 'Jane Smith',
+        customerAddress: '456 Oak Ave, City, State',
+        contactNumber: '+1-555-0102',
+        email: 'jane@example.com',
+        accountNumber: 'ACC12346',
+        poleNumber: 'POLE002',
+        priority: 'medium',
+        scheduledDate: '2024-01-16',
+        installationNotes: 'Requires ladder truck',
+        accessNotes: 'Contact before arrival'
+      }
+    ];
+    
+    const jsonContent = JSON.stringify(sampleData, null, 2);
+    const blob = new Blob([jsonContent], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sample-assignments.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Execute import
+  const executeImport = async () => {
+    if (!parsedData.length) return;
+    
+    setIsLoading(true);
+    setCurrentStep(3);
+    setImportProgress(0);
+
+    const result: ImportResult = {
+      successful: 0,
+      failed: 0,
+      errors: []
+    };
+
+    try {
+      const validRows = parsedData.filter(row => row.isValid);
+      const total = validRows.length;
+      
+      for (let i = 0; i < validRows.length; i++) {
+        const row = validRows[i];
+        
+        try {
+          // Map CSV fields to assignment fields
+          const mappedData: any = {};
+          fieldMappings.forEach(mapping => {
+            if (mapping.csvField) {
+              mappedData[mapping.assignmentField] = row[mapping.csvField];
+            }
+          });
+
+          // Create assignment
+          await homeDropAssignmentService.createStandaloneAssignment({
+            poleNumber: mappedData.poleNumber || 'IMPORT-PENDING',
+            customer: {
+              name: mappedData.customerName || 'Unknown Customer',
+              address: mappedData.customerAddress || 'No address provided',
+              contactNumber: mappedData.contactNumber,
+              email: mappedData.email,
+              accountNumber: mappedData.accountNumber
+            },
+            assignedTo: technicianId || mappedData.assignedTo || 'unassigned',
+            assignedBy: 'import-system',
+            priority: (mappedData.priority?.toLowerCase() as 'high' | 'medium' | 'low') || 'medium',
+            scheduledDate: mappedData.scheduledDate ? new Date(mappedData.scheduledDate) : undefined,
+            installationNotes: mappedData.installationNotes || 'Imported from file',
+            accessNotes: mappedData.accessNotes || '',
+            status: 'pending'
+          });
+
+          result.successful++;
+        } catch (error) {
+          result.failed++;
+          result.errors.push({
+            row: row.originalRow || i + 1,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+          log.error('Failed to import assignment', { row: row.originalRow }, 'ImportAssignmentsModal', error instanceof Error ? error : new Error(String(error)));
+        }
+        
+        setImportProgress(Math.round(((i + 1) / total) * 100));
+      }
+
+      log.info('Import completed', result, 'ImportAssignmentsModal');
+    } catch (error) {
+      log.error('Import process failed', {}, 'ImportAssignmentsModal', error instanceof Error ? error : new Error(String(error)));
+    } finally {
+      setImportResult(result);
+      setIsLoading(false);
+      
+      if (result.successful > 0) {
+        onImportComplete();
+      }
+    }
+  };
+
+  // Render step content
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-6">
+            {/* File Format Information */}
+            <div className="grid gap-4">
+              <h3 className="text-lg font-semibold">Supported File Formats</h3>
+              <div className="grid gap-3 md:grid-cols-3">
+                {supportedFormats.map((format) => (
+                  <Card key={format.extension} className="p-4">
+                    <div className="flex items-start space-x-3">
+                      <format.icon className="w-5 h-5 mt-0.5 text-blue-500" />
+                      <div>
+                        <p className="font-medium">{format.label}</p>
+                        <p className="text-sm text-gray-600">{format.description}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Sample Files */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Sample Files</h3>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" onClick={downloadSampleCSV}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download CSV Sample
+                </Button>
+                <Button variant="outline" size="sm" onClick={downloadSampleExcel}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Excel Sample
+                </Button>
+                <Button variant="outline" size="sm" onClick={downloadSampleJSON}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download JSON Sample
+                </Button>
+              </div>
+            </div>
+
+            {/* File Upload Area */}
+            <div
+              ref={dropzoneRef}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={cn(
+                "border-2 border-dashed rounded-lg p-8 text-center transition-colors",
+                isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300",
+                selectedFile && "border-green-500 bg-green-50"
+              )}
+            >
+              <div className="space-y-4">
+                <div className="flex justify-center">
+                  {selectedFile ? (
+                    <CheckCircle2 className="w-12 h-12 text-green-500" />
+                  ) : (
+                    <FileUp className="w-12 h-12 text-gray-400" />
+                  )}
+                </div>
+                
+                {selectedFile ? (
+                  <div>
+                    <p className="text-lg font-medium text-green-700">File Selected</p>
+                    <p className="text-sm text-gray-600">{selectedFile.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {(selectedFile.size / 1024).toFixed(1)} KB
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-lg font-medium">Drop your file here</p>
+                    <p className="text-sm text-gray-600">or click to browse</p>
+                  </div>
+                )}
+                
+                <Button
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <RotateCcw className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 mr-2" />
+                      {selectedFile ? 'Choose Different File' : 'Select File'}
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv,.xlsx,.xls,.json"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileSelect(file);
+              }}
+              className="hidden"
+            />
+
+            {parseError && (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{parseError}</AlertDescription>
+              </Alert>
+            )}
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className="space-y-6">
+            {/* Field Mapping (for CSV and Excel files) */}
+            {(selectedFile?.name.endsWith('.csv') || selectedFile?.name.endsWith('.xlsx') || selectedFile?.name.endsWith('.xls')) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Field Mapping</CardTitle>
+                  <CardDescription>
+                    Map your file columns to assignment fields (automatically detected)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {fieldMappings.map((mapping) => (
+                      <div key={mapping.assignmentField} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                        <div>
+                          <Label className="font-medium">
+                            {assignmentFields.find(f => f.key === mapping.assignmentField)?.label}
+                            {mapping.required && <span className="text-red-500 ml-1">*</span>}
+                          </Label>
+                          <p className="text-xs text-gray-600">
+                            {assignmentFields.find(f => f.key === mapping.assignmentField)?.description}
+                          </p>
+                        </div>
+                        <div className="flex items-center">
+                          <ArrowRight className="w-4 h-4 text-gray-400" />
+                        </div>
+                        <Select
+                          value={mapping.csvField}
+                          onValueChange={(value) => handleFieldMappingChange(mapping.assignmentField, value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select column from file" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="">None</SelectItem>
+                            {csvHeaders.map((header) => (
+                              <SelectItem key={header} value={header}>
+                                {header}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Validation Summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center">
+                  <Eye className="w-5 h-5 mr-2" />
+                  Data Preview
+                </CardTitle>
+                <CardDescription>
+                  Review your data before import ({parsedData.length} rows found)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Summary Stats */}
+                  <div className="flex gap-4 text-sm">
+                    <div className="flex items-center">
+                      <CheckCircle2 className="w-4 h-4 mr-1 text-green-500" />
+                      <span>{parsedData.filter(r => r.isValid).length} valid</span>
+                    </div>
+                    <div className="flex items-center">
+                      <AlertTriangle className="w-4 h-4 mr-1 text-red-500" />
+                      <span>{parsedData.filter(r => !r.isValid).length} with errors</span>
+                    </div>
+                    <div className="flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-1 text-yellow-500" />
+                      <span>{validationErrors.filter(e => e.type === 'warning').length} warnings</span>
+                    </div>
+                  </div>
+
+                  {/* Validation Errors */}
+                  {validationErrors.length > 0 && (
+                    <div className="space-y-2">
+                      <h4 className="font-medium">Validation Issues:</h4>
+                      <div className="max-h-32 overflow-y-auto space-y-1">
+                        {validationErrors.map((error, index) => (
+                          <div key={index} className={cn(
+                            "text-sm p-2 rounded flex items-center",
+                            error.type === 'error' ? 'bg-red-50 text-red-700' : 'bg-yellow-50 text-yellow-700'
+                          )}>
+                            {error.type === 'error' ? (
+                              <AlertTriangle className="w-4 h-4 mr-2" />
+                            ) : (
+                              <AlertCircle className="w-4 h-4 mr-2" />
+                            )}
+                            Row {error.row}: {error.message}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Preview Table */}
+                  <div className="border rounded-lg overflow-hidden">
+                    <div className="max-h-64 overflow-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-3 py-2 text-left">#</th>
+                            <th className="px-3 py-2 text-left">Customer</th>
+                            <th className="px-3 py-2 text-left">Address</th>
+                            <th className="px-3 py-2 text-left">Priority</th>
+                            <th className="px-3 py-2 text-left">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {parsedData.slice(0, 10).map((row, index) => (
+                            <tr key={index} className={cn(
+                              "border-t",
+                              !row.isValid && "bg-red-50"
+                            )}>
+                              <td className="px-3 py-2">
+                                <div className="flex items-center">
+                                  {row.originalRow}
+                                  {row.isValid ? (
+                                    <CheckCircle2 className="w-3 h-3 ml-1 text-green-500" />
+                                  ) : (
+                                    <AlertTriangle className="w-3 h-3 ml-1 text-red-500" />
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-3 py-2">{row.customerName || row['Customer Name'] || 'N/A'}</td>
+                              <td className="px-3 py-2 max-w-xs truncate">{row.customerAddress || row['Service Address'] || 'N/A'}</td>
+                              <td className="px-3 py-2">
+                                <Badge variant={row.priority === 'high' ? 'destructive' : row.priority === 'medium' ? 'default' : 'secondary'}>
+                                  {row.priority || row.Priority || 'medium'}
+                                </Badge>
+                              </td>
+                              <td className="px-3 py-2">
+                                {row.isValid ? (
+                                  <Badge variant="outline" className="text-green-600 border-green-600">Valid</Badge>
+                                ) : (
+                                  <Badge variant="destructive">Errors</Badge>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  
+                  {parsedData.length > 10 && (
+                    <p className="text-sm text-gray-600 text-center">
+                      Showing first 10 of {parsedData.length} rows
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            {/* Import Progress */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Import Progress</CardTitle>
+                <CardDescription>
+                  {isLoading ? 'Importing assignments...' : 'Import completed'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <Progress value={importProgress} className="w-full" />
+                  
+                  {isLoading && (
+                    <div className="flex items-center justify-center">
+                      <RotateCcw className="w-4 h-4 mr-2 animate-spin" />
+                      <span>Processing assignments... {importProgress}%</span>
+                    </div>
+                  )}
+                  
+                  {importResult && (
+                    <div className="space-y-4">
+                      {/* Success Summary */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <Card className="p-4 bg-green-50">
+                          <div className="flex items-center">
+                            <CheckCircle2 className="w-8 h-8 text-green-500 mr-3" />
+                            <div>
+                              <p className="text-2xl font-bold text-green-700">{importResult.successful}</p>
+                              <p className="text-sm text-green-600">Successful</p>
+                            </div>
+                          </div>
+                        </Card>
+                        
+                        {importResult.failed > 0 && (
+                          <Card className="p-4 bg-red-50">
+                            <div className="flex items-center">
+                              <AlertTriangle className="w-8 h-8 text-red-500 mr-3" />
+                              <div>
+                                <p className="text-2xl font-bold text-red-700">{importResult.failed}</p>
+                                <p className="text-sm text-red-600">Failed</p>
+                              </div>
+                            </div>
+                          </Card>
+                        )}
+                      </div>
+                      
+                      {/* Error Details */}
+                      {importResult.errors.length > 0 && (
+                        <div>
+                          <h4 className="font-medium mb-2">Import Errors:</h4>
+                          <div className="max-h-32 overflow-y-auto space-y-1">
+                            {importResult.errors.map((error, index) => (
+                              <div key={index} className="text-sm p-2 bg-red-50 text-red-700 rounded">
+                                Row {error.row}: {error.error}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl">Import Assignments</DialogTitle>
+          <DialogDescription>
+            Import home drop assignments from CSV, Excel, or JSON files with data validation and field mapping.
+          </DialogDescription>
+        </DialogHeader>
+
+        {/* Step Indicator */}
+        <div className="flex items-center justify-between mb-6">
+          {steps.map((step, index) => (
+            <div key={step.id} className="flex items-center">
+              <div className={cn(
+                "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium",
+                currentStep === step.id ? "bg-blue-500 text-white" :
+                step.completed ? "bg-green-500 text-white" :
+                "bg-gray-200 text-gray-600"
+              )}>
+                {step.completed ? (
+                  <CheckCircle2 className="w-4 h-4" />
+                ) : (
+                  step.id
+                )}
+              </div>
+              <div className="ml-2 hidden md:block">
+                <p className="text-sm font-medium">{step.title}</p>
+                <p className="text-xs text-gray-600">{step.description}</p>
+              </div>
+              {index < steps.length - 1 && (
+                <div className="flex-1 h-px bg-gray-200 mx-4" />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Step Content */}
+        <div className="min-h-96">
+          {renderStepContent()}
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-between pt-6 border-t">
+          <Button variant="outline" onClick={handleClose}>
+            {importResult ? 'Close' : 'Cancel'}
+          </Button>
+          
+          <div className="flex space-x-2">
+            {currentStep > 1 && !isLoading && (
+              <Button variant="outline" onClick={() => setCurrentStep(currentStep - 1)}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            )}
+            
+            {currentStep === 1 && selectedFile && !parseError && (
+              <Button onClick={() => setCurrentStep(2)} disabled={isLoading}>
+                Next: Preview Data
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
+            
+            {currentStep === 2 && (
+              <Button 
+                onClick={executeImport}
+                disabled={isLoading || parsedData.filter(r => r.isValid).length === 0}
+              >
+                Import {parsedData.filter(r => r.isValid).length} Assignments
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

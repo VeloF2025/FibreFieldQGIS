@@ -71,7 +71,7 @@ export function PhotoCapture({
         setIsCapturing(true);
       }
     } catch (error) {
-      console.error('Error accessing camera:', error);
+      log.error('Error accessing camera:', {}, "Photocapture", error);
       alert('Unable to access camera. Please check permissions.');
     }
   };

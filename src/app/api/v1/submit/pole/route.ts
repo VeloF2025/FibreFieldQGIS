@@ -7,9 +7,24 @@ import { db, storage } from '@/lib/firebase';
 import { collection, addDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Timestamp } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
+    if (!storage) {
+      return NextResponse.json(
+        { success: false, error: 'Storage connection not available' },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     
     // Extract pole data
@@ -71,7 +86,7 @@ export async function POST(request: NextRequest) {
             uploadedAt: Timestamp.now()
           });
         } catch (uploadError) {
-          console.error(`Failed to upload ${photoType} photo:`, uploadError);
+          log.error(`Failed to upload ${photoType} photo:`, {}, "Route", uploadError as Error);
         }
       }
     }
@@ -96,7 +111,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Pole submission error:', error);
+    log.error('Pole submission error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,
@@ -110,6 +125,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const submissionId = searchParams.get('id');
 
@@ -141,7 +163,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Get submission error:', error);
+    log.error('Get submission error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

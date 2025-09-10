@@ -7,6 +7,7 @@ import { db, storage } from '@/lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 // Photo validation settings
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -15,6 +16,20 @@ const MIN_DIMENSIONS = { width: 800, height: 600 };
 
 export async function POST(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
+    if (!storage) {
+      return NextResponse.json(
+        { success: false, error: 'Storage connection not available' },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     
     // Extract metadata
@@ -125,7 +140,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Photo upload error:', error);
+    log.error('Photo upload error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

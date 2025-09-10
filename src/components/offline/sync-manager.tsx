@@ -40,7 +40,7 @@ export function SyncManager({ className, showDetails = false }: SyncManagerProps
     try {
       await triggerSync();
     } catch (error) {
-      console.error('Manual sync failed:', error);
+      log.error('Manual sync failed:', {}, "Syncmanager", error);
     }
   };
 

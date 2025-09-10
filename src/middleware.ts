@@ -42,6 +42,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Check if we're in development mode - bypass auth check
+  const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined;
+  if (isDev) {
+    console.log('🔧 DEV MODE: Middleware bypassing auth check for', pathname);
+    return NextResponse.next();
+  }
+
   // Check for authentication token (from cookie)
   const token = request.cookies.get('auth-token');
   

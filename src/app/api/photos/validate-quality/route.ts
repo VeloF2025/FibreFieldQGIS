@@ -3,6 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { log } from '@/lib/logger';
 
 // Photo quality thresholds by type
 const QUALITY_THRESHOLDS = {
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error: unknown) {
-    console.error('Photo quality validation error:', error);
+    log.error('Photo quality validation error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

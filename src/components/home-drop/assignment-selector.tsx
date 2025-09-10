@@ -67,7 +67,7 @@ export function AssignmentSelector({
         
         setAssignments(sortedAssignments);
       } catch (err) {
-        console.error('Error loading assignments:', err);
+        log.error('Error loading assignments:', {}, "Assignmentselector", err);
         setError(err instanceof Error ? err.message : 'Failed to load assignments');
       } finally {
         setLoading(false);
@@ -362,7 +362,7 @@ export function AssignmentSelector({
                     {assignment.installationNotes && (
                       <div className="mt-2">
                         <p className="text-sm text-gray-700 dark:text-gray-300 italic">
-                          "{assignment.installationNotes}"
+                          &quot;{assignment.installationNotes}&quot;
                         </p>
                       </div>
                     )}

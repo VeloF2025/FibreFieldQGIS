@@ -5,15 +5,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 import { geoPackageHandler } from '@/lib/geopackage-handler';
 import type { GeoPackageExportOptions } from '@/lib/geopackage-handler';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
+  const resolvedParams = await params;
+  const projectId = resolvedParams.projectId;
+
   try {
-    const projectId = params.projectId;
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
     
     if (!projectId) {
       return NextResponse.json(
@@ -32,7 +41,7 @@ export async function GET(
     const layerName = searchParams.get('layerName') || `${projectId} Home Drops`;
 
     // Fetch home drop captures for the project
-    let capturesQuery = query(
+    const capturesQuery = query(
       collection(db, 'home_drop_captures'),
       where('projectId', '==', projectId)
     );
@@ -44,7 +53,7 @@ export async function GET(
       capturedAt: doc.data().capturedAt?.toDate?.()?.toISOString(),
       approvedAt: doc.data().approvedAt?.toDate?.()?.toISOString(),
       syncedAt: doc.data().syncedAt?.toDate?.()?.toISOString()
-    }));
+    })) as Array<any>;
 
     // Apply status filters
     if (!includeApproved) {
@@ -141,7 +150,7 @@ export async function GET(
     }
 
   } catch (error: unknown) {
-    console.error('QGIS export error:', error);
+    log.error('QGIS export error', { projectId }, 'QgisExportRoute', error as Error);
     return NextResponse.json(
       {
         success: false,

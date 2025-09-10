@@ -8,7 +8,7 @@ export const registerServiceWorker = () => {
       try {
         const registration = await navigator.serviceWorker.register('/sw.js');
         
-        console.log('✅ Service Worker registered:', registration);
+        log.info('✅ Service Worker registered:', registration, {}, "Serviceworker");
         
         // Listen for updates
         registration.addEventListener('updatefound', () => {
@@ -18,7 +18,7 @@ export const registerServiceWorker = () => {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New version available
-                console.log('🆕 New app version available');
+                log.info('🆕 New app version available', {}, "Serviceworker");
                 showUpdateAvailableNotification();
               }
             });
@@ -27,7 +27,7 @@ export const registerServiceWorker = () => {
         
         return registration;
       } catch (error) {
-        console.error('❌ Service Worker registration failed:', error);
+        log.error('❌ Service Worker registration failed:', {}, "Serviceworker", error);
       }
     });
   }
@@ -48,7 +48,7 @@ export const unregisterServiceWorker = async () => {
     
     if (registration) {
       await registration.unregister();
-      console.log('Service Worker unregistered');
+      log.info('Service Worker unregistered', {}, "Serviceworker");
     }
   }
 };
@@ -75,7 +75,7 @@ export const promptInstall = async (): Promise<boolean> => {
   const deferredPrompt = (window as any).deferredPrompt;
   
   if (!deferredPrompt) {
-    console.log('Install prompt not available');
+    log.info('Install prompt not available', {}, "Serviceworker");
     return false;
   }
   
@@ -88,7 +88,7 @@ export const promptInstall = async (): Promise<boolean> => {
     
     return result.outcome === 'accepted';
   } catch (error) {
-    console.error('Install prompt error:', error);
+    log.error('Install prompt error:', {}, "Serviceworker", error);
     return false;
   }
 };
@@ -103,7 +103,7 @@ export const setupInstallPrompt = () => {
       // Store the event for later use
       (window as any).deferredPrompt = e;
       
-      console.log('Install prompt available');
+      log.info('Install prompt available', {}, "Serviceworker");
     });
   }
 };
@@ -118,10 +118,10 @@ export const registerBackgroundSync = async (tag: string) => {
       const syncManager = (registration as any).sync;
       if (syncManager) {
         await syncManager.register(tag);
-        console.log(`Background sync registered: ${tag}`);
+        log.info(`Background sync registered: ${tag}`, {}, "Serviceworker");
       }
     } catch (error) {
-      console.error('Background sync registration failed:', error);
+      log.error('Background sync registration failed:', {}, "Serviceworker", error);
     }
   }
 };

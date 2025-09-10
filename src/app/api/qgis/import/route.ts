@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 import { geoPackageHandler } from '@/lib/geopackage-handler';
 import type { 
   GeoPackageImportOptions,
@@ -14,6 +15,13 @@ import type {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     
     // Get the uploaded file
@@ -237,7 +245,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('QGIS import error:', error);
+    log.error('QGIS import error', {}, 'QgisImportRoute', error as Error);
     return NextResponse.json(
       {
         success: false,

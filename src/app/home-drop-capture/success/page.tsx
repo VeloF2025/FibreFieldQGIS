@@ -7,6 +7,7 @@ import { homeDropCaptureService } from '@/services/home-drop-capture.service';
 import { useAuth } from '@/contexts/auth-context';
 import { AuthGuard } from '@/components/auth/auth-guard';
 import { cn } from '@/lib/utils';
+import { log } from '@/lib/logger';
 import type { HomeDropCapture } from '@/types/home-drop.types';
 
 export default function HomeDropSuccessPageWrapper() {
@@ -44,7 +45,7 @@ function HomeDropSuccessPage() {
           setLatestCapture(userCaptures[0]);
         }
       } catch (error) {
-        console.error('Error loading latest capture:', error);
+        log.error('Error loading latest capture:', {}, "Page", error as Error);
       } finally {
         setLoading(false);
       }

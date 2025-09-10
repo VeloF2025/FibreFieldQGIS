@@ -59,6 +59,7 @@ const navigation: NavItem[] = [
 ];
 
 const adminNavigation: NavItem[] = [
+  { name: 'Admin Dashboard', href: '/admin', icon: Settings, adminOnly: true },
   { name: 'Review Drops', href: '/admin/home-drop-reviews', icon: CheckCircle, adminOnly: true },
   { name: 'Photo Gallery', href: '/admin/photo-gallery', icon: FileText, adminOnly: true },
   { name: 'QGIS Integration', href: '/admin/qgis-integration', icon: MapPin, adminOnly: true },
@@ -94,10 +95,13 @@ export function AppLayout({ children }: AppLayoutProps) {
       )}
 
       {/* Sidebar */}
-      <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
+      <div 
+        data-testid="main-sidebar"
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
         <div className="flex items-center justify-between h-16 px-4 border-b">
           <h1 className="text-xl font-bold text-blue-600">FibreField</h1>
           <Button

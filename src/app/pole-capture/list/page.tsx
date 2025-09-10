@@ -52,7 +52,7 @@ function PoleCaptureListPage() {
       setCaptures(data);
       setFilteredCaptures(data);
     } catch (error) {
-      console.error('Error loading captures:', error);
+      log.error('Error loading captures:', {}, "Page", error);
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +97,7 @@ function PoleCaptureListPage() {
       await poleCaptureService.deletePoleCapture(poleNumber);
       await loadCaptures();
     } catch (error) {
-      console.error('Error deleting capture:', error);
+      log.error('Error deleting capture:', {}, "Page", error);
       alert('Failed to delete capture');
     }
   };

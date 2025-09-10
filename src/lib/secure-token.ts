@@ -48,7 +48,7 @@ export class SecureTokenManager {
     try {
       return await user.getIdToken(forceRefresh);
     } catch (error) {
-      console.error('Failed to get Firebase token:', error);
+      log.error('Failed to get Firebase token:', {}, "Securetoken", error);
       throw new Error('Authentication token unavailable');
     }
   }
@@ -103,7 +103,7 @@ export class SecureTokenManager {
         updatedAt: new Date()
       });
     } catch (error) {
-      console.error('Failed to store token cache:', error);
+      log.error('Failed to store token cache:', {}, "Securetoken", error);
     }
   }
 
@@ -118,7 +118,7 @@ export class SecureTokenManager {
       await this.storeToken(userId, token, expiresAt, scopes);
       return token;
     } catch (error) {
-      console.error('Token refresh failed:', error);
+      log.error('Token refresh failed:', {}, "Securetoken", error);
       throw new Error('Failed to refresh authentication token');
     }
   }
@@ -142,7 +142,7 @@ export class SecureTokenManager {
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     } catch (error) {
-      console.error('Token hashing failed:', error);
+      log.error('Token hashing failed:', {}, "Securetoken", error);
       return btoa(token.substring(0, 10) + '...' + token.substring(token.length - 10));
     }
   }
@@ -162,14 +162,14 @@ export class SecureTokenManager {
         if (tokenData.expiresAt > Date.now()) {
           // Note: We don't store the actual token, only metadata
           // Real token will be refreshed when needed
-          console.log(`📱 Found cached token metadata for user ${tokenData.userId}`);
+          log.info(`📱 Found cached token metadata for user ${tokenData.userId}`, {}, "Securetoken");
         } else {
           // Clean up expired token metadata
           await localDB.appSettings.delete(setting.id!);
         }
       }
     } catch (error) {
-      console.error('Failed to load cached tokens:', error);
+      log.error('Failed to load cached tokens:', {}, "Securetoken", error);
     }
   }
 
@@ -189,7 +189,7 @@ export class SecureTokenManager {
         }
       }
     } catch (error) {
-      console.error('Failed to update token usage:', error);
+      log.error('Failed to update token usage:', {}, "Securetoken", error);
     }
   }
 
@@ -203,13 +203,13 @@ export class SecureTokenManager {
           // Proactively refresh tokens that are close to expiry
           for (const [key, token] of this.tokenCache.entries()) {
             if (!this.isTokenValid(token)) {
-              console.log('🔄 Proactively refreshing token:', key);
+              log.info('🔄 Proactively refreshing token:', key, {}, "Securetoken");
               await this.refreshToken(token.userId, token.scopes);
             }
           }
         }
       } catch (error) {
-        console.error('Automatic token refresh failed:', error);
+        log.error('Automatic token refresh failed:', {}, "Securetoken", error);
       }
     }, 5 * 60 * 1000); // 5 minutes
   }
@@ -229,9 +229,9 @@ export class SecureTokenManager {
         await localDB.appSettings.delete(setting.id!);
       }
       
-      console.log('🧹 All tokens cleared');
+      log.info('🧹 All tokens cleared', {}, "Securetoken");
     } catch (error) {
-      console.error('Failed to clear tokens:', error);
+      log.error('Failed to clear tokens:', {}, "Securetoken", error);
     }
   }
 
@@ -266,7 +266,7 @@ export class SecureTokenManager {
 
       return { activeTokens, expiredTokens, lastRefresh };
     } catch (error) {
-      console.error('Failed to get token stats:', error);
+      log.error('Failed to get token stats:', {}, "Securetoken", error);
       return { activeTokens: 0, expiredTokens: 0, lastRefresh: null };
     }
   }

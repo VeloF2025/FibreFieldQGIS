@@ -112,7 +112,7 @@ class PhotoQualityValidationService {
         recommendations
       };
     } catch (error) {
-      console.error('Photo validation error:', error);
+      log.error('Photo validation error:', {}, "PhotoqualityvalidationService", error);
       return {
         passed: false,
         score: 0,

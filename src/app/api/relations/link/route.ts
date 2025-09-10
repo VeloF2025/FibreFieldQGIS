@@ -6,9 +6,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, updateDoc, addDoc, collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     const { 
       homeDropId, 
@@ -40,7 +48,7 @@ export async function POST(request: NextRequest) {
     // Find pole by ID or pole number
     let poleDoc = null;
     let poleRef = doc(db, 'pole_captures', poleId);
-    let poleDocResult = await getDoc(poleRef);
+    const poleDocResult = await getDoc(poleRef);
     
     if (poleDocResult.exists()) {
       poleDoc = poleDocResult;
@@ -192,7 +200,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Link relationship error:', error);
+    log.error('Link relationship error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,
@@ -206,6 +214,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const homeDropId = searchParams.get('homeDropId');
     const poleId = searchParams.get('poleId');
@@ -253,7 +268,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Get relationships error:', error);
+    log.error('Get relationships error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

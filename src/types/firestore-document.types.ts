@@ -330,7 +330,7 @@ export function convertTimestampFields<T extends Record<string, any>>(
       try {
         converted[field] = (converted[field] as Timestamp).toDate() as T[keyof T];
       } catch (error) {
-        console.warn(`Failed to convert timestamp field ${String(field)}:`, error);
+        log.warn(`Failed to convert timestamp field ${String(field, {}, "Firestoredocumenttypes")}:`, error);
         converted[field] = null as T[keyof T];
       }
     }

@@ -771,7 +771,7 @@ export function PhotoManagement() {
 
   const handleBulkReject = () => {
     // TODO: Implement bulk rejection dialog
-    console.log('Bulk reject:', selectedPhotos);
+    log.info('Bulk reject:', selectedPhotos, {}, "Photomanagement");
   };
 
   const photosWithGPS = useMemo(() => 

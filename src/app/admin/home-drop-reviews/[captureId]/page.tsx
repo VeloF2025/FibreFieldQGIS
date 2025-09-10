@@ -41,10 +41,11 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { InteractiveMap } from '@/components/mapping/interactive-map';
 import { homeDropCaptureService } from '@/services/home-drop-capture.service';
-import type { 
-  HomeDropCapture, 
+import { log } from '@/lib/logger';
+import type {
+  HomeDropCapture,
   HomeDropPhoto,
-  HomeDropPhotoType 
+  HomeDropPhotoType
 } from '@/types/home-drop.types';
 
 /**
@@ -334,7 +335,7 @@ function QualityChecklist({
             <div key={item.key} className="flex items-start space-x-3">
               <Checkbox
                 id={item.key}
-                checked={qualityChecks[item.key] || false}
+                checked={Boolean(qualityChecks[item.key]) || false}
                 onCheckedChange={(checked) => handleCheckChange(item.key, Boolean(checked))}
                 className="mt-1"
               />
@@ -483,7 +484,7 @@ export default function IndividualCaptureReviewPage() {
       setPhotos(captureData.photos || []);
       
     } catch (error) {
-      console.error('Failed to load capture data:', error);
+      log.error('Failed to load capture data:', {}, "Page", error as Error);
       // TODO: Show error message or redirect
     } finally {
       setIsLoading(false);
@@ -494,18 +495,28 @@ export default function IndividualCaptureReviewPage() {
     if (!capture) return;
     
     try {
+      const updatedQualityChecks = {
+        powerLevelAcceptable: false,
+        allPhotosPresent: false,
+        customerVerified: false,
+        installationComplete: false,
+        serviceActive: false,
+        ...capture.qualityChecks,
+        ...checks
+      };
+      
       await homeDropCaptureService.updateHomeDropCapture(captureId, {
-        qualityChecks: { ...capture.qualityChecks, ...checks }
+        qualityChecks: updatedQualityChecks
       });
       
       // Update local state
       setCapture(prev => prev ? {
         ...prev,
-        qualityChecks: { ...prev.qualityChecks, ...checks }
+        qualityChecks: updatedQualityChecks
       } : null);
       
     } catch (error) {
-      console.error('Failed to update quality checks:', error);
+      log.error('Failed to update quality checks:', {}, "Page", error as Error);
     }
   }, [capture, captureId]);
 
@@ -521,7 +532,7 @@ export default function IndividualCaptureReviewPage() {
       router.push('/admin/home-drop-reviews');
       
     } catch (error) {
-      console.error('Failed to approve capture:', error);
+      log.error('Failed to approve capture:', {}, "Page", error as Error);
     }
   };
 
@@ -532,7 +543,6 @@ export default function IndividualCaptureReviewPage() {
       await homeDropCaptureService.rejectHomeDropCapture(
         captureId,
         'admin-user', // TODO: Use actual admin user ID
-        'Quality standards not met',
         notes
       );
       
@@ -541,7 +551,7 @@ export default function IndividualCaptureReviewPage() {
       router.push('/admin/home-drop-reviews');
       
     } catch (error) {
-      console.error('Failed to reject capture:', error);
+      log.error('Failed to reject capture:', {}, "Page", error as Error);
     }
   };
 

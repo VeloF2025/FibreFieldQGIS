@@ -5,9 +5,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     // Get query parameters
     const { searchParams } = new URL(request.url);
     const active = searchParams.get('active') !== 'false';
@@ -41,7 +49,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Contractors API error:', error);
+    log.error('Contractors API error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

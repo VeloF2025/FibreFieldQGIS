@@ -1,4 +1,6 @@
 // Configuration management for FibreField
+import { log } from './logger';
+
 export interface AppConfig {
   env: 'development' | 'production';
   firebase: {
@@ -50,7 +52,7 @@ const requireEnv = (key: string): string => {
     if (!value) {
       // Only warn in development and if not during initial hydration
       if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
-        console.warn(`Missing environment variable: ${key}`);
+        log.warn(`Missing environment variable: ${key}`, {}, "Config");
       }
       return '';
     }
@@ -157,18 +159,18 @@ export const validateConfig = () => {
   }
   
   if (errors.length > 0) {
-    console.error('Configuration validation errors:');
-    errors.forEach(error => console.error(`  - ${error}`));
+    log.error('Configuration validation errors:', {}, "Config");
+    errors.forEach(error => log.error(`  - ${error}`, {}, "Config"));
     throw new Error('Invalid configuration. Check environment variables.');
   }
   
-  console.log('✅ Configuration validated successfully');
+  log.info('✅ Configuration validated successfully', {}, "Config");
 };
 
 // Development helper - log config (without sensitive data)
 export const logConfig = () => {
   if (config.env === 'development') {
-    console.log('🔧 FibreField Configuration:', {
+    log.info('FibreField Configuration loaded', {
       env: config.env,
       firebase: {
         projectId: config.firebase.projectId,

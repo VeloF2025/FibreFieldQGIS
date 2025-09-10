@@ -58,6 +58,8 @@ import {
 import { homeDropCaptureService } from '@/services/home-drop-capture.service';
 import type { HomeDropStatistics } from '@/types/home-drop.types';
 import { cn } from '@/lib/utils';
+import { AdminGuard } from '@/components/auth/auth-guard';
+import { log } from '@/lib/logger';
 
 /**
  * Navigation Items Configuration
@@ -201,7 +203,7 @@ function QuickStats() {
       const stats = await homeDropCaptureService.getStatistics();
       setStatistics(stats);
     } catch (error) {
-      console.error('Failed to load statistics:', error);
+      log.error('Failed to load statistics:', {}, "Layout", error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
     }
@@ -364,7 +366,7 @@ function UserProfileMenu() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder-avatar.jpg" alt="Admin" />
+            <AvatarImage src="/placeholder-avatar.svg" alt="Admin" />
             <AvatarFallback>AD</AvatarFallback>
           </Avatar>
         </Button>
@@ -484,7 +486,8 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <AdminGuard>
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="flex items-center justify-between px-4 py-3">
@@ -527,7 +530,10 @@ export default function AdminLayout({
 
       <div className="flex">
         {/* Sidebar - Desktop */}
-        <aside className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 lg:top-[73px] lg:bg-white lg:border-r lg:border-gray-200">
+        <aside 
+          data-testid="admin-sidebar"
+          className="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 lg:top-[73px] lg:bg-white lg:border-r lg:border-gray-200"
+        >
           <div className="flex-1 flex flex-col overflow-y-auto">
             {/* Navigation */}
             <nav className="p-4 space-y-2">
@@ -586,5 +592,6 @@ export default function AdminLayout({
         </main>
       </div>
     </div>
+    </AdminGuard>
   );
 }

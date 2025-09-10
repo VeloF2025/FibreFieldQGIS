@@ -28,6 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/auth-context';
 import { localDB } from '@/lib/database';
 import { cn } from '@/lib/utils';
+import { log } from '@/lib/logger';
 
 interface Installation {
   id: string;
@@ -102,7 +103,7 @@ export default function InstallationDetailPage() {
       setIsLoading(true);
       
       // Get installation from local database
-      const record = await localDB.poleInstallations.get(installationId);
+      const record = await localDB.poleInstallations.get(parseInt(installationId));
       
       if (record) {
         // Load photos for this installation
@@ -136,7 +137,7 @@ export default function InstallationDetailPage() {
         setInstallation(mappedInstallation);
       }
     } catch (error) {
-      console.error('Failed to load installation:', error);
+      log.error('Failed to load installation:', {}, "Page", error as Error);
     } finally {
       setIsLoading(false);
     }
@@ -200,7 +201,7 @@ export default function InstallationDetailPage() {
         alert('Installation link copied to clipboard');
       }
     } catch (error) {
-      console.error('Failed to share:', error);
+      log.error('Failed to share:', {}, "Page", error as Error);
     }
   };
 
@@ -262,7 +263,7 @@ export default function InstallationDetailPage() {
               <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">Installation Not Found</h3>
               <p className="text-gray-600 mb-4">
-                The installation you're looking for doesn't exist or may have been deleted.
+                The installation you&apos;re looking for doesn&apos;t exist or may have been deleted.
               </p>
               <Button 
                 onClick={() => router.push('/installations')}
@@ -607,7 +608,7 @@ export default function InstallationDetailPage() {
                   <Alert>
                     <WifiOff className="h-4 w-4" />
                     <AlertDescription>
-                      This installation will sync automatically when you're back online.
+                      This installation will sync automatically when you&apos;re back online.
                     </AlertDescription>
                   </Alert>
                 )}

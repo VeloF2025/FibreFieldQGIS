@@ -140,7 +140,7 @@ describe('Home Drop Photo Capture', () => {
     mockCameraSuccess()
     
     // Mock React hooks
-    let stateValues: any = {}
+    const stateValues: any = {}
     React.useState = vi.fn((initial) => {
       const key = JSON.stringify(initial)
       if (!(key in stateValues)) {

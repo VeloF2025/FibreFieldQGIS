@@ -1,1 +1,283 @@
-if(!self.define){let e,s={};const a=(a,c)=>(a=new URL(a+".js",c).href,s[a]||new Promise(s=>{if("document"in self){const e=document.createElement("script");e.src=a,e.onload=s,document.head.appendChild(e)}else e=a,importScripts(a),s()}).then(()=>{let e=s[a];if(!e)throw new Error(`Module ${a} didn’t register its module`);return e}));self.define=(c,i)=>{const n=e||("document"in self?document.currentScript.src:"")||location.href;if(s[n])return;let t={};const d=e=>a(e,n),r={module:{uri:n},exports:t,require:d};s[n]=Promise.all(c.map(e=>r[e]||d(e))).then(e=>(i(...e),t))}}define(["./workbox-f52fd911"],function(e){"use strict";importScripts(),self.skipWaiting(),e.clientsClaim(),e.precacheAndRoute([{url:"/_next/app-build-manifest.json",revision:"ae4e478f701b5cba3cb15f64ba2dc8b9"},{url:"/_next/static/S0f5tNgizMmFBz9O3Kem1/_buildManifest.js",revision:"bcd0f6298ce7b42e696dba67bc82c0b6"},{url:"/_next/static/S0f5tNgizMmFBz9O3Kem1/_ssgManifest.js",revision:"b6652df95db52feb4daf4eca35380933"},{url:"/_next/static/chunks/1416-0ed8a42f14ac0bf2.js",revision:"0ed8a42f14ac0bf2"},{url:"/_next/static/chunks/1766-17d4d0b4e211f73d.js",revision:"17d4d0b4e211f73d"},{url:"/_next/static/chunks/1778-112d244e38ce25f9.js",revision:"112d244e38ce25f9"},{url:"/_next/static/chunks/2520-e221459f90c55af8.js",revision:"e221459f90c55af8"},{url:"/_next/static/chunks/259-68b36c2d04435d03.js",revision:"68b36c2d04435d03"},{url:"/_next/static/chunks/2614-ca0dd02bc173040d.js",revision:"ca0dd02bc173040d"},{url:"/_next/static/chunks/2815-16c2ae761968e0c1.js",revision:"16c2ae761968e0c1"},{url:"/_next/static/chunks/2872-84e5e4825b89471d.js",revision:"84e5e4825b89471d"},{url:"/_next/static/chunks/3069-f56b18ae82f000fd.js",revision:"f56b18ae82f000fd"},{url:"/_next/static/chunks/3111-5a0bcd55a15cc71e.js",revision:"5a0bcd55a15cc71e"},{url:"/_next/static/chunks/3191-3bbdc392837a2507.js",revision:"3bbdc392837a2507"},{url:"/_next/static/chunks/3233-fcc4d36450934f7c.js",revision:"fcc4d36450934f7c"},{url:"/_next/static/chunks/347-512e9f379832663e.js",revision:"512e9f379832663e"},{url:"/_next/static/chunks/3637-33e5b0a56201d909.js",revision:"33e5b0a56201d909"},{url:"/_next/static/chunks/3942-a1a67feea17110a6.js",revision:"a1a67feea17110a6"},{url:"/_next/static/chunks/4247-d81c28ef3394198d.js",revision:"d81c28ef3394198d"},{url:"/_next/static/chunks/4260-3e7ace5980e76edd.js",revision:"3e7ace5980e76edd"},{url:"/_next/static/chunks/4395-51aaa608714ddbdc.js",revision:"51aaa608714ddbdc"},{url:"/_next/static/chunks/472.a3826d29d6854395.js",revision:"a3826d29d6854395"},{url:"/_next/static/chunks/4bd1b696-602635ee57868870.js",revision:"602635ee57868870"},{url:"/_next/static/chunks/5-0d86e7111c58a6c9.js",revision:"0d86e7111c58a6c9"},{url:"/_next/static/chunks/5122-1c7458907ddeb9d8.js",revision:"1c7458907ddeb9d8"},{url:"/_next/static/chunks/5152-ff545059811e046e.js",revision:"ff545059811e046e"},{url:"/_next/static/chunks/585-dd12c6b48f83a7ec.js",revision:"dd12c6b48f83a7ec"},{url:"/_next/static/chunks/5964-2a1ddd40921d073b.js",revision:"2a1ddd40921d073b"},{url:"/_next/static/chunks/6235-3b31370481f9cb9a.js",revision:"3b31370481f9cb9a"},{url:"/_next/static/chunks/6423-92c4debd494748c5.js",revision:"92c4debd494748c5"},{url:"/_next/static/chunks/6690-47284708f0103498.js",revision:"47284708f0103498"},{url:"/_next/static/chunks/7508b87c-0e485b0c6766adc8.js",revision:"0e485b0c6766adc8"},{url:"/_next/static/chunks/7962-caa882dfb8f89cb2.js",revision:"caa882dfb8f89cb2"},{url:"/_next/static/chunks/8428-f30684a68472f47e.js",revision:"f30684a68472f47e"},{url:"/_next/static/chunks/8959-8a015a0852a9b03a.js",revision:"8a015a0852a9b03a"},{url:"/_next/static/chunks/9218-f1539a8ba467cb7b.js",revision:"f1539a8ba467cb7b"},{url:"/_next/static/chunks/9341.e21ab9b6d7c03978.js",revision:"e21ab9b6d7c03978"},{url:"/_next/static/chunks/9868-cb3b1242d700d4ec.js",revision:"cb3b1242d700d4ec"},{url:"/_next/static/chunks/app/_not-found/page-802823c619adefbf.js",revision:"802823c619adefbf"},{url:"/_next/static/chunks/app/admin/client-packages/page-d143b9040e03df25.js",revision:"d143b9040e03df25"},{url:"/_next/static/chunks/app/admin/home-drop-reviews/%5BcaptureId%5D/page-4f1ac3b7f0eaabee.js",revision:"4f1ac3b7f0eaabee"},{url:"/_next/static/chunks/app/admin/home-drop-reviews/page-910b58a930d58751.js",revision:"910b58a930d58751"},{url:"/_next/static/chunks/app/admin/layout-a2ec20d30c07cea6.js",revision:"a2ec20d30c07cea6"},{url:"/_next/static/chunks/app/admin/photo-gallery/page-2a3d85cb3db9dc65.js",revision:"2a3d85cb3db9dc65"},{url:"/_next/static/chunks/app/admin/qgis-integration/page-e197fb1e720f12db.js",revision:"e197fb1e720f12db"},{url:"/_next/static/chunks/app/home-drop-assignments/page-bd48ff59f8bd35ed.js",revision:"bd48ff59f8bd35ed"},{url:"/_next/static/chunks/app/home-drop-capture/page-a5041b3b4af15311.js",revision:"a5041b3b4af15311"},{url:"/_next/static/chunks/app/home-drop-capture/success/page-faa313b830a5dc07.js",revision:"faa313b830a5dc07"},{url:"/_next/static/chunks/app/installations/%5Bid%5D/page-f6573e83c77286f6.js",revision:"f6573e83c77286f6"},{url:"/_next/static/chunks/app/installations/page-70c7fde69a59faef.js",revision:"70c7fde69a59faef"},{url:"/_next/static/chunks/app/layout-2cdbdcfdd6418d97.js",revision:"2cdbdcfdd6418d97"},{url:"/_next/static/chunks/app/login/page-55fc25f331438b83.js",revision:"55fc25f331438b83"},{url:"/_next/static/chunks/app/menu/page-ba4c93f708101cf4.js",revision:"ba4c93f708101cf4"},{url:"/_next/static/chunks/app/navigation/page-86f2ca3391f2015f.js",revision:"86f2ca3391f2015f"},{url:"/_next/static/chunks/app/page-4f67de95d0c1b89d.js",revision:"4f67de95d0c1b89d"},{url:"/_next/static/chunks/app/pole-capture/list/page-97ebcdd0586d18dd.js",revision:"97ebcdd0586d18dd"},{url:"/_next/static/chunks/app/pole-capture/page-802fc990d35c73aa.js",revision:"802fc990d35c73aa"},{url:"/_next/static/chunks/app/pole-capture/success/page-b7bae0ca66134887.js",revision:"b7bae0ca66134887"},{url:"/_next/static/chunks/app/poles/capture/page-5cd9417be5006081.js",revision:"5cd9417be5006081"},{url:"/_next/static/chunks/app/settings/page-7e2b5260fdcc6314.js",revision:"7e2b5260fdcc6314"},{url:"/_next/static/chunks/app/sync/page-2b540d7db44c3f23.js",revision:"2b540d7db44c3f23"},{url:"/_next/static/chunks/d0deef33-322f00ff70f48287.js",revision:"322f00ff70f48287"},{url:"/_next/static/chunks/dd8162e8-0572ecc72df9c553.js",revision:"0572ecc72df9c553"},{url:"/_next/static/chunks/framework-2c9863a08d67ec10.js",revision:"2c9863a08d67ec10"},{url:"/_next/static/chunks/main-5ad33d7c88edfc0e.js",revision:"5ad33d7c88edfc0e"},{url:"/_next/static/chunks/main-app-81573acd70bedaa8.js",revision:"81573acd70bedaa8"},{url:"/_next/static/chunks/pages/_app-6ffeaeea9cdb76a2.js",revision:"6ffeaeea9cdb76a2"},{url:"/_next/static/chunks/pages/_error-5404fd3f53862bc1.js",revision:"5404fd3f53862bc1"},{url:"/_next/static/chunks/polyfills-42372ed130431b0a.js",revision:"846118c33b2c0e922d7b3a7676f81f6f"},{url:"/_next/static/chunks/webpack-7173dd526342ae70.js",revision:"7173dd526342ae70"},{url:"/_next/static/css/177ffe3f10918671.css",revision:"177ffe3f10918671"},{url:"/_next/static/media/26a46d62cd723877-s.woff2",revision:"befd9c0fdfa3d8a645d5f95717ed6420"},{url:"/_next/static/media/55c55f0601d81cf3-s.woff2",revision:"43828e14271c77b87e3ed582dbff9f74"},{url:"/_next/static/media/581909926a08bbc8-s.woff2",revision:"f0b86e7c24f455280b8df606b89af891"},{url:"/_next/static/media/8e9860b6e62d6359-s.woff2",revision:"01ba6c2a184b8cba08b0d57167664d75"},{url:"/_next/static/media/97e0cb1ae144a2a9-s.woff2",revision:"e360c61c5bd8d90639fd4503c829c2dc"},{url:"/_next/static/media/df0a9ae256c0569c-s.woff2",revision:"d54db44de5ccb18886ece2fda72bdfe0"},{url:"/_next/static/media/e4af272ccee01ff0-s.p.woff2",revision:"65850a373e258f1c897a2b3d75eb74de"},{url:"/_next/static/media/layers-2x.9859cd12.png",revision:"9859cd12"},{url:"/_next/static/media/layers.ef6db872.png",revision:"ef6db872"},{url:"/_next/static/media/marker-icon.d577052a.png",revision:"d577052a"},{url:"/file.svg",revision:"d09f95206c3fa0bb9bd9fefabfd0ea71"},{url:"/globe.svg",revision:"2aaafa6a49b6563925fe440891e32717"},{url:"/leaflet/layers-2x.png",revision:"4f0283c6ce28e888000e978e537a6a56"},{url:"/leaflet/layers.png",revision:"a6137456ed160d7606981aa57c559898"},{url:"/leaflet/marker-icon-2x.png",revision:"401d815dc206b8dc1b17cd0e37695975"},{url:"/leaflet/marker-icon.png",revision:"2273e3d8ad9264b7daa5bdbf8e6b47f8"},{url:"/leaflet/marker-shadow.png",revision:"44a526eed258222515aa21eaffd14a96"},{url:"/manifest.json",revision:"2810c7ad1ac72c0ff354dcbaa076e204"},{url:"/next.svg",revision:"8e061864f388b47f33a1c3780831193e"},{url:"/vercel.svg",revision:"c0af2f507b369b085b35ef4bbe3bcf1e"},{url:"/window.svg",revision:"a2760511c65806022ad20adf74370ff3"}],{ignoreURLParametersMatching:[]}),e.cleanupOutdatedCaches(),e.registerRoute("/",new e.NetworkFirst({cacheName:"start-url",plugins:[{cacheWillUpdate:async({request:e,response:s,event:a,state:c})=>s&&"opaqueredirect"===s.type?new Response(s.body,{status:200,statusText:"OK",headers:s.headers}):s}]}),"GET"),e.registerRoute(/^https:\/\/firestore\.googleapis\.com\/.*/i,new e.NetworkFirst({cacheName:"firestore-cache",plugins:[new e.ExpirationPlugin({maxEntries:32,maxAgeSeconds:86400})]}),"GET"),e.registerRoute(/^https:\/\/.*\.firebasestorage\.app\/.*/i,new e.CacheFirst({cacheName:"firebase-storage-cache",plugins:[new e.ExpirationPlugin({maxEntries:64,maxAgeSeconds:2592e3})]}),"GET"),e.registerRoute(/\.(?:js|css|html|png|jpg|jpeg|svg|ico|webp)$/i,new e.CacheFirst({cacheName:"static-assets",plugins:[new e.ExpirationPlugin({maxEntries:64,maxAgeSeconds:2592e3})]}),"GET"),e.registerRoute(/^\/api\/.*/i,new e.NetworkFirst({cacheName:"api-cache",plugins:[new e.ExpirationPlugin({maxEntries:16,maxAgeSeconds:300})]}),"GET")});
+// FibreField Service Worker
+// Enhanced service worker with advanced caching strategies
+
+const CACHE_NAME = 'fibrefield-v2';
+const STATIC_CACHE = 'fibrefield-static-v2';
+const IMAGE_CACHE = 'fibrefield-images-v2';
+const API_CACHE = 'fibrefield-api-v2';
+
+// Static assets to cache immediately
+const STATIC_ASSETS = [
+  '/',
+  '/favicon.ico',
+  '/manifest.json',
+  '/sw.js'
+];
+
+// Cache strategies
+const CACHE_STRATEGIES = {
+  // Cache first for static assets
+  CACHE_FIRST: 'cache-first',
+  // Network first for dynamic content
+  NETWORK_FIRST: 'network-first',
+  // Stale while revalidate for frequently updated content
+  STALE_WHILE_REVALIDATE: 'stale-while-revalidate',
+  // Cache only for offline resources
+  CACHE_ONLY: 'cache-only',
+  // Network only for real-time data
+  NETWORK_ONLY: 'network-only'
+};
+
+self.addEventListener('install', function(event) {
+  console.log('Service Worker installing');
+  self.skipWaiting();
+
+  event.waitUntil(
+    Promise.all([
+      // Cache static assets
+      caches.open(STATIC_CACHE).then(cache => cache.addAll(STATIC_ASSETS)),
+      // Cache critical images
+      caches.open(IMAGE_CACHE)
+    ]).then(() => {
+      console.log('Service Worker installed and assets cached');
+    })
+  );
+});
+
+self.addEventListener('activate', function(event) {
+  console.log('Service Worker activating');
+  self.clients.claim();
+
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.map(function(cacheName) {
+          // Delete old caches
+          if (cacheName !== CACHE_NAME &&
+              cacheName !== STATIC_CACHE &&
+              cacheName !== IMAGE_CACHE &&
+              cacheName !== API_CACHE) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Enhanced fetch handler with different strategies
+self.addEventListener('fetch', function(event) {
+  const url = new URL(event.request.url);
+  const pathname = url.pathname;
+
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') return;
+
+  // Skip Chrome extension requests
+  if (url.protocol === 'chrome-extension:') return;
+
+  // Determine cache strategy based on resource type
+  let strategy = CACHE_STRATEGIES.NETWORK_FIRST;
+
+  if (pathname.match(/\.(css|js|woff|woff2|ttf|eot)$/)) {
+    strategy = CACHE_STRATEGIES.CACHE_FIRST;
+  } else if (pathname.match(/\.(png|jpg|jpeg|gif|svg|webp|ico)$/)) {
+    strategy = CACHE_STRATEGIES.CACHE_FIRST;
+  } else if (pathname.match(/^\/api\//)) {
+    strategy = CACHE_STRATEGIES.NETWORK_FIRST;
+  } else if (pathname === '/' || pathname.match(/\/(login|dashboard|assignments)/)) {
+    strategy = CACHE_STRATEGIES.STALE_WHILE_REVALIDATE;
+  }
+
+  event.respondWith(
+    handleRequest(event.request, strategy)
+  );
+});
+
+// Handle requests based on strategy
+async function handleRequest(request, strategy) {
+  const url = new URL(request.url);
+
+  switch (strategy) {
+    case CACHE_STRATEGIES.CACHE_FIRST:
+      return cacheFirst(request);
+
+    case CACHE_STRATEGIES.NETWORK_FIRST:
+      return networkFirst(request);
+
+    case CACHE_STRATEGIES.STALE_WHILE_REVALIDATE:
+      return staleWhileRevalidate(request);
+
+    case CACHE_STRATEGIES.CACHE_ONLY:
+      return cacheOnly(request);
+
+    case CACHE_STRATEGIES.NETWORK_ONLY:
+    default:
+      return fetch(request);
+  }
+}
+
+// Cache-first strategy
+async function cacheFirst(request) {
+  try {
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(STATIC_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch (error) {
+    console.error('Cache-first strategy failed:', error);
+    return new Response('Offline', { status: 503 });
+  }
+}
+
+// Network-first strategy
+async function networkFirst(request) {
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(API_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch (error) {
+    console.log('Network failed, trying cache:', error);
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    return new Response('Offline', { status: 503 });
+  }
+}
+
+// Stale-while-revalidate strategy
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cachedResponse = await cache.match(request);
+
+  const fetchPromise = fetch(request).then(networkResponse => {
+    if (networkResponse.ok) {
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  });
+
+  return cachedResponse || fetchPromise;
+}
+
+// Cache-only strategy
+async function cacheOnly(request) {
+  const cachedResponse = await caches.match(request);
+  return cachedResponse || new Response('Not found', { status: 404 });
+}
+
+// Background sync for offline actions
+self.addEventListener('sync', function(event) {
+  console.log('Background sync triggered:', event.tag);
+
+  if (event.tag === 'background-sync') {
+    event.waitUntil(doBackgroundSync());
+  }
+});
+
+async function doBackgroundSync() {
+  try {
+    // Get pending sync items from IndexedDB or similar
+    const pendingItems = await getPendingSyncItems();
+
+    for (const item of pendingItems) {
+      try {
+        await syncItem(item);
+        await markItemAsSynced(item.id);
+      } catch (error) {
+        console.error('Failed to sync item:', item.id, error);
+      }
+    }
+  } catch (error) {
+    console.error('Background sync failed:', error);
+  }
+}
+
+// Push notification handler
+self.addEventListener('push', function(event) {
+  if (!event.data) return;
+
+  const data = event.data.json();
+  const options = {
+    body: data.body,
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-72x72.png',
+    vibrate: [100, 50, 100],
+    data: data.data,
+    actions: data.actions || []
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Notification click handler
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+
+  const action = event.action;
+  const data = event.notification.data;
+
+  if (action === 'view') {
+    event.waitUntil(
+      clients.openWindow(data.url || '/')
+    );
+  } else {
+    event.waitUntil(
+      clients.openWindow('/')
+    );
+  }
+});
+
+// Periodic cleanup
+self.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'CLEANUP_CACHE') {
+    event.waitUntil(cleanupCache());
+  }
+});
+
+async function cleanupCache() {
+  try {
+    const cacheNames = await caches.keys();
+    const validCaches = [CACHE_NAME, STATIC_CACHE, IMAGE_CACHE, API_CACHE];
+
+    for (const cacheName of cacheNames) {
+      if (!validCaches.includes(cacheName)) {
+        await caches.delete(cacheName);
+      }
+    }
+
+    console.log('Cache cleanup completed');
+  } catch (error) {
+    console.error('Cache cleanup failed:', error);
+  }
+}
+
+// Placeholder functions for background sync
+async function getPendingSyncItems() {
+  // Implement based on your offline storage strategy
+  return [];
+}
+
+async function syncItem(item) {
+  // Implement sync logic
+  console.log('Syncing item:', item);
+}
+
+async function markItemAsSynced(id) {
+  // Mark item as synced
+  console.log('Marked as synced:', id);
+}

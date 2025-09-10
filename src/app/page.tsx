@@ -20,12 +20,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AppLayout } from '@/components/layout/app-layout';
-import { SyncManager } from '@/components/offline/sync-manager';
 import { AuthGuard } from '@/components/auth/auth-guard';
+import { LazyWrapper, createLazyComponent } from '@/components/ui/lazy-wrapper';
+
+// Lazy load heavy components
+const SyncManager = createLazyComponent(
+  () => import('@/components/offline/sync-manager').then(module => ({ default: module.SyncManager })),
+  {
+    fallback: (
+      <Card className="p-4">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+          <span className="ml-2">Loading sync manager...</span>
+        </div>
+      </Card>
+    )
+  }
+);
 import { useAuth } from '@/contexts/auth-context';
 import { homeDropCaptureService } from '@/services/home-drop-capture.service';
 import { homeDropAssignmentService } from '@/services/home-drop-assignment.service';
 import type { HomeDropStatistics } from '@/types/home-drop.types';
+import { log } from '@/lib/logger';
 
 interface DashboardStats {
   // Pole capture stats
@@ -114,7 +130,7 @@ export default function DashboardPage() {
       });
 
     } catch (error) {
-      console.error('Failed to load dashboard data:', error);
+      log.error('Failed to load dashboard data:', {}, "Page", error as Error);
     } finally {
       setLoading(false);
     }
@@ -148,11 +164,11 @@ export default function DashboardPage() {
     },
     {
       title: 'My Drop Assignments',
-      description: `${homeDropStats.pendingAssignments} pending drops`,
+      description: `${homeDropStats.pendingAssignments || 0} pending drops`,
       href: '/home-drop-assignments',
       icon: MapPin,
       color: 'bg-teal-500',
-      badge: homeDropStats.pendingAssignments > 0 ? homeDropStats.pendingAssignments : undefined
+      badge: (homeDropStats.pendingAssignments || 0) > 0 ? homeDropStats.pendingAssignments : undefined
     },
     // Navigation
     {
@@ -165,11 +181,11 @@ export default function DashboardPage() {
     // Sync and admin
     {
       title: 'Sync Data',
-      description: `${stats.pendingSync + (homeDropStats.inProgress || 0)} items pending`,
+      description: `${(stats.pendingSync || 0) + (homeDropStats.inProgress || 0)} items pending`,
       href: '/sync',
       icon: RefreshCw,
       color: 'bg-orange-500',
-      badge: (stats.pendingSync + (homeDropStats.inProgress || 0)) > 0 ? (stats.pendingSync + (homeDropStats.inProgress || 0)) : undefined
+      badge: ((stats.pendingSync || 0) + (homeDropStats.inProgress || 0)) > 0 ? ((stats.pendingSync || 0) + (homeDropStats.inProgress || 0)) : undefined
     }
   ];
 
@@ -177,11 +193,11 @@ export default function DashboardPage() {
   const adminActions = [
     {
       title: 'Review Drops',
-      description: `${homeDropStats.needingApproval} need approval`,
+      description: `${homeDropStats.needingApproval || 0} need approval`,
       href: '/admin/home-drop-reviews',
       icon: CheckCircle,
       color: 'bg-emerald-500',
-      badge: homeDropStats.needingApproval > 0 ? homeDropStats.needingApproval : undefined,
+      badge: (homeDropStats.needingApproval || 0) > 0 ? homeDropStats.needingApproval : undefined,
       adminOnly: true
     },
     {
@@ -224,7 +240,7 @@ export default function DashboardPage() {
     // Today's work
     {
       title: 'Completed Today',
-      value: stats.completedToday + homeDropStats.completedToday,
+      value: (stats.completedToday || 0) + (homeDropStats.completedToday || 0),
       description: 'All installations today',
       icon: TrendingUp,
       color: 'text-emerald-600',
@@ -232,7 +248,7 @@ export default function DashboardPage() {
     },
     {
       title: 'Pending Work',
-      value: stats.assignedPoles + homeDropStats.pendingAssignments,
+      value: (stats.assignedPoles || 0) + (homeDropStats.pendingAssignments || 0),
       description: 'Total assignments pending',
       icon: Clock,
       color: 'text-orange-600',
@@ -241,18 +257,18 @@ export default function DashboardPage() {
     // Status indicators
     {
       title: 'Sync Queue',
-      value: stats.pendingSync + (homeDropStats.inProgress || 0),
+      value: (stats.pendingSync || 0) + (homeDropStats.inProgress || 0),
       description: 'Items awaiting sync',
       icon: RefreshCw,
-      color: (stats.pendingSync + (homeDropStats.inProgress || 0)) > 0 ? 'text-orange-600' : 'text-gray-600',
+      color: ((stats.pendingSync || 0) + (homeDropStats.inProgress || 0)) > 0 ? 'text-orange-600' : 'text-gray-600',
       category: 'sync'
     },
     {
       title: 'Need Approval',
-      value: homeDropStats.needingApproval,
+      value: homeDropStats.needingApproval || 0,
       description: 'Drops pending review',
       icon: AlertTriangle,
-      color: homeDropStats.needingApproval > 0 ? 'text-red-600' : 'text-gray-600',
+      color: (homeDropStats.needingApproval || 0) > 0 ? 'text-red-600' : 'text-gray-600',
       category: 'approval'
     }
   ];
@@ -322,7 +338,7 @@ export default function DashboardPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                      <p className="text-2xl font-bold">{stat.value}</p>
+                      <p className="text-2xl font-bold">{stat.value || 0}</p>
                       <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
                       {stat.category && (
                         <Badge variant="secondary" className="mt-2 text-xs">
@@ -461,11 +477,11 @@ export default function DashboardPage() {
               <div className="bg-gray-50 rounded-lg p-3 mt-4">
                 <div className="grid grid-cols-2 gap-4 text-center text-sm">
                   <div>
-                    <div className="font-semibold text-blue-600">{stats.totalCaptured + homeDropStats.monthCount}</div>
+                    <div className="font-semibold text-blue-600">{(stats.totalCaptured || 0) + (homeDropStats.monthCount || 0)}</div>
                     <div className="text-gray-600">Total This Month</div>
                   </div>
                   <div>
-                    <div className="font-semibold text-green-600">{stats.completedToday + homeDropStats.completedToday}</div>
+                    <div className="font-semibold text-green-600">{(stats.completedToday || 0) + (homeDropStats.completedToday || 0)}</div>
                     <div className="text-gray-600">Completed Today</div>
                   </div>
                 </div>

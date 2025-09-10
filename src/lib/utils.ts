@@ -161,7 +161,7 @@ export const setStorageItem = <T>(key: string, value: T): void => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (error) {
-    console.error('Failed to set localStorage item:', error);
+    log.error('Failed to set localStorage item:', {}, "Utils", error);
   }
 };
 
@@ -171,7 +171,7 @@ export const removeStorageItem = (key: string): void => {
   try {
     localStorage.removeItem(key);
   } catch (error) {
-    console.error('Failed to remove localStorage item:', error);
+    log.error('Failed to remove localStorage item:', {}, "Utils", error);
   }
 };
 

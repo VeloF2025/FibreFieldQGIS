@@ -5,9 +5,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
+import { log } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database connection not available' },
+        { status: 500 }
+      );
+    }
+
     // Get query parameters
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get('project');
@@ -67,7 +75,7 @@ export async function GET(request: NextRequest) {
     const processingSubmissions = submissions.filter(s => s.status === 'processing').length;
 
     // Calculate daily breakdown
-    const dailyStats = {};
+    const dailyStats: Record<string, { completed: number; total: number }> = {};
     poles.forEach(pole => {
       if (pole.capturedAt) {
         const date = pole.capturedAt.toDate().toISOString().split('T')[0];
@@ -128,7 +136,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error: unknown) {
-    console.error('Analytics API error:', error);
+    log.error('Analytics API error:', {}, "Route", error as Error);
     return NextResponse.json(
       {
         success: false,

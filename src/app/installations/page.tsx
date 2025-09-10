@@ -98,7 +98,7 @@ export default function InstallationsPage() {
 
       setInstallations(mappedInstallations);
     } catch (error) {
-      console.error('Failed to load installations:', error);
+      log.error('Failed to load installations:', {}, "Page", error);
     } finally {
       setIsLoading(false);
     }

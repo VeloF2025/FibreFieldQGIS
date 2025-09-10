@@ -24,11 +24,12 @@ export function AuthGuard({
   requirePermissions = [],
   requireOfflineCapable = false,
   fallback,
-  redirectTo = '/login'
+  redirectTo = '/auth/login'
 }: AuthGuardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, userProfile, loading, hasPermission, canWorkOffline } = useAuth();
+
 
   useEffect(() => {
     // Don't redirect while loading
@@ -36,14 +37,14 @@ export function AuthGuard({
 
     // If auth is required but user is not authenticated
     if (requireAuth && !user) {
-      if (pathname !== '/login') {
+      if (pathname !== '/auth/login') {
         router.push(`${redirectTo}?redirect=${encodeURIComponent(pathname)}`);
       }
       return;
     }
 
     // If user is authenticated but we're on login page, redirect to dashboard
-    if (!requireAuth && user && pathname === '/login') {
+    if (!requireAuth && user && pathname === '/auth/login') {
       const redirect = new URLSearchParams(window.location.search).get('redirect');
       router.push(redirect || '/dashboard');
       return;

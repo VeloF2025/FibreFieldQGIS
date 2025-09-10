@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/auth-context';
+import { log } from '@/lib/logger';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -64,7 +65,7 @@ export function LoginForm({ onSuccess, redirectPath = '/dashboard' }: LoginFormP
       }
     } catch (err) {
       // Error is handled by the auth context
-      console.error('Login failed:', err);
+      log.error('Login failed:', {}, "Loginform", err);
     }
   };
 
@@ -80,7 +81,7 @@ export function LoginForm({ onSuccess, redirectPath = '/dashboard' }: LoginFormP
       await resetPassword(formData.email);
       setResetEmailSent(true);
     } catch (err) {
-      console.error('Password reset failed:', err);
+      log.error('Password reset failed:', {}, "Loginform", err);
     } finally {
       setIsResettingPassword(false);
     }

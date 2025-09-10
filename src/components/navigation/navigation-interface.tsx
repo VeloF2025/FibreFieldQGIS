@@ -297,7 +297,7 @@ export function NavigationInterface({
       await navigationService.startNavigation(assignment, navigationOptions);
       onAssignmentSelect?.(assignment);
     } catch (error) {
-      console.error('Failed to start navigation:', error);
+      log.error('Failed to start navigation:', {}, "Navigationinterface", error);
     }
   }, [navigationOptions, onAssignmentSelect]);
 
@@ -306,7 +306,7 @@ export function NavigationInterface({
     try {
       await navigationService.startMultiAssignmentNavigation(assignments, navigationOptions);
     } catch (error) {
-      console.error('Failed to start multi-assignment navigation:', error);
+      log.error('Failed to start multi-assignment navigation:', {}, "Navigationinterface", error);
     }
   }, [assignments, navigationOptions]);
 

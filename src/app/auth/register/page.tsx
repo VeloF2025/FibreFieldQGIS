@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, UserPlus, AlertCircle } from 'lucide-react';
+import { log } from '@/lib/logger';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -46,6 +47,10 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
+      if (!auth || !db) {
+        throw new Error('Firebase not initialized');
+      }
+
       // Create user account
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -80,7 +85,7 @@ export default function RegisterPage() {
       // Redirect to dashboard
       router.push('/');
     } catch (error: any) {
-      console.error('Registration error:', error);
+      log.error('Registration error:', {}, "Page", error as Error);
       
       // Handle specific Firebase errors
       if (error.code === 'auth/email-already-in-use') {

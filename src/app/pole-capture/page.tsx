@@ -118,7 +118,7 @@ function PoleCaptureFlow() {
         photos: stepData.photos || []
       });
     } catch (error) {
-      console.error('Error saving progress:', error);
+      log.error('Error saving progress:', {}, "Page", error);
     } finally {
       setIsSaving(false);
     }
@@ -199,7 +199,7 @@ function PoleCaptureFlow() {
       // Navigate to success page or list
       router.push('/pole-capture/success');
     } catch (error) {
-      console.error('Error saving pole capture:', error);
+      log.error('Error saving pole capture:', {}, "Page", error);
       alert('Failed to save pole capture. Please try again.');
     } finally {
       setIsLoading(false);

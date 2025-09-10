@@ -1,6 +1,7 @@
 // Utility functions for offline data management
 import { localDB } from '@/lib/database';
 import { offlineSyncService } from '@/services/offline-sync.service';
+import { log } from '@/lib/logger';
 
 // Data persistence utilities
 export class OfflineDataUtils {
@@ -106,7 +107,7 @@ export class OfflineDataUtils {
       
       return offlineId;
     } catch (error) {
-      console.error('Failed to save file offline:', error);
+      log.error('Failed to save file offline:', {}, "Offlineutils", error);
       throw error;
     }
   }
@@ -123,7 +124,7 @@ export class OfflineDataUtils {
       
       return new File([blob], fileData.originalName, { type: fileData.mimeType });
     } catch (error) {
-      console.error('Failed to retrieve offline file:', error);
+      log.error('Failed to retrieve offline file:', {}, "Offlineutils", error);
       return null;
     }
   }
@@ -143,13 +144,13 @@ export class OfflineDataUtils {
         })
         .toArray();
       
-      const keysToDelete = oldFiles.map(file => file.key);
+      const keysToDelete = oldFiles.map(file => Number(file.key));
       await localDB.appSettings.bulkDelete(keysToDelete);
       
-      console.log(`🧹 Cleaned up ${keysToDelete.length} old offline files`);
+      log.info(`🧹 Cleaned up ${keysToDelete.length} old offline files`, {}, "Offlineutils");
       return keysToDelete.length;
     } catch (error) {
-      console.error('Failed to cleanup offline files:', error);
+      log.error('Failed to cleanup offline files:', {}, "Offlineutils", error);
       return 0;
     }
   }
@@ -166,18 +167,18 @@ export class OfflineDataUtils {
           try {
             const lastSync = await localDB.getLastSyncTime('general');
             if (OfflineDataUtils.shouldSync(lastSync, intervalMinutes)) {
-              console.log('🔄 Auto-syncing...');
+              log.info('🔄 Auto-syncing...', {}, "Offlineutils");
               await offlineSyncService.syncAll();
             }
           } catch (error) {
-            console.error('Auto-sync failed:', error);
+            log.error('Auto-sync failed:', {}, "Offlineutils", error);
           }
         }
       }, intervalMinutes * 60 * 1000);
     };
     
     const handleOnline = () => {
-      console.log('📶 Device came online, starting auto-sync');
+      log.info('📶 Device came online, starting auto-sync', {}, "Offlineutils");
       startAutoSync();
       
       // Immediate sync when coming online
@@ -185,13 +186,13 @@ export class OfflineDataUtils {
         try {
           await offlineSyncService.syncAll();
         } catch (error) {
-          console.error('Initial online sync failed:', error);
+          log.error('Initial online sync failed:', {}, "Offlineutils", error);
         }
       }, 2000);
     };
     
     const handleOffline = () => {
-      console.log('📵 Device went offline, stopping auto-sync');
+      log.info('📵 Device went offline, stopping auto-sync', {}, "Offlineutils");
       if (syncInterval) clearInterval(syncInterval);
     };
     
@@ -327,9 +328,9 @@ export class OfflineDataUtils {
         }
       });
       
-      console.log('✅ Data import completed successfully');
+      log.info('✅ Data import completed successfully', {}, "Offlineutils");
     } catch (error) {
-      console.error('❌ Data import failed:', error);
+      log.error('❌ Data import failed:', {}, "Offlineutils", error);
       throw error;
     }
   }
@@ -338,9 +339,9 @@ export class OfflineDataUtils {
   static async resetOfflineData(): Promise<void> {
     try {
       await localDB.clearAllData();
-      console.log('🗑️ All offline data cleared');
+      log.info('🗑️ All offline data cleared', {}, "Offlineutils");
     } catch (error) {
-      console.error('Failed to reset offline data:', error);
+      log.error('Failed to reset offline data:', {}, "Offlineutils", error);
       throw error;
     }
   }

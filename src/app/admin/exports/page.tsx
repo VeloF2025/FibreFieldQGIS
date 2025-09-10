@@ -401,7 +401,7 @@ export default function ExportsPage() {
             <CardContent className="space-y-2">
               <Button variant="outline" size="sm" className="w-full justify-start">
                 <FileSpreadsheet className="w-4 h-4 mr-2" />
-                Today's Captures (CSV)
+                Today&apos;s Captures (CSV)
               </Button>
               <Button variant="outline" size="sm" className="w-full justify-start">
                 <Map className="w-4 h-4 mr-2" />

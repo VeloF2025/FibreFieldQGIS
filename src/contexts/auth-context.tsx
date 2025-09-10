@@ -22,8 +22,10 @@ import {
   mockUserProfile, 
   mockSignIn, 
   mockSignOut,
-  getMockProfile 
+  getMockProfile,
+  getMockUserByEmail 
 } from '@/lib/auth-dev';
+import { log } from '@/lib/logger';
 
 interface AuthContextType {
   // Auth state
@@ -81,13 +83,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         // Check if dev mode is enabled
         if (isDevMode()) {
-          console.log('🔧 Dev Mode: Auto-login enabled');
+          log.info('🔧 Dev Mode: Auto-login enabled', {}, "Authcontext");
           
-          // Set mock user and profile
+          // Set mock user and profile immediately
           if (mounted) {
             setUser(mockUser);
             setUserProfile(mockUserProfile);
             setLoading(false);
+            setError(null);
+            log.info('🔧 Dev Mode: User set to', mockUser.email, 'with role', mockUserProfile.role, {}, "Authcontext");
           }
           return;
         }
@@ -106,7 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           }
         }
       } catch (err) {
-        console.error('Auth initialization error:', err);
+        log.error('Auth initialization error:', {}, "Authcontext", err);
         if (mounted) {
           setError(err instanceof Error ? err.message : 'Authentication initialization failed');
         }
@@ -117,18 +121,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     };
 
-    // Skip auth listener in dev mode
+    // Skip auth listener in dev mode and initialize immediately
     if (isDevMode()) {
-      initializeAuth();
+      // Initialize immediately for dev mode
+      log.info('🔧 Dev Mode: Initializing immediately', {}, "Authcontext");
+      setUser(mockUser);
+      setUserProfile(mockUserProfile);
+      setLoading(false);
+      setError(null);
+      
+      // Set auth cookie for middleware in dev mode
+      const mockToken = 'dev-mode-token-auto';
+      document.cookie = `auth-token=${mockToken}; path=/; max-age=3600; samesite=strict`;
+      log.info('🍪 Dev mode auto-auth token cookie set for middleware', {}, "Authcontext");
+      
+      log.info('🔧 Dev Mode: Auth initialized with', mockUser.email, 'role:', mockUserProfile.role, {}, "Authcontext");
+      
       return () => {
         mounted = false;
       };
     }
 
     // Set up auth state listener for production
+    log.info('🔧 Setting up Firebase auth state listener', {}, "Authcontext");
     const unsubscribe = onAuthStateChange(async (firebaseUser) => {
       if (!mounted) return;
       
+      log.info('🔥 Auth state changed:', firebaseUser ? `✅ ${firebaseUser.email}` : '❌ Logged out', {}, "Authcontext");
       setUser(firebaseUser);
       
       if (firebaseUser) {
@@ -136,17 +155,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const profile = await getUserProfile(firebaseUser.uid);
           if (mounted) {
             setUserProfile(profile);
+            log.info('✅ User profile loaded for auth context', {}, "Authcontext");
           }
         } catch (err) {
-          console.error('Failed to load user profile:', err);
+          log.warn('⚠️ Failed to load user profile, continuing without profile:', err, {}, "Authcontext");
           if (mounted) {
-            setError(err instanceof Error ? err.message : 'Failed to load user profile');
+            // Don't set error, just continue without profile
+            setUserProfile(null);
           }
         }
       } else {
         if (mounted) {
           setUserProfile(null);
         }
+      }
+      
+      // Ensure loading is set to false after auth state is determined
+      if (mounted) {
+        setLoading(false);
       }
       
       if (mounted) {
@@ -170,9 +196,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       // Use mock sign in for dev mode
       if (isDevMode()) {
-        await mockSignIn(email, password);
-        setUser(mockUser);
-        setUserProfile(mockUserProfile);
+        const mockUserResult = await mockSignIn(email, password);
+        const mockUserData = getMockUserByEmail(email);
+        
+        setUser(mockUserResult);
+        setUserProfile(mockUserData?.profile || mockUserProfile);
+        
+        // Set auth cookie for middleware in dev mode
+        const mockToken = 'dev-mode-token';
+        document.cookie = `auth-token=${mockToken}; path=/; max-age=3600; samesite=strict`;
+        log.info('🍪 Dev mode auth token cookie set for middleware', {}, "Authcontext");
       } else {
         await signIn(email, password);
         // User state will be updated by the auth state listener

@@ -47,6 +47,9 @@ import {
 import { qgisIntegrationService } from '@/services/qgis-integration.service';
 import { homeDropCaptureService } from '@/services/home-drop-capture.service';
 import type { HomeDropCapture } from '@/types/home-drop.types';
+import { AppLayout } from '@/components/layout/app-layout';
+import { AuthGuard } from '@/components/auth/auth-guard';
+import { log } from '@/lib/logger';
 
 // Dashboard state interface
 interface DashboardState {
@@ -152,7 +155,7 @@ export default function QGISIntegrationPage() {
 
       setHomeDrops(homeDropData);
     } catch (error: unknown) {
-      console.error('Failed to load dashboard data:', error);
+      log.error('Failed to load dashboard data:', {}, "Page", error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -341,6 +344,9 @@ export default function QGISIntegrationPage() {
   };
 
   return (
+    <AuthGuard requireRoles={['admin', 'manager', 'technician']}>
+      <AppLayout>
+        <div className="space-y-6">
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -835,5 +841,8 @@ export default function QGISIntegrationPage() {
         </TabsContent>
       </Tabs>
     </div>
+        </div>
+      </AppLayout>
+    </AuthGuard>
   );
 }

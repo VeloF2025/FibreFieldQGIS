@@ -18,6 +18,7 @@ import {
 } from '@/lib/firestore';
 import { uploadPolePhoto, uploadBase64Image } from '@/lib/storage';
 import { config } from '@/lib/config';
+import { log } from '@/lib/logger';
 
 export class OfflineSyncService {
   private syncInProgress = false;
@@ -27,12 +28,12 @@ export class OfflineSyncService {
   // Main sync function - syncs all data bidirectionally
   async syncAll(): Promise<void> {
     if (this.syncInProgress) {
-      console.log('Sync already in progress, skipping...');
+      log.info('Sync already in progress, skipping...', {}, "OfflineSyncService");
       return;
     }
 
     this.syncInProgress = true;
-    console.log('🔄 Starting full sync...');
+    log.info('🔄 Starting full sync...', {}, "OfflineSyncService");
 
     try {
       // Step 1: Download master data from FibreFlow
@@ -44,9 +45,9 @@ export class OfflineSyncService {
       // Step 3: Process offline queue
       await this.processOfflineQueue();
       
-      console.log('✅ Full sync completed successfully');
+      log.info('✅ Full sync completed successfully', {}, "OfflineSyncService");
     } catch (error) {
-      console.error('❌ Sync failed:', error);
+      log.error('❌ Sync failed:', {}, "OfflineSyncService", error);
       throw error;
     } finally {
       this.syncInProgress = false;
@@ -55,7 +56,7 @@ export class OfflineSyncService {
 
   // Download master data (projects, planned poles, contractors, staff)
   async downloadMasterData(): Promise<void> {
-    console.log('📥 Downloading master data...');
+    log.info('📥 Downloading master data...', {}, "OfflineSyncService");
     
     try {
       // Download projects
@@ -74,16 +75,16 @@ export class OfflineSyncService {
       const plannedPoles = await plannedPolesService.getAll();
       await this.syncPlannedPoles(plannedPoles);
       
-      console.log('✅ Master data download completed');
+      log.info('✅ Master data download completed', {}, "OfflineSyncService");
     } catch (error) {
-      console.error('❌ Master data download failed:', error);
+      log.error('❌ Master data download failed:', {}, "OfflineSyncService", error);
       throw error;
     }
   }
 
   // Upload local changes to FibreFlow
   async uploadLocalChanges(): Promise<void> {
-    console.log('📤 Uploading local changes...');
+    log.info('📤 Uploading local changes...', {}, "OfflineSyncService");
     
     try {
       // Upload new pole installations
@@ -92,42 +93,68 @@ export class OfflineSyncService {
       // Upload photos
       await this.uploadPhotos();
       
-      console.log('✅ Local changes upload completed');
+      log.info('✅ Local changes upload completed', {}, "OfflineSyncService");
     } catch (error) {
-      console.error('❌ Local changes upload failed:', error);
+      log.error('❌ Local changes upload failed:', {}, "OfflineSyncService", error);
       throw error;
     }
   }
 
   // Process offline queue items
   async processOfflineQueue(): Promise<void> {
-    console.log('📋 Processing offline queue...');
+    log.info('📋 Processing offline queue...', {}, "OfflineSyncService");
     
-    const pendingItems = await localDB.offlineQueue
-      .where('status')
-      .equals('pending')
-      .and(item => item.nextAttempt ? item.nextAttempt <= new Date() : true)
-      .toArray();
-
-    for (const item of pendingItems) {
-      try {
-        await this.processQueueItem(item);
-      } catch (error) {
-        console.error(`Failed to process queue item ${item.id}:`, error);
-        await this.handleQueueItemError(item, error as Error);
+    try {
+      // Ensure database is initialized
+      if (!localDB.offlineQueue) {
+        log.warn('Offline queue table not available', {}, "OfflineSyncService");
+        return;
       }
+
+      // Get pending items with validation
+      const pendingItems = await localDB.offlineQueue
+        .where('status')
+        .equals('pending')
+        .and(item => {
+          // Validate item has required properties
+          if (!item || typeof item.status !== 'string') {
+            log.warn('Skipping invalid queue item:', item, {}, "OfflineSyncService");
+            return false;
+          }
+          return item.nextAttempt ? item.nextAttempt <= new Date() : true;
+        })
+        .toArray();
+
+      for (const item of pendingItems) {
+        try {
+          await this.processQueueItem(item);
+        } catch (error) {
+          log.error(`Failed to process queue item ${item.id}:`, {}, "OfflineSyncService", error);
+          await this.handleQueueItemError(item, error as Error);
+        }
+      }
+      
+      log.info('✅ Offline queue processing completed', {}, "OfflineSyncService");
+    } catch (error) {
+      log.error('❌ Failed to process offline queue:', {}, "OfflineSyncService", error);
+      throw error;
     }
-    
-    console.log('✅ Offline queue processing completed');
   }
 
   // Sync projects from remote to local
   private async syncProjects(remoteProjects: any[]): Promise<void> {
     for (const remoteProject of remoteProjects) {
-      const localProject = await localDB.projects
-        .where('remoteId')
-        .equals(remoteProject.id)
-        .first();
+      try {
+        // Validate remoteProject has valid ID
+        if (!remoteProject?.id) {
+          log.warn('Skipping project sync - missing ID:', remoteProject, {}, "OfflineSyncService");
+          continue;
+        }
+
+        const localProject = await localDB.projects
+          .where('remoteId')
+          .equals(remoteProject.id)
+          .first();
 
       if (!localProject) {
         // Create new local project
@@ -162,6 +189,10 @@ export class OfflineSyncService {
           updatedAt: remoteProject.updatedAt?.toDate() || new Date()
         });
       }
+      } catch (error) {
+        log.error('Error syncing project:', {}, "OfflineSyncService", remoteProject?.id, error);
+        // Continue with next project rather than failing entire sync
+      }
     }
 
     await localDB.updateLastSyncTime('projects', 'down', remoteProjects.length);
@@ -170,6 +201,12 @@ export class OfflineSyncService {
   // Sync contractors from remote to local
   private async syncContractors(remoteContractors: any[]): Promise<void> {
     for (const remoteContractor of remoteContractors) {
+      // Validate remoteContractor has valid ID
+      if (!remoteContractor?.id) {
+        log.warn('Skipping contractor sync - missing ID:', remoteContractor, {}, "OfflineSyncService");
+        continue;
+      }
+
       const localContractor = await localDB.contractors
         .where('remoteId')
         .equals(remoteContractor.id)
@@ -212,6 +249,12 @@ export class OfflineSyncService {
   // Sync staff from remote to local
   private async syncStaff(remoteStaff: any[]): Promise<void> {
     for (const remoteStaffMember of remoteStaff) {
+      // Validate remoteStaffMember has valid ID
+      if (!remoteStaffMember?.id) {
+        log.warn('Skipping staff sync - missing ID:', remoteStaffMember, {}, "OfflineSyncService");
+        continue;
+      }
+
       const localStaffMember = await localDB.staff
         .where('remoteId')
         .equals(remoteStaffMember.id)
@@ -252,6 +295,12 @@ export class OfflineSyncService {
   // Sync planned poles from remote to local
   private async syncPlannedPoles(remotePlannedPoles: any[]): Promise<void> {
     for (const remotePole of remotePlannedPoles) {
+      // Validate remotePole has valid ID
+      if (!remotePole?.id) {
+        log.warn('Skipping planned pole sync - missing ID:', remotePole, {}, "OfflineSyncService");
+        continue;
+      }
+
       const localPole = await localDB.plannedPoles
         .where('remoteId')
         .equals(remotePole.id)
@@ -295,6 +344,12 @@ export class OfflineSyncService {
 
   // Upload pole installations to remote
   private async uploadPoleInstallations(): Promise<void> {
+    // Ensure database is initialized
+    if (!localDB.poleInstallations) {
+      log.warn('Pole installations table not available', {}, "OfflineSyncService");
+      return;
+    }
+
     const unsyncedInstallations = await localDB.poleInstallations
       .where('isOffline')
       .equals(true)
@@ -330,9 +385,9 @@ export class OfflineSyncService {
           updatedAt: new Date()
         });
 
-        console.log(`✅ Uploaded pole installation ${installation.id} -> ${remoteId}`);
+        log.info(`✅ Uploaded pole installation ${installation.id} -> ${remoteId}`, {}, "OfflineSyncService");
       } catch (error) {
-        console.error(`❌ Failed to upload pole installation ${installation.id}:`, error);
+        log.error(`❌ Failed to upload pole installation ${installation.id}:`, {}, "OfflineSyncService", error);
         
         // Add to queue for retry
         await localDB.offlineQueue.add({
@@ -352,6 +407,12 @@ export class OfflineSyncService {
 
   // Upload photos to remote storage
   private async uploadPhotos(): Promise<void> {
+    // Ensure database is initialized
+    if (!localDB.photos) {
+      log.warn('Photos table not available', {}, "OfflineSyncService");
+      return;
+    }
+
     const unuploadedPhotos = await localDB.photos
       .where('uploaded')
       .equals(false)
@@ -380,9 +441,9 @@ export class OfflineSyncService {
           remoteId: result.name
         });
 
-        console.log(`✅ Uploaded photo ${photo.id} -> ${result.url}`);
+        log.info(`✅ Uploaded photo ${photo.id} -> ${result.url}`, {}, "OfflineSyncService");
       } catch (error) {
-        console.error(`❌ Failed to upload photo ${photo.id}:`, error);
+        log.error(`❌ Failed to upload photo ${photo.id}:`, {}, "OfflineSyncService", error);
         
         // Add to queue for retry
         await localDB.offlineQueue.add({
@@ -402,7 +463,7 @@ export class OfflineSyncService {
 
   // Process individual queue item
   private async processQueueItem(item: LocalOfflineQueueItem): Promise<void> {
-    console.log(`Processing queue item ${item.id}: ${item.type}/${item.action}`);
+    log.info(`Processing queue item ${item.id}: ${item.type}/${item.action}`, {}, "OfflineSyncService");
 
     // Mark as processing
     await localDB.offlineQueue.update(item.id!, {
@@ -431,7 +492,7 @@ export class OfflineSyncService {
         updatedAt: new Date()
       });
 
-      console.log(`✅ Completed queue item ${item.id}`);
+      log.info(`✅ Completed queue item ${item.id}`, {}, "OfflineSyncService");
     } catch (error) {
       throw error; // Re-throw to be handled by caller
     }
@@ -521,7 +582,7 @@ export class OfflineSyncService {
         lastError: error.message,
         updatedAt: new Date()
       });
-      console.error(`❌ Queue item ${item.id} failed permanently:`, error);
+      log.error(`❌ Queue item ${item.id} failed permanently:`, {}, "OfflineSyncService", error);
     } else {
       // Schedule retry with exponential backoff
       const nextAttempt = new Date(Date.now() + (this.retryDelay * Math.pow(2, newAttempts)));
@@ -534,7 +595,7 @@ export class OfflineSyncService {
         updatedAt: new Date()
       });
       
-      console.log(`⏰ Queue item ${item.id} scheduled for retry ${newAttempts}/${item.maxAttempts} at ${nextAttempt}`);
+      log.info(`⏰ Queue item ${item.id} scheduled for retry ${newAttempts}/${item.maxAttempts} at ${nextAttempt}`, {}, "OfflineSyncService");
     }
   }
 

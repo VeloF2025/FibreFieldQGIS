@@ -1,9 +1,12 @@
-// Pole Sync Service for FibreField
-import { poleCaptureService, type PoleCapture, type PolePhoto } from './pole-capture.service';
-import { fibreFlowApiService } from './fibreflow-api.service';
+// Pole Sync Service - Offline queue and sync management
 import { db } from '@/lib/database';
+import { liveQuery } from 'dexie';
+import { log } from '@/lib/logger';
+import { fibreFlowApi } from './fibreflow-api.service';
 import { auth, storage } from '@/lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import type { PoleCapture, PolePhoto, CapturedPhoto } from './core-pole-capture.service';
+import { poleCaptureService } from './pole-capture.service';
 
 export interface SyncResult {
   success: boolean;
@@ -12,12 +15,26 @@ export interface SyncResult {
   errors: Array<{ poleId: string; error: string }>;
 }
 
+interface SyncStatistics {
+  totalQueue: number;
+  pending: number;
+  processing: number;
+  failed: number;
+  completed: number;
+  nextSync?: Date;
+}
+
 class PoleSyncService {
-  private isSyncing = false;
-  private syncInterval: NodeJS.Timeout | null = null;
+  private readonly MAX_RETRY_ATTEMPTS = 3;
+  private readonly RETRY_DELAY_BASE = 5000; // 5 seconds
+  private readonly SYNC_BATCH_SIZE = 5;
+  private syncInProgress = false;
+  private syncInterval?: NodeJS.Timeout;
   
   constructor() {
-    // Listen for online/offline events
+    // Initialize sync service and listen for online/offline events
+    this.startPeriodicSync();
+    
     if (typeof window !== 'undefined') {
       window.addEventListener('online', () => this.handleOnline());
       window.addEventListener('offline', () => this.handleOffline());
@@ -26,92 +43,176 @@ class PoleSyncService {
   
   // Handle online event
   private handleOnline = () => {
-    console.log('Network online - starting sync');
-    this.startAutoSync();
-    this.syncAll(); // Immediate sync attempt
+    log.info('Network online - starting sync', {}, 'PoleSyncService');
+    this.startPeriodicSync();
+    this.forceSyncNow(); // Immediate sync attempt
   };
   
   // Handle offline event
   private handleOffline = () => {
-    console.log('Network offline - stopping sync');
-    this.stopAutoSync();
+    log.info('Network offline - stopping sync', {}, 'PoleSyncService');
+    this.stopPeriodicSync();
   };
   
-  // Start automatic sync (every 5 minutes when online)
-  startAutoSync(intervalMs: number = 5 * 60 * 1000) {
-    this.stopAutoSync(); // Clear any existing interval
-    
-    if (!navigator.onLine) {
-      console.log('Not starting auto-sync - offline');
-      return;
-    }
-    
-    this.syncInterval = setInterval(() => {
-      if (navigator.onLine && !this.isSyncing) {
-        this.syncAll();
-      }
-    }, intervalMs);
-    
-    console.log(`Auto-sync started (every ${intervalMs / 1000}s)`);
-  }
-  
-  // Stop automatic sync
-  stopAutoSync() {
-    if (this.syncInterval) {
-      clearInterval(this.syncInterval);
-      this.syncInterval = null;
-      console.log('Auto-sync stopped');
+  // Get sync queue for poles
+  async getSyncQueue(): Promise<PoleCapture[]> {
+    try {
+      return await db.poleCaptures
+        .where('syncStatus')
+        .anyOf(['pending', 'error'])
+        .toArray();
+    } catch (error) {
+      log.error('Failed to get sync queue', {}, 'PoleSyncService', error);
+      throw error;
     }
   }
   
-  // Sync all pending captures
-  async syncAll(): Promise<SyncResult> {
-    if (this.isSyncing) {
-      console.log('Sync already in progress');
+  // Get sync queue with detailed status
+  async getDetailedSyncQueue(): Promise<{
+    pending: PoleCapture[];
+    syncing: PoleCapture[];
+    errors: PoleCapture[];
+  }> {
+    try {
+      const pending = await db.poleCaptures
+        .where('syncStatus')
+        .equals('pending')
+        .toArray();
+      
+      const syncing = await db.poleCaptures
+        .where('syncStatus')
+        .equals('syncing')
+        .toArray();
+      
+      const errors = await db.poleCaptures
+        .where('syncStatus')
+        .equals('error')
+        .toArray();
+      
+      return { pending, syncing, errors };
+    } catch (error) {
+      log.error('Failed to get detailed sync queue', {}, 'PoleSyncService', error);
+      throw error;
+    }
+  }
+  
+  // Mark as synced
+  async markAsSynced(poleNumber: string): Promise<void> {
+    try {
+      await db.poleCaptures.update(poleNumber, {
+        status: 'synced',
+        syncStatus: 'synced',
+        syncError: undefined,
+        updatedAt: new Date()
+      });
+      
+      log.info('Marked pole as synced', { poleNumber }, 'PoleSyncService');
+    } catch (error) {
+      log.error('Failed to mark as synced', { poleNumber }, 'PoleSyncService', error);
+      throw error;
+    }
+  }
+  
+  // Mark sync error
+  async markSyncError(poleNumber: string, error: string): Promise<void> {
+    try {
+      await db.poleCaptures.update(poleNumber, {
+        syncStatus: 'error',
+        syncError: error,
+        updatedAt: new Date()
+      });
+      
+      log.error('Marked pole sync error', { poleNumber, error }, 'PoleSyncService');
+    } catch (syncError) {
+      log.error('Failed to mark sync error', { poleNumber, error }, 'PoleSyncService', syncError);
+      throw syncError;
+    }
+  }
+  
+  // Mark sync in progress
+  async markSyncInProgress(poleNumber: string): Promise<void> {
+    try {
+      await db.poleCaptures.update(poleNumber, {
+        syncStatus: 'syncing',
+        syncError: undefined,
+        updatedAt: new Date()
+      });
+      
+      log.info('Marked pole sync in progress', { poleNumber }, 'PoleSyncService');
+    } catch (error) {
+      log.error('Failed to mark sync in progress', { poleNumber }, 'PoleSyncService', error);
+      throw error;
+    }
+  }
+  
+  // Process sync queue (batch processing)
+  async processSyncQueue(): Promise<SyncResult> {
+    if (this.syncInProgress) {
+      log.warn('Sync already in progress, skipping', {}, 'PoleSyncService');
       return { success: false, synced: 0, failed: 0, errors: [] };
     }
     
     if (!navigator.onLine) {
-      console.log('Cannot sync - offline');
+      log.info('Cannot sync - offline', {}, 'PoleSyncService');
       return { success: false, synced: 0, failed: 0, errors: [] };
     }
     
-    this.isSyncing = true;
-    const result: SyncResult = {
-      success: true,
-      synced: 0,
-      failed: 0,
-      errors: []
-    };
+    this.syncInProgress = true;
     
     try {
-      // Get all captures pending sync
-      const pendingCaptures = await poleCaptureService.getSyncQueue();
-      console.log(`Found ${pendingCaptures.length} captures to sync`);
+      const syncQueue = await this.getSyncQueue();
+      const batch = syncQueue.slice(0, this.SYNC_BATCH_SIZE);
       
-      for (const capture of pendingCaptures) {
+      if (batch.length === 0) {
+        log.info('No items in sync queue', {}, 'PoleSyncService');
+        return { success: false, synced: 0, failed: 0, errors: [] };
+      }
+      
+      log.info('Processing sync queue batch', { batchSize: batch.length }, 'PoleSyncService');
+      
+      let successful = 0;
+      let failed = 0;
+      const errors: Array<{ poleId: string; error: string }> = [];
+      
+      for (const poleCapture of batch) {
         try {
-          await this.syncPoleCapture(capture);
-          result.synced++;
+          if (!poleCapture.poleNumber) {
+            throw new Error('Pole number is missing');
+          }
+          
+          await this.markSyncInProgress(poleCapture.poleNumber);
+          await this.syncPoleCapture(poleCapture);
+          await this.markAsSynced(poleCapture.poleNumber);
+          successful++;
+          
+          log.info('Synced pole successfully', { poleNumber: poleCapture.poleNumber }, 'PoleSyncService');
         } catch (error) {
-          result.failed++;
-          result.errors.push({
-            poleId: capture.id || 'unknown',
-            error: error instanceof Error ? error.message : 'Unknown error'
+          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          await this.markSyncError(poleCapture.poleNumber || 'unknown', errorMsg);
+          failed++;
+          errors.push({
+            poleId: poleCapture.poleNumber || 'unknown',
+            error: errorMsg
           });
-          result.success = false;
         }
       }
       
-      console.log(`Sync complete: ${result.synced} synced, ${result.failed} failed`);
+      const result = {
+        success: failed === 0,
+        synced: successful,
+        failed,
+        errors
+      };
+      
+      log.info('Completed sync queue processing', result, 'PoleSyncService');
+      return result;
+      
     } catch (error) {
-      console.error('Sync error:', error);
-      result.success = false;
+      log.error('Failed to process sync queue', {}, 'PoleSyncService', error);
+      throw error;
     } finally {
-      this.isSyncing = false;
+      this.syncInProgress = false;
     }
-    
-    return result;
   }
   
   // Sync single pole capture
@@ -154,14 +255,14 @@ class PoleSyncService {
       };
       
       // Send to FibreFlow API
-      await fibreFlowApiService.syncPoleInstallation(syncData as any);
+      await fibreFlowApi.syncPoleInstallation(syncData as any);
       
       // Mark as synced
       await poleCaptureService.markAsSynced(capture.id);
       
-      console.log(`Successfully synced pole ${capture.id}`);
+      log.info(`Successfully synced pole ${capture.id}`, {}, "PolesyncService");
     } catch (error) {
-      console.error(`Failed to sync pole ${capture.id}:`, error);
+      log.error(`Failed to sync pole ${capture.id}:`, {}, "PolesyncService", error);
       
       // Mark sync error
       await poleCaptureService.markSyncError(
@@ -224,7 +325,7 @@ class PoleSyncService {
         
         uploadedPhotos.push(polePhoto);
       } catch (error) {
-        console.error(`Failed to upload photo ${photo.id}:`, error);
+        log.error(`Failed to upload photo ${photo.id}:`, {}, "PolesyncService", error);
         
         // Mark photo upload as failed
         await db.polePhotos.update(photo.id, {
@@ -262,7 +363,7 @@ class PoleSyncService {
       .equals('error')
       .toArray();
     
-    console.log(`Retrying ${failedCaptures.length} failed syncs`);
+    log.info(`Retrying ${failedCaptures.length} failed syncs`, {}, "PolesyncService");
     
     const result: SyncResult = {
       success: true,
@@ -303,22 +404,139 @@ class PoleSyncService {
       }
     }
     
-    console.log(`Cleared ${cleared} synced captures`);
+    log.info(`Cleared ${cleared} synced captures`, {}, "PolesyncService");
     return cleared;
   }
   
-  // Get sync status
+  // Get sync statistics
+  async getSyncStatistics(): Promise<SyncStatistics> {
+    try {
+      const total = await db.poleCaptures.count();
+      const pending = await db.poleCaptures.where('syncStatus').equals('pending').count();
+      const processing = await db.poleCaptures.where('syncStatus').equals('syncing').count();
+      const failed = await db.poleCaptures.where('syncStatus').equals('error').count();
+      const completed = await db.poleCaptures.where('syncStatus').equals('synced').count();
+      
+      const nextSyncItems = await db.poleCaptures
+        .where('syncStatus')
+        .equals('pending')
+        .limit(1)
+        .toArray();
+      
+      const stats: SyncStatistics = {
+        totalQueue: total,
+        pending,
+        processing,
+        failed,
+        completed,
+        nextSync: nextSyncItems.length > 0 ? nextSyncItems[0].updatedAt : undefined
+      };
+      
+      log.info('Generated sync statistics', stats, 'PoleSyncService');
+      return stats;
+    } catch (error) {
+      log.error('Failed to get sync statistics', {}, 'PoleSyncService', error);
+      throw error;
+    }
+  }
+  
+  // Start periodic sync
+  startPeriodicSync(intervalMs: number = 60000): void { // Default 1 minute
+    this.stopPeriodicSync(); // Clear any existing interval
+    
+    this.syncInterval = setInterval(async () => {
+      try {
+        if (navigator.onLine && !this.syncInProgress) {
+          await this.processSyncQueue();
+        }
+      } catch (error) {
+        log.error('Periodic sync failed', {}, 'PoleSyncService', error);
+      }
+    }, intervalMs);
+    
+    log.info('Started periodic sync', { intervalMs }, 'PoleSyncService');
+  }
+  
+  // Stop periodic sync
+  stopPeriodicSync(): void {
+    if (this.syncInterval) {
+      clearInterval(this.syncInterval);
+      this.syncInterval = undefined;
+      log.info('Stopped periodic sync', {}, 'PoleSyncService');
+    }
+  }
+  
+  // Force sync now
+  async forceSyncNow(): Promise<SyncResult> {
+    try {
+      log.info('Force sync initiated', {}, 'PoleSyncService');
+      return await this.processSyncQueue();
+    } catch (error) {
+      log.error('Force sync failed', {}, 'PoleSyncService', error);
+      throw error;
+    }
+  }
+  
+  // Clear sync errors (retry all failed)
+  async clearSyncErrors(): Promise<number> {
+    try {
+      const erroredPoles = await db.poleCaptures
+        .where('syncStatus')
+        .equals('error')
+        .toArray();
+      
+      for (const pole of erroredPoles) {
+        if (pole.poleNumber) {
+          await db.poleCaptures.update(pole.poleNumber, {
+            syncStatus: 'pending',
+            syncError: undefined,
+            updatedAt: new Date()
+          });
+        }
+      }
+      
+      log.info('Cleared sync errors', { count: erroredPoles.length }, 'PoleSyncService');
+      return erroredPoles.length;
+    } catch (error) {
+      log.error('Failed to clear sync errors', {}, 'PoleSyncService', error);
+      throw error;
+    }
+  }
+  
+  // Check if sync is currently in progress
+  isSyncInProgress(): boolean {
+    return this.syncInProgress;
+  }
+  
+  // Live query for sync queue
+  watchSyncQueue() {
+    return liveQuery(() => 
+      db.poleCaptures
+        .where('syncStatus')
+        .anyOf(['pending', 'error'])
+        .toArray()
+    );
+  }
+  
+  // Live query for sync statistics
+  watchSyncStatistics() {
+    return liveQuery(async () => {
+      return await this.getSyncStatistics();
+    });
+  }
+  
+  // Get sync status (compatibility with existing code)
   async getSyncStatus() {
-    const stats = await poleCaptureService.getStatistics();
+    const stats = await this.getSyncStatistics();
     
     return {
       online: navigator.onLine,
-      syncing: this.isSyncing,
-      autoSync: this.syncInterval !== null,
-      pending: stats.captured,
-      synced: stats.synced,
-      errors: stats.errors,
-      total: stats.total
+      syncing: this.syncInProgress,
+      autoSync: this.syncInterval !== undefined,
+      pending: stats.pending,
+      synced: stats.completed,
+      errors: stats.failed,
+      total: stats.totalQueue
     };
   }
 }
