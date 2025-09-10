@@ -408,7 +408,7 @@ export function HomeDropWorkflow({
                   <div className="flex items-center gap-2 text-yellow-800">
                     <AlertCircle className="h-4 w-4" />
                     <span className="text-sm">
-                      GPS accuracy is poor (>{gpsAccuracy.toFixed(1)}m). Please move to an open area and try again.
+                      GPS accuracy is poor (&gt;{gpsAccuracy.toFixed(1)}m). Please move to an open area and try again.
                     </span>
                   </div>
                 </div>

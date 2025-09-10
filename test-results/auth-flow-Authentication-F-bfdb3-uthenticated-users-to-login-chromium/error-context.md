@@ -1,0 +1,263 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - heading "FibreField" [level=1] [ref=e6]
+      - generic [ref=e8]:
+        - img [ref=e9]
+        - generic [ref=e13]: Online
+      - navigation [ref=e14]:
+        - generic [ref=e15]:
+          - generic [ref=e16]: Main
+          - generic [ref=e17]:
+            - link "Dashboard" [ref=e18] [cursor=pointer]:
+              - /url: /
+              - img [ref=e19] [cursor=pointer]
+              - generic [ref=e22] [cursor=pointer]: Dashboard
+            - link "Navigation" [ref=e23] [cursor=pointer]:
+              - /url: /navigation
+              - img [ref=e24] [cursor=pointer]
+              - generic [ref=e26] [cursor=pointer]: Navigation
+            - link "Sync" [ref=e27] [cursor=pointer]:
+              - /url: /sync
+              - img [ref=e28] [cursor=pointer]
+              - generic [ref=e33] [cursor=pointer]: Sync
+            - link "My Assignments" [ref=e34] [cursor=pointer]:
+              - /url: /assignments
+              - img [ref=e35] [cursor=pointer]
+              - generic [ref=e40] [cursor=pointer]: My Assignments
+            - link "Drop Assignments" [ref=e41] [cursor=pointer]:
+              - /url: /home-drop-assignments
+              - img [ref=e42] [cursor=pointer]
+              - generic [ref=e45] [cursor=pointer]: Drop Assignments
+            - link "Settings" [ref=e46] [cursor=pointer]:
+              - /url: /settings
+              - img [ref=e47] [cursor=pointer]
+              - generic [ref=e50] [cursor=pointer]: Settings
+        - generic [ref=e51]:
+          - generic [ref=e52]: Capture
+          - generic [ref=e53]:
+            - link "Capture Pole" [ref=e54] [cursor=pointer]:
+              - /url: /poles/capture
+              - img [ref=e55] [cursor=pointer]
+              - generic [ref=e58] [cursor=pointer]: Capture Pole
+            - link "Capture Home Drop" [ref=e59] [cursor=pointer]:
+              - /url: /home-drop-capture
+              - img [ref=e60] [cursor=pointer]
+              - generic [ref=e63] [cursor=pointer]: Capture Home Drop
+        - generic [ref=e64]:
+          - generic [ref=e65]:
+            - img [ref=e66]
+            - text: Admin
+          - generic [ref=e68]:
+            - link "Review Drops" [ref=e69] [cursor=pointer]:
+              - /url: /admin/home-drop-reviews
+              - img [ref=e70] [cursor=pointer]
+              - generic [ref=e73] [cursor=pointer]: Review Drops
+            - link "Photo Gallery" [ref=e74] [cursor=pointer]:
+              - /url: /admin/photo-gallery
+              - img [ref=e75] [cursor=pointer]
+              - generic [ref=e78] [cursor=pointer]: Photo Gallery
+            - link "QGIS Integration" [ref=e79] [cursor=pointer]:
+              - /url: /admin/qgis-integration
+              - img [ref=e80] [cursor=pointer]
+              - generic [ref=e83] [cursor=pointer]: QGIS Integration
+      - generic [ref=e84]:
+        - generic [ref=e85]:
+          - generic [ref=e87]: Dev User
+          - generic [ref=e88]: admin
+        - paragraph [ref=e89]: FibreField v1.0.0
+    - main [ref=e91]:
+      - generic [ref=e93]:
+        - generic [ref=e94]:
+          - generic [ref=e95]:
+            - heading "Dashboard" [level=1] [ref=e96]
+            - paragraph [ref=e97]: Welcome back, Dev User. You are online.
+          - generic [ref=e98]:
+            - generic [ref=e99]: Online
+            - generic [ref=e100]: Admin
+        - generic [ref=e101]:
+          - generic [ref=e104]:
+            - generic [ref=e105]:
+              - paragraph [ref=e106]: Total Poles
+              - paragraph [ref=e107]: "24"
+              - paragraph [ref=e108]: Poles captured this month
+              - generic [ref=e109]: poles
+            - img [ref=e110]
+          - generic [ref=e115]:
+            - generic [ref=e116]:
+              - paragraph [ref=e117]: Total Drops
+              - paragraph [ref=e118]: "0"
+              - paragraph [ref=e119]: Home drops this month
+              - generic [ref=e120]: drops
+            - img [ref=e121]
+          - generic [ref=e126]:
+            - generic [ref=e127]:
+              - paragraph [ref=e128]: Completed Today
+              - paragraph [ref=e129]: "5"
+              - paragraph [ref=e130]: All installations today
+              - generic [ref=e131]: today
+            - img [ref=e132]
+          - generic [ref=e137]:
+            - generic [ref=e138]:
+              - paragraph [ref=e139]: Pending Work
+              - paragraph [ref=e140]: "17"
+              - paragraph [ref=e141]: Total assignments pending
+              - generic [ref=e142]: pending
+            - img [ref=e143]
+          - generic [ref=e148]:
+            - generic [ref=e149]:
+              - paragraph [ref=e150]: Sync Queue
+              - paragraph [ref=e151]: "6"
+              - paragraph [ref=e152]: Items awaiting sync
+              - generic [ref=e153]: sync
+            - img [ref=e154]
+          - generic [ref=e161]:
+            - generic [ref=e162]:
+              - paragraph [ref=e163]: Need Approval
+              - paragraph [ref=e164]: "3"
+              - paragraph [ref=e165]: Drops pending review
+              - generic [ref=e166]: approval
+            - img [ref=e167]
+        - generic [ref=e169]:
+          - heading "Quick Actions" [level=2] [ref=e170]
+          - generic [ref=e171]:
+            - link "Capture Pole Start new pole installation capture" [ref=e172] [cursor=pointer]:
+              - /url: /poles/capture
+              - generic [ref=e174] [cursor=pointer]:
+                - img [ref=e177] [cursor=pointer]
+                - heading "Capture Pole" [level=3] [ref=e180] [cursor=pointer]
+                - paragraph [ref=e181] [cursor=pointer]: Start new pole installation capture
+            - link "Capture Home Drop Start home drop installation" [ref=e182] [cursor=pointer]:
+              - /url: /home-drop-capture
+              - generic [ref=e184] [cursor=pointer]:
+                - img [ref=e187] [cursor=pointer]
+                - heading "Capture Home Drop" [level=3] [ref=e190] [cursor=pointer]
+                - paragraph [ref=e191] [cursor=pointer]: Start home drop installation
+            - link "My Assignments View assigned poles for today" [ref=e192] [cursor=pointer]:
+              - /url: /assignments
+              - generic [ref=e194] [cursor=pointer]:
+                - img [ref=e197] [cursor=pointer]
+                - heading "My Assignments" [level=3] [ref=e202] [cursor=pointer]
+                - paragraph [ref=e203] [cursor=pointer]: View assigned poles for today
+            - link "5 My Drop Assignments 5 pending drops" [ref=e204] [cursor=pointer]:
+              - /url: /home-drop-assignments
+              - generic [ref=e206] [cursor=pointer]:
+                - generic [ref=e207] [cursor=pointer]:
+                  - img [ref=e209] [cursor=pointer]
+                  - generic [ref=e212] [cursor=pointer]: "5"
+                - heading "My Drop Assignments" [level=3] [ref=e213] [cursor=pointer]
+                - paragraph [ref=e214] [cursor=pointer]: 5 pending drops
+            - link "Navigate to Drops GPS navigation to locations" [ref=e215] [cursor=pointer]:
+              - /url: /navigation
+              - generic [ref=e217] [cursor=pointer]:
+                - img [ref=e220] [cursor=pointer]
+                - heading "Navigate to Drops" [level=3] [ref=e222] [cursor=pointer]
+                - paragraph [ref=e223] [cursor=pointer]: GPS navigation to locations
+            - link "6 Sync Data 6 items pending" [ref=e224] [cursor=pointer]:
+              - /url: /sync
+              - generic [ref=e226] [cursor=pointer]:
+                - generic [ref=e227] [cursor=pointer]:
+                  - img [ref=e229] [cursor=pointer]
+                  - generic [ref=e234] [cursor=pointer]: "6"
+                - heading "Sync Data" [level=3] [ref=e235] [cursor=pointer]
+                - paragraph [ref=e236] [cursor=pointer]: 6 items pending
+        - generic [ref=e237]:
+          - heading "Admin Actions" [level=2] [ref=e238]
+          - generic [ref=e239]:
+            - link "3 Review Drops 3 need approval" [ref=e240] [cursor=pointer]:
+              - /url: /admin/home-drop-reviews
+              - generic [ref=e242] [cursor=pointer]:
+                - generic [ref=e243] [cursor=pointer]:
+                  - img [ref=e245] [cursor=pointer]
+                  - generic [ref=e248] [cursor=pointer]: "3"
+                - heading "Review Drops" [level=3] [ref=e249] [cursor=pointer]
+                - paragraph [ref=e250] [cursor=pointer]: 3 need approval
+            - link "Photo Gallery View all captured photos" [ref=e251] [cursor=pointer]:
+              - /url: /admin/photo-gallery
+              - generic [ref=e253] [cursor=pointer]:
+                - img [ref=e256] [cursor=pointer]
+                - heading "Photo Gallery" [level=3] [ref=e259] [cursor=pointer]
+                - paragraph [ref=e260] [cursor=pointer]: View all captured photos
+            - link "QGIS Integration Export data for GIS" [ref=e261] [cursor=pointer]:
+              - /url: /admin/qgis-integration
+              - generic [ref=e263] [cursor=pointer]:
+                - img [ref=e266] [cursor=pointer]
+                - heading "QGIS Integration" [level=3] [ref=e269] [cursor=pointer]
+                - paragraph [ref=e270] [cursor=pointer]: Export data for GIS
+        - generic [ref=e271]:
+          - generic [ref=e273]:
+            - generic [ref=e274]:
+              - img [ref=e275]
+              - generic [ref=e278]:
+                - heading "Sync Status" [level=3] [ref=e279]
+                - paragraph [ref=e280]: Up to date
+            - button "Sync" [ref=e282]:
+              - img [ref=e283]
+              - text: Sync
+          - generic [ref=e288]:
+            - generic [ref=e289]:
+              - img [ref=e290]
+              - generic [ref=e294]: Online
+            - generic [ref=e295]:
+              - generic [ref=e296]:
+                - paragraph [ref=e297]: Auto-sync
+                - paragraph [ref=e298]: Sync every 5 minutes when online
+              - checkbox [checked] [ref=e300]
+            - button "Clear Completed" [ref=e303]
+        - generic [ref=e304]:
+          - generic [ref=e305]:
+            - heading "Recent Activity" [level=3] [ref=e306]
+            - paragraph [ref=e307]: Latest captures and updates from both poles and home drops
+          - generic [ref=e308]:
+            - generic [ref=e309]:
+              - generic [ref=e310]:
+                - img [ref=e312]
+                - generic [ref=e315]:
+                  - paragraph [ref=e316]: Home drop HD-123 completed
+                  - paragraph [ref=e317]: 1 hour ago • 123 Main St
+              - generic [ref=e318]:
+                - img [ref=e320]
+                - generic [ref=e323]:
+                  - paragraph [ref=e324]: Pole LAW-P-001 captured
+                  - paragraph [ref=e325]: 2 hours ago • Lawson Ave
+              - generic [ref=e326]:
+                - img [ref=e328]
+                - generic [ref=e331]:
+                  - paragraph [ref=e332]: Home drop HD-119 approved
+                  - paragraph [ref=e333]: 3 hours ago • Admin review
+              - generic [ref=e334]:
+                - img [ref=e336]
+                - generic [ref=e341]:
+                  - paragraph [ref=e342]: Data synced successfully
+                  - paragraph [ref=e343]: 4 hours ago • 3 poles, 2 drops
+              - generic [ref=e344]:
+                - img [ref=e346]
+                - generic [ref=e349]:
+                  - paragraph [ref=e350]: 7 new drop assignments received
+                  - paragraph [ref=e351]: Yesterday • Downtown area
+              - generic [ref=e353]:
+                - generic [ref=e354]:
+                  - generic [ref=e355]: NaN
+                  - generic [ref=e356]: Total This Month
+                - generic [ref=e357]:
+                  - generic [ref=e358]: "5"
+                  - generic [ref=e359]: Completed Today
+            - link "View All Activity" [ref=e361] [cursor=pointer]:
+              - /url: /activity
+              - button "View All Activity" [ref=e362]
+  - generic [ref=e367] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e368] [cursor=pointer]:
+      - img [ref=e369] [cursor=pointer]
+    - generic [ref=e372] [cursor=pointer]:
+      - button "Open issues overlay" [ref=e373] [cursor=pointer]:
+        - generic [ref=e374] [cursor=pointer]:
+          - generic [ref=e375] [cursor=pointer]: "0"
+          - generic [ref=e376] [cursor=pointer]: "1"
+        - generic [ref=e377] [cursor=pointer]: Issue
+      - button "Collapse issues badge" [ref=e378] [cursor=pointer]:
+        - img [ref=e379] [cursor=pointer]
+  - alert [ref=e381]
+```

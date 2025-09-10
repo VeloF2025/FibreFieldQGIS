@@ -1,0 +1,158 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "FibreField Admin" [ref=e7] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e8] [cursor=pointer]
+          - generic [ref=e10] [cursor=pointer]: FibreField Admin
+        - generic [ref=e12]:
+          - img [ref=e13]
+          - textbox "Search captures, customers, poles..." [ref=e16]
+        - generic [ref=e17]:
+          - button "1" [ref=e18]:
+            - img [ref=e19]
+            - generic [ref=e22]: "1"
+          - button "AD" [ref=e23]:
+            - generic [ref=e25]: AD
+    - generic [ref=e26]:
+      - complementary [ref=e27]:
+        - generic [ref=e28]:
+          - navigation [ref=e29]:
+            - link "Dashboard Admin overview and statistics" [ref=e30] [cursor=pointer]:
+              - /url: /admin
+              - img [ref=e31] [cursor=pointer]
+              - generic [ref=e36] [cursor=pointer]:
+                - generic [ref=e37] [cursor=pointer]: Dashboard
+                - generic [ref=e38] [cursor=pointer]: Admin overview and statistics
+            - link "Home Drop Reviews Review and approve installations" [ref=e39] [cursor=pointer]:
+              - /url: /admin/home-drop-reviews
+              - img [ref=e40] [cursor=pointer]
+              - generic [ref=e43] [cursor=pointer]:
+                - generic [ref=e44] [cursor=pointer]: Home Drop Reviews
+                - generic [ref=e45] [cursor=pointer]: Review and approve installations
+            - link "Geographic View Map-based review interface" [ref=e46] [cursor=pointer]:
+              - /url: /admin/map-review
+              - img [ref=e47] [cursor=pointer]
+              - generic [ref=e50] [cursor=pointer]:
+                - generic [ref=e51] [cursor=pointer]: Geographic View
+                - generic [ref=e52] [cursor=pointer]: Map-based review interface
+            - link "Technicians Manage field technicians" [ref=e53]:
+              - /url: /admin/technicians
+              - img [ref=e54]
+              - generic [ref=e59]:
+                - generic [ref=e60]: Technicians
+                - generic [ref=e61]: Manage field technicians
+            - link "Reports Performance analytics" [ref=e62]:
+              - /url: /admin/reports
+              - img [ref=e63]
+              - generic [ref=e65]:
+                - generic [ref=e66]: Reports
+                - generic [ref=e67]: Performance analytics
+            - link "Data Export Export capture data" [ref=e68]:
+              - /url: /admin/exports
+              - img [ref=e69]
+              - generic [ref=e72]:
+                - generic [ref=e73]: Data Export
+                - generic [ref=e74]: Export capture data
+            - link "Admin Settings System configuration" [ref=e75]:
+              - /url: /admin/settings
+              - img [ref=e76]
+              - generic [ref=e79]:
+                - generic [ref=e80]: Admin Settings
+                - generic [ref=e81]: System configuration
+          - generic [ref=e83]:
+            - heading "Quick Stats" [level=3] [ref=e85]
+            - generic [ref=e86]:
+              - generic [ref=e87]:
+                - generic [ref=e88]:
+                  - generic [ref=e89]: Pending Review
+                  - generic [ref=e90]: "0"
+                - generic [ref=e91]:
+                  - generic [ref=e92]: Today
+                  - generic [ref=e93]: "0"
+                - generic [ref=e94]:
+                  - generic [ref=e95]: Approved
+                  - generic [ref=e96]: "0"
+                - generic [ref=e97]:
+                  - generic [ref=e98]: Rejected
+                  - generic [ref=e99]: "0"
+              - generic [ref=e100]:
+                - generic [ref=e101]:
+                  - generic [ref=e102]: Approval Rate
+                  - generic [ref=e103]: 0%
+                - generic [ref=e104]:
+                  - generic [ref=e105]: Sync Success
+                  - generic [ref=e106]: 0%
+        - generic [ref=e108]:
+          - generic [ref=e109]:
+            - img [ref=e110]
+            - generic [ref=e114]: Online
+          - generic [ref=e117]: Synced
+      - main [ref=e118]:
+        - generic [ref=e120]:
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - heading "Home Drop Reviews" [level=1] [ref=e123]
+              - paragraph [ref=e124]: Review and approve home drop installations
+            - generic [ref=e125]:
+              - generic [ref=e126]:
+                - img [ref=e127]
+                - text: Online
+              - button "Refresh" [ref=e131]:
+                - img [ref=e132]
+                - text: Refresh
+          - generic [ref=e137]:
+            - generic [ref=e140]:
+              - generic [ref=e141]:
+                - paragraph [ref=e142]: Total
+                - paragraph [ref=e143]: "0"
+              - img [ref=e144]
+            - generic [ref=e148]:
+              - generic [ref=e149]:
+                - paragraph [ref=e150]: Pending
+                - paragraph [ref=e151]: "0"
+              - img [ref=e152]
+            - generic [ref=e157]:
+              - generic [ref=e158]:
+                - paragraph [ref=e159]: In Review
+                - paragraph [ref=e160]: "0"
+              - img [ref=e161]
+            - generic [ref=e166]:
+              - generic [ref=e167]:
+                - paragraph [ref=e168]: Approved
+                - paragraph [ref=e169]: "0"
+              - img [ref=e170]
+            - generic [ref=e175]:
+              - generic [ref=e176]:
+                - paragraph [ref=e177]: Rejected
+                - paragraph [ref=e178]: "0"
+              - img [ref=e179]
+          - generic [ref=e185]:
+            - generic [ref=e187]:
+              - img [ref=e188]
+              - textbox "Search by ID, address, customer..." [ref=e191]
+            - combobox [ref=e192]:
+              - generic: All Status
+              - img [ref=e193]
+            - combobox [ref=e195]:
+              - generic: All Time
+              - img [ref=e196]
+            - generic [ref=e198]:
+              - button "Bulk Approve" [disabled]:
+                - img
+                - text: Bulk Approve
+              - button "Export" [ref=e199]:
+                - img [ref=e200]
+                - text: Export
+          - generic [ref=e205]:
+            - img [ref=e206]
+            - paragraph [ref=e208]: No home drop captures found
+            - paragraph [ref=e209]: Try adjusting your filters
+  - button "Open Next.js Dev Tools" [ref=e215] [cursor=pointer]:
+    - img [ref=e216] [cursor=pointer]
+  - alert [ref=e219]
+```

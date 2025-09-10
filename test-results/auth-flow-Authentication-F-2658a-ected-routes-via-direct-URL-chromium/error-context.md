@@ -1,0 +1,50 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e6]:
+      - button "Back" [ref=e7]:
+        - img [ref=e8]
+        - generic [ref=e10]: Back
+      - heading "Pole Capture (POLE-1757439641530-2KAA1F)" [level=1] [ref=e11]
+    - generic [ref=e14]:
+      - generic [ref=e15] [cursor=pointer]:
+        - generic [ref=e16] [cursor=pointer]: "1"
+        - generic [ref=e17] [cursor=pointer]: Basic Information
+      - generic [ref=e18] [cursor=pointer]:
+        - generic [ref=e19] [cursor=pointer]: "2"
+        - generic [ref=e20] [cursor=pointer]: GPS Location
+      - generic [ref=e21] [cursor=pointer]:
+        - generic [ref=e22] [cursor=pointer]: "3"
+        - generic [ref=e23] [cursor=pointer]: Capture Photos
+      - generic [ref=e24] [cursor=pointer]:
+        - img [ref=e26] [cursor=pointer]
+        - generic [ref=e29] [cursor=pointer]: Review & Save
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - heading "Basic Information" [level=2] [ref=e35]
+        - generic [ref=e36]:
+          - generic [ref=e37]: Project *
+          - combobox "Project *" [ref=e38]:
+            - option "Select a project..." [selected]
+            - option "Lawley Installation"
+            - option "Mohadin Phase 2"
+            - option "Test Project"
+        - generic [ref=e39]:
+          - generic [ref=e40]: Pole Number (Optional)
+          - textbox "Pole Number (Optional)" [ref=e41]
+        - generic [ref=e42]:
+          - generic [ref=e43]: Notes (Optional)
+          - textbox "Notes (Optional)" [ref=e44]
+      - generic [ref=e45]:
+        - button "Previous" [disabled] [ref=e46]:
+          - img [ref=e47]
+          - text: Previous
+        - button "Next" [disabled] [ref=e49]:
+          - text: Next
+          - img [ref=e50]
+  - button "Open Next.js Dev Tools" [ref=e57] [cursor=pointer]:
+    - img [ref=e58] [cursor=pointer]
+  - alert [ref=e61]
+```

@@ -1,0 +1,219 @@
+{
+  "collections": {
+    "users": [
+      {
+        "id": "admin_user_001",
+        "data": {
+          "uid": "admin_user_001",
+          "email": "admin@fibrefield.com",
+          "displayName": "FibreField Administrator",
+          "role": "admin",
+          "contractorId": "contractor_001",
+          "permissions": ["*"],
+          "isActive": true,
+          "offlineCapable": true,
+          "syncPreferences": {
+            "autoSync": true,
+            "syncInterval": 5,
+            "wifiOnly": false
+          },
+          "createdAt": "2025-01-01T00:00:00Z",
+          "lastLogin": "2025-01-01T00:00:00Z"
+        }
+      },
+      {
+        "id": "manager_user_001",
+        "data": {
+          "uid": "manager_user_001", 
+          "email": "manager@fibrefield.com",
+          "displayName": "Project Manager",
+          "role": "manager",
+          "contractorId": "contractor_001",
+          "permissions": ["view_all", "manage_assignments", "approve_captures", "export_data"],
+          "isActive": true,
+          "offlineCapable": true,
+          "syncPreferences": {
+            "autoSync": true,
+            "syncInterval": 10,
+            "wifiOnly": true
+          },
+          "createdAt": "2025-01-01T00:00:00Z",
+          "lastLogin": "2025-01-01T00:00:00Z"
+        }
+      },
+      {
+        "id": "tech_user_001",
+        "data": {
+          "uid": "tech_user_001",
+          "email": "tech@fibrefield.com", 
+          "displayName": "Field Technician",
+          "role": "technician",
+          "contractorId": "contractor_001",
+          "permissions": ["capture_data", "view_assignments", "update_progress"],
+          "isActive": true,
+          "offlineCapable": true,
+          "syncPreferences": {
+            "autoSync": true,
+            "syncInterval": 5,
+            "wifiOnly": false
+          },
+          "createdAt": "2025-01-01T00:00:00Z",
+          "lastLogin": "2025-01-01T00:00:00Z"
+        }
+      }
+    ],
+    "contractors": [
+      {
+        "id": "contractor_001",
+        "data": {
+          "name": "FibreField Services LLC",
+          "contactEmail": "contact@fibrefield.com",
+          "contactPhone": "+1-555-FIBER-01",
+          "address": {
+            "street": "123 Network Drive",
+            "city": "Tech City",
+            "state": "CA",
+            "zipCode": "90210",
+            "country": "USA"
+          },
+          "isActive": true,
+          "specializations": ["fiber_installation", "home_drops", "pole_mounting"],
+          "certifications": ["Fiber Optic Certified", "OSHA Safety Certified"],
+          "serviceAreas": ["North District", "South District"],
+          "createdAt": "2025-01-01T00:00:00Z"
+        }
+      }
+    ],
+    "projects": [
+      {
+        "id": "project_main_001",
+        "data": {
+          "name": "Main Fiber Network Expansion",
+          "description": "Primary fiber optic infrastructure deployment across residential areas",
+          "status": "active",
+          "contractorIds": ["contractor_001"],
+          "startDate": "2025-01-01T00:00:00Z",
+          "expectedEndDate": "2025-12-31T23:59:59Z",
+          "location": {
+            "region": "North District",
+            "bounds": {
+              "north": 40.8128,
+              "south": 40.6128,
+              "east": -73.9060,
+              "west": -74.1060
+            },
+            "centerCoordinates": {
+              "lat": 40.7128,
+              "lng": -74.0060
+            }
+          },
+          "budget": {
+            "total": 500000,
+            "currency": "USD",
+            "spent": 125000
+          },
+          "targets": {
+            "totalPoles": 150,
+            "totalHomeDrops": 500,
+            "completionPercentage": 25
+          },
+          "roles": {
+            "admin_user_001": ["admin"],
+            "manager_user_001": ["manager"],
+            "tech_user_001": ["technician"]
+          },
+          "createdAt": "2025-01-01T00:00:00Z",
+          "createdBy": "admin_user_001"
+        }
+      }
+    ],
+    "assignments": [
+      {
+        "id": "assignment_001",
+        "data": {
+          "projectId": "project_main_001",
+          "contractorId": "contractor_001",
+          "assignedTo": "tech_user_001",
+          "assignedBy": "manager_user_001",
+          "poleNumber": "P001",
+          "customer": {
+            "name": "John Smith",
+            "address": "123 Main Street, Tech City, CA 90210",
+            "contactNumber": "+1-555-123-4567",
+            "email": "john.smith@email.com",
+            "accountNumber": "AC001001"
+          },
+          "status": "pending",
+          "priority": "medium",
+          "scheduledDate": "2025-01-15T09:00:00Z",
+          "dueDate": "2025-01-15T17:00:00Z",
+          "installationNotes": "Standard home drop installation. Customer has existing underground conduit.",
+          "accessNotes": "Gate code: 1234. Contact customer 24hrs before arrival.",
+          "estimatedDuration": 120,
+          "assignedAt": "2025-01-10T10:00:00Z",
+          "createdAt": "2025-01-10T10:00:00Z"
+        }
+      },
+      {
+        "id": "assignment_002", 
+        "data": {
+          "projectId": "project_main_001",
+          "contractorId": "contractor_001",
+          "assignedTo": "tech_user_001",
+          "assignedBy": "manager_user_001",
+          "poleNumber": "P002",
+          "customer": {
+            "name": "Sarah Johnson",
+            "address": "456 Oak Avenue, Tech City, CA 90210",
+            "contactNumber": "+1-555-456-7890",
+            "email": "sarah.j@email.com",
+            "accountNumber": "AC001002"
+          },
+          "status": "accepted",
+          "priority": "high",
+          "scheduledDate": "2025-01-16T08:00:00Z",
+          "dueDate": "2025-01-16T16:00:00Z", 
+          "installationNotes": "Business location - requires minimal downtime during installation.",
+          "accessNotes": "Business hours 8-6. Backup internet required during install.",
+          "estimatedDuration": 180,
+          "assignedAt": "2025-01-10T14:00:00Z",
+          "acceptedAt": "2025-01-11T09:00:00Z",
+          "createdAt": "2025-01-10T14:00:00Z"
+        }
+      }
+    ]
+  },
+  "indexes": [
+    {
+      "collection": "pole_captures",
+      "fields": [
+        { "field": "projectId", "order": "ASCENDING" },
+        { "field": "capturedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collection": "home_drop_captures", 
+      "fields": [
+        { "field": "projectId", "order": "ASCENDING" },
+        { "field": "approvalStatus", "order": "ASCENDING" },
+        { "field": "capturedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collection": "assignments",
+      "fields": [
+        { "field": "assignedTo", "order": "ASCENDING" },
+        { "field": "status", "order": "ASCENDING" },
+        { "field": "scheduledDate", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collection": "users",
+      "fields": [
+        { "field": "contractorId", "order": "ASCENDING" },
+        { "field": "role", "order": "ASCENDING" },
+        { "field": "isActive", "order": "ASCENDING" }
+      ]
+    }
+  ]
+}

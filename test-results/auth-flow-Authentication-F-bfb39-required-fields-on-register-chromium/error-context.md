@@ -1,0 +1,45 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e8]: FF
+      - heading "Create Account" [level=3] [ref=e9]
+      - paragraph [ref=e10]: Register to start collecting field data
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: Full Name
+          - textbox "Full Name" [active] [ref=e15]
+        - generic [ref=e16]:
+          - generic [ref=e17]: Email
+          - textbox "Email" [ref=e18]
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: Role
+            - combobox "Role" [ref=e22]:
+              - generic: Technician
+              - img [ref=e23]
+            - combobox [ref=e25]
+          - generic [ref=e26]:
+            - generic [ref=e27]: Contractor ID
+            - textbox "Contractor ID" [ref=e28]
+        - generic [ref=e29]:
+          - generic [ref=e30]: Password
+          - textbox "Password" [ref=e31]
+        - generic [ref=e32]:
+          - generic [ref=e33]: Confirm Password
+          - textbox "Confirm Password" [ref=e34]
+      - generic [ref=e35]:
+        - button "Create Account" [ref=e36]:
+          - img [ref=e37]
+          - text: Create Account
+        - generic [ref=e40]:
+          - text: Already have an account?
+          - link "Sign in" [ref=e41] [cursor=pointer]:
+            - /url: /auth/login
+  - button "Open Next.js Dev Tools" [ref=e47] [cursor=pointer]:
+    - img [ref=e48] [cursor=pointer]
+  - alert [ref=e51]
+```

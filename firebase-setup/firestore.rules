@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection - users can read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && hasRole(['admin', 'manager']);
+    }
+    
+    // Projects collection - admin/manager access
+    match /projects/{projectId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && hasRole(['admin', 'manager']);
+    }
+    
+    // Contractors collection
+    match /contractors/{contractorId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && hasRole(['admin']);
+    }
+    
+    // Pole captures - technicians can CRUD their own, admins can read all
+    match /pole_captures/{captureId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && 
+        (resource.data.capturedBy == request.auth.uid || 
+         hasRole(['admin', 'manager']));
+      allow delete: if request.auth != null && hasRole(['admin']);
+    }
+    
+    // Home drop captures - technicians can CRUD their own
+    match /home_drop_captures/{captureId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && 
+        (resource.data.capturedBy == request.auth.uid || 
+         hasRole(['admin', 'manager']));
+      allow delete: if request.auth != null && hasRole(['admin']);
+    }
+    
+    // Assignments - assigned technician can read/update
+    match /assignments/{assignmentId} {
+      allow read: if request.auth != null && 
+        (resource.data.assignedTo == request.auth.uid || 
+         hasRole(['admin', 'manager']));
+      allow update: if request.auth != null && 
+        (resource.data.assignedTo == request.auth.uid ||
+         hasRole(['admin', 'manager']));
+      allow create, delete: if request.auth != null && hasRole(['admin', 'manager']);
+    }
+    
+    // Pole-drop relationships - read for all authenticated, write for admin/manager
+    match /pole_drop_relationships/{relationshipId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && hasRole(['admin', 'manager']);
+    }
+    
+    // Coverage areas - read for all, write for admin/manager
+    match /coverage_areas/{areaId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && hasRole(['admin', 'manager']);
+    }
+    
+    // Performance metrics - read for admin/manager, write for system
+    match /performance_metrics/{metricId} {
+      allow read: if request.auth != null && hasRole(['admin', 'manager']);
+      allow write: if request.auth != null;
+    }
+    
+    // Security audit logs - admin only
+    match /security_audit_logs/{logId} {
+      allow read, write: if request.auth != null && hasRole(['admin']);
+    }
+    
+    // Helper function to check user role
+    function hasRole(roles) {
+      return request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in roles;
+    }
+    
+    // Helper function to check if user is active
+    function isActiveUser() {
+      return request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isActive == true;
+    }
+    
+    // Helper function to check contractor access
+    function hasContractorAccess(contractorId) {
+      return request.auth != null && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.contractorId == contractorId ||
+         hasRole(['admin']));
+    }
+  }
+}

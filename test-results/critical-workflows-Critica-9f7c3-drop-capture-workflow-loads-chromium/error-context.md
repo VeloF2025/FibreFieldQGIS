@@ -1,0 +1,64 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e6]:
+      - button "Back" [ref=e7]:
+        - img [ref=e8]
+        - generic [ref=e10]: Back
+      - generic [ref=e11]:
+        - img [ref=e12]
+        - heading "Home Drop Capture" [level=1] [ref=e15]
+    - generic [ref=e18]:
+      - generic [ref=e19] [cursor=pointer]:
+        - generic [ref=e20] [cursor=pointer]: "1"
+        - generic [ref=e21] [cursor=pointer]: Assignment Selection
+      - generic [ref=e22] [cursor=pointer]:
+        - generic [ref=e23] [cursor=pointer]: "2"
+        - generic [ref=e24] [cursor=pointer]: GPS Location
+      - generic [ref=e25] [cursor=pointer]:
+        - generic [ref=e26] [cursor=pointer]: "3"
+        - generic [ref=e27] [cursor=pointer]: Capture Photos
+      - generic [ref=e28] [cursor=pointer]:
+        - img [ref=e30] [cursor=pointer]
+        - generic [ref=e33] [cursor=pointer]: Review & Save
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - img [ref=e40]
+          - generic [ref=e45]:
+            - heading "Assignment Selection" [level=2] [ref=e46]
+            - paragraph [ref=e47]: Choose a home drop installation assignment to begin capture
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - generic [ref=e50]:
+              - img [ref=e51]
+              - textbox "Search by pole number, customer name, address..." [ref=e54]
+            - generic [ref=e55]:
+              - generic [ref=e56]:
+                - generic [ref=e57]: "Status:"
+                - button "pending" [ref=e58]
+                - button "accepted" [ref=e59]
+                - button "in progress" [ref=e60]
+              - generic [ref=e61]:
+                - generic [ref=e62]: "Priority:"
+                - button "high" [ref=e63]
+                - button "medium" [ref=e64]
+                - button "low" [ref=e65]
+          - generic [ref=e67]: 0 assignments found
+          - generic [ref=e69]:
+            - img [ref=e70]
+            - paragraph [ref=e73]: No assignments found matching your criteria
+            - paragraph [ref=e74]: Try adjusting your filters or search term
+      - generic [ref=e75]:
+        - button "Previous" [disabled] [ref=e76]:
+          - img [ref=e77]
+          - text: Previous
+        - button "Next" [disabled] [ref=e79]:
+          - text: Next
+          - img [ref=e80]
+  - button "Open Next.js Dev Tools" [ref=e87] [cursor=pointer]:
+    - img [ref=e88] [cursor=pointer]
+  - alert [ref=e91]
+```

@@ -1,0 +1,28 @@
+[
+  {
+    "poleNumber": "POLE-001",
+    "customerName": "John Doe",
+    "customerAddress": "123 Main St, Anytown, USA",
+    "contactNumber": "+1-555-0123",
+    "email": "john.doe@example.com",
+    "accountNumber": "ACC-001",
+    "assignedTo": "tech-001",
+    "priority": "medium",
+    "scheduledDate": "2024-01-15",
+    "installationNotes": "Customer prefers morning appointments",
+    "accessNotes": "Gate code: 1234, Call on arrival"
+  },
+  {
+    "poleNumber": "POLE-002", 
+    "customerName": "Jane Smith",
+    "customerAddress": "456 Oak Ave, Somewhere, USA",
+    "contactNumber": "+1-555-0456",
+    "email": "jane.smith@example.com",
+    "accountNumber": "ACC-002",
+    "assignedTo": "tech-002",
+    "priority": "high",
+    "scheduledDate": "2024-01-16",
+    "installationNotes": "Urgent installation required",
+    "accessNotes": "Ring doorbell, home office in back"
+  }
+]

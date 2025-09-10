@@ -1,0 +1,148 @@
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - heading [level=1]: Home Drop Assignments
+          - paragraph: Manage work assignments for field technicians with real-time updates and offline support
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - img
+                  - generic:
+                    - paragraph: Total
+                    - paragraph: "0"
+            - generic:
+              - generic:
+                - generic:
+                  - img
+                  - generic:
+                    - paragraph: Pending
+                    - paragraph: "0"
+            - generic:
+              - generic:
+                - generic:
+                  - img
+                  - generic:
+                    - paragraph: In Progress
+                    - paragraph: "0"
+            - generic:
+              - generic:
+                - generic:
+                  - img
+                  - generic:
+                    - paragraph: Completed
+                    - paragraph: "0"
+          - generic:
+            - generic:
+              - generic:
+                - heading [level=3]: Assignments
+                - generic:
+                  - button:
+                    - img
+                    - text: Refresh
+                  - button:
+                    - img
+                    - text: Export
+                  - button:
+                    - img
+                    - text: Import
+                  - button:
+                    - img
+                    - text: Create Assignment
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+                    - textbox
+                - generic:
+                  - button:
+                    - img
+                    - text: Overdue (0)
+                  - button:
+                    - img
+                    - text: More Filters
+              - generic:
+                - tablist:
+                  - tab [selected]: All
+                  - tab: Pending (0)
+                  - tab: In Progress (0)
+                  - tab: Completed (0)
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+                  - generic:
+                    - heading [level=3]: No assignments found
+                    - paragraph: No assignments have been created yet.
+                  - button:
+                    - img
+                    - text: Create Assignment
+  - button "Open Next.js Dev Tools" [ref=e6] [cursor=pointer]:
+    - img [ref=e7] [cursor=pointer]
+  - alert
+  - dialog "Create New Assignment" [ref=e11]:
+    - generic [ref=e12]:
+      - heading "Create New Assignment" [level=2] [ref=e13]
+      - paragraph [ref=e14]: Create a new home drop assignment for a technician. All fields marked with * are required.
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - heading "Customer Information" [level=3] [ref=e17]
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - generic [ref=e20]: Customer Name *
+            - textbox "Customer Name *" [active] [ref=e21]
+          - generic [ref=e22]:
+            - generic [ref=e23]: Contact Number
+            - textbox "Contact Number" [ref=e24]
+          - generic [ref=e25]:
+            - generic [ref=e26]: Service Address *
+            - textbox "Service Address *" [ref=e27]
+          - generic [ref=e28]:
+            - generic [ref=e29]: Email
+            - textbox "Email" [ref=e30]
+          - generic [ref=e31]:
+            - generic [ref=e32]: Account Number
+            - textbox "Account Number" [ref=e33]
+      - generic [ref=e34]:
+        - heading "Assignment Details" [level=3] [ref=e35]
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - generic [ref=e38]: Pole Number
+            - textbox "Pole Number" [ref=e39]
+          - generic [ref=e40]:
+            - generic [ref=e41]: Assigned To
+            - textbox "Assigned To" [ref=e42]
+          - generic [ref=e43]:
+            - generic [ref=e44]: Priority
+            - combobox [ref=e45]:
+              - generic: Medium
+              - img [ref=e46]
+            - combobox [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: Scheduled Date
+            - textbox "Scheduled Date" [ref=e51]
+      - generic [ref=e52]:
+        - heading "Notes" [level=3] [ref=e53]
+        - generic [ref=e54]:
+          - generic [ref=e55]:
+            - generic [ref=e56]: Installation Notes
+            - textbox "Installation Notes" [ref=e57]
+          - generic [ref=e58]:
+            - generic [ref=e59]: Access Notes
+            - textbox "Access Notes" [ref=e60]
+      - generic [ref=e61]:
+        - button "Cancel" [ref=e62]
+        - button "Create Assignment" [disabled]
+    - button "Close" [ref=e63]:
+      - img [ref=e64]
+      - generic [ref=e67]: Close
+```
